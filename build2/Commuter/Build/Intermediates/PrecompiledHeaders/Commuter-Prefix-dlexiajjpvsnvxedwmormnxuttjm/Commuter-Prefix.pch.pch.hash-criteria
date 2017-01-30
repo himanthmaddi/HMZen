@@ -1,0 +1,28 @@
+-x
+objective-c
+-arch
+arm64
+-std=gnu99
+-fobjc-arc
+-fmodules
+-fmodules-cache-path=/Users/admin/Desktop/SafetraxApp copy/MAppIOS/build2/ModuleCache
+-fbuild-session-file=/Users/admin/Desktop/SafetraxApp copy/MAppIOS/build2/ModuleCache/Session.modulevalidation
+-fpascal-strings
+-O0
+-DDEBUG=1
+-isysroot
+/Applications/Xcode 2.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk
+-miphoneos-version-min=7.1
+-g
+-iquote
+-iquote
+-I/Users/admin/Desktop/SafetraxApp copy/MAppIOS/build2/Commuter/Build/Products/Debug-iphoneos/include
+-F/Users/admin/Desktop/SafetraxApp copy/MAppIOS/build2/Commuter/Build/Products/Debug-iphoneos
+-F/Users/admin/Desktop/SafetraxApp copy/MAppIOS/Safetrax
+-F/Applications/Xcode 2.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/Library/Frameworks
+-F/Applications/Xcode 2.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/Library/Framework
+-F/Users/admin/Desktop/SafetraxApp copy/MAppIOS
+aarch64-apple-darwin15.6.0
+"4.2.1 Compatible Apple LLVM 7.3.0 (clang-703.0.31)"
+SDK_PRODUCT_BUILD_VERSION=13E230
+13E230

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "A92279FAE9837CD5175D4DCAC5F0FAB02C05FC86",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "A92279FAE9837CD5175D4DCAC5F0FAB02C05FC86" : 0,
+    "C4C22DDD2C7FA3E1A12A62FC2665542DADB10794" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8231F7E9-4573-4520-8D58-0A3CE473D3A6",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "A92279FAE9837CD5175D4DCAC5F0FAB02C05FC86" : "SafetraxApp\/",
+    "C4C22DDD2C7FA3E1A12A62FC2665542DADB10794" : "msafe"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Safetrax",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "MAppIOS\/Safetrax.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/iincube\/SafetraxApp.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A92279FAE9837CD5175D4DCAC5F0FAB02C05FC86"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/iincube\/msafe.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C4C22DDD2C7FA3E1A12A62FC2665542DADB10794"
+    }
+  ]
+}
