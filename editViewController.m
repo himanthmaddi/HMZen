@@ -143,7 +143,8 @@
 }
 
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
     if (textField == _loginTextField){
         
         if ([_loginDoubleString isEqualToString:@"OFF"]){
@@ -276,7 +277,6 @@
         
     }
     
-    return YES;
 }
 
 -(IBAction)saveButtonClicked:(id)sender{

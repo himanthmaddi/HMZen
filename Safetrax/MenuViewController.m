@@ -116,6 +116,14 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     }
 }
 -(IBAction)help:(id)sender{
+    [Smooch initWithSettings:[SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]]];
+    
+    //        SKTSettings* settings = [SKTSettings settingsWithAppToken:@"772558t0t0rm25k0a1zov7kq6"];
+    SKTSettings* settings1 = [SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]];
+    
+    settings1.conversationAccentColor = [UIColor redColor];
+    settings1.conversationStatusBarStyle = UIStatusBarStyleLightContent;
+
     [Smooch show];
 }
 -(IBAction)mySchedulePressed:(id)sender
