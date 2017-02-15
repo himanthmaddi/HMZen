@@ -23,6 +23,10 @@
 @property (nonatomic , strong) NSString *cutoffTime;
 @property (nonatomic , strong) NSDate *cutoffDateAndTime;
 
+@property (nonatomic , assign) BOOL loginRivisionAllowed;
+@property (nonatomic , assign) BOOL logoutRivisionAllowed;
+
+@property (nonatomic , strong) NSDictionary *cutOffModel;
 
 @property (nonatomic , strong) NSMutableArray *allDatesArray;
 @property (nonatomic , strong) NSMutableArray *loginTimesArray;
@@ -36,8 +40,11 @@
 @property (nonatomic , strong) NSMutableArray *loginDoubleValuesArray;
 @property (nonatomic , strong) NSMutableArray *logoutDoubleValuesArray;
 
+@property (nonatomic , strong) NSString *finalEmergencyDate;
+
+
 @property (nonatomic , strong) IBOutlet UITableView *scheduleTableView;
-@property (nonatomic , strong) IBOutlet UIButton *selectButton;
+@property (nonatomic , strong) IBOutlet UIButton    *selectButton;
 
 -(void)getAllSchedule;
 -(void)getAllOffices;

@@ -15,7 +15,7 @@
 #import "Reachability.h"
 #import "AppDelegate.h"
 #import "SomeViewController.h"
-
+#import <MBProgressHUD.h>
 
 #define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
 NSString *recorderFilePath;
@@ -433,7 +433,8 @@ CGRect keyboardFrame;
     return [[formatter stringFromDate:[NSDate date]] stringByAppendingString:@".jpg"];
 }
 -(IBAction)takePictureWithCamera {
-    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
     AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if(authStatus == AVAuthorizationStatusAuthorized) {
         // do your logic
@@ -467,8 +468,8 @@ CGRect keyboardFrame;
             }
         }];
     }
-    
-    
+        });
+    });
     
 }
 -(void)imagePickerController:(UIImagePickerController*)picker

@@ -15,6 +15,8 @@
                 <outlet property="DriverName" destination="HP2-Ow-3Us" id="lwb-mq-693"/>
                 <outlet property="VehicleName" destination="2hT-Lo-E6c" id="cmc-W1-jH6"/>
                 <outlet property="boardedButton" destination="UUe-fN-fBq" id="l1V-vy-peu"/>
+                <outlet property="callButton" destination="8hc-8s-LDS" id="NIY-Me-ize"/>
+                <outlet property="callLabel" destination="EsB-zA-PcI" id="grv-vx-ZIB"/>
                 <outlet property="endPoint" destination="KhL-lZ-DBe" id="X7p-q2-2SN"/>
                 <outlet property="endTime" destination="SvH-fw-fH4" id="HmZ-wD-njv"/>
                 <outlet property="etaLabel" destination="dvw-SL-aQf" id="4AR-87-TWE"/>

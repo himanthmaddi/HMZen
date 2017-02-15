@@ -74,7 +74,8 @@ CGRect PasswordkeyboardFrame;
                 }
                 invalidCredentials.textColor = [UIColor greenColor];
                 [invalidCredentials setText:@"Updating New Password!"];
-                NSURL *mainUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/auth?type=change_password",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]]];            NSMutableURLRequest *mainRequest = [NSMutableURLRequest requestWithURL:mainUrl];
+                NSURL *mainUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/auth?type=change_password",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]]];
+                NSMutableURLRequest *mainRequest = [NSMutableURLRequest requestWithURL:mainUrl];
                 [mainRequest setHTTPMethod:@"POST"];
                 [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
                 [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];

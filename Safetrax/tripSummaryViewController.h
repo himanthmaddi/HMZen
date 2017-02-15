@@ -56,6 +56,9 @@
 @property (nonatomic, retain) IBOutlet UILabel *endPoint;
 @property (nonatomic, retain) IBOutlet UIButton *boardedCab;
 
+@property (nonatomic, strong) IBOutlet UIButton *callButton;
+@property (nonatomic, strong) IBOutlet UILabel *callLabel;
+
 @property (nonatomic , strong) IBOutlet UILabel *etaLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil tripArray:(NSArray*)trips selectedIndex:(int)Index withHome:(HomeViewController*)homeobject;

@@ -37,8 +37,12 @@
 @property (nonatomic , strong) NSString *logoutDoubleString;
 
 @property (nonatomic , strong) NSDate *cutoffDateAndTime;
+@property (nonatomic , strong) NSString *loginCutoffTime;
+@property (nonatomic , strong) NSString *logoutCutoffTime;
 
 @property (nonatomic ,assign) BOOL isRevised;
+@property (nonatomic ,assign) BOOL canLoginRevised;
+@property (nonatomic ,assign) BOOL canLogoutRevised;
 
 @property (nonatomic , strong) NSString *cutoffLoginTime;
 @property (nonatomic , strong) NSString *cutoffLogoutTime;

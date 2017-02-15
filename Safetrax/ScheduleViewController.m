@@ -30,26 +30,27 @@
     
     [super viewDidLoad];
     
+    [self getCutoffs];
     
-//    _daysArray = [[NSMutableArray alloc]init];
-//    
-//    [self getCutoffs];
-//    _allDatesArray = [self getWeekDays];
-//
-//    _officeIdsArray = [[NSMutableArray alloc]init];
-//    _officeNamesArray = [[NSMutableArray alloc]init];
-//    
-//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-//    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-//    for (int i=0;i<_allDatesArray.count;i++){
-//        NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-//        [formatter setDateFormat:@"dd\nEE"];
-//        NSDate *date = [dateFormatter dateFromString:[_allDatesArray objectAtIndex:i]];
-//        NSString *dayString = [formatter stringFromDate:date];
-//        [_daysArray addObject:dayString];
-//    }
+    //    _daysArray = [[NSMutableArray alloc]init];
+    //
+    //    [self getCutoffs];
+    //    _allDatesArray = [self getWeekDays];
+    //
+    //    _officeIdsArray = [[NSMutableArray alloc]init];
+    //    _officeNamesArray = [[NSMutableArray alloc]init];
+    //
+    //    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    //    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    //    for (int i=0;i<_allDatesArray.count;i++){
+    //        NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+    //        [formatter setDateFormat:@"dd\nEE"];
+    //        NSDate *date = [dateFormatter dateFromString:[_allDatesArray objectAtIndex:i]];
+    //        NSString *dayString = [formatter stringFromDate:date];
+    //        [_daysArray addObject:dayString];
+    //    }
     
-       [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"enabledSelection"];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"enabledSelection"];
     
     indexpathOfSelectedItemsInTableView = [[NSMutableArray alloc]init];
     
@@ -88,7 +89,7 @@
             
             if ([self connectedToInternet]){
                 if (indexPath.section == 0){
-                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"emergency"]){
+                    if ([[_allDatesArray objectAtIndex:0] isEqualToString:_finalEmergencyDate]){
                         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Schedule can not be edit" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
                     }else{
@@ -110,6 +111,8 @@
                         
                         [edit getDoubleValuesForLogin:[_loginDoubleValuesArray objectAtIndex:indexPath.section] withLogout:[_logoutDoubleValuesArray objectAtIndex:indexPath.section]];
                         
+                        [edit getCutoffsModel:_cutOffModel];
+                        
                         [self.navigationController pushViewController:edit animated:YES];
                     }
                 }else{
@@ -129,6 +132,8 @@
                     [edit getLoginTime:[_loginTimesArray objectAtIndex:indexPath.section] withLogoutTime:[_logoutTimesArray objectAtIndex:indexPath.section] withOffice:[_officeIdsFromRoster objectAtIndex:indexPath.section] withDate:[_allDatesArray objectAtIndex:indexPath.section] withOfficeName:officeName withCutoffDateAndTime:_cutoffDateAndTime];
                     
                     [edit getDoubleValuesForLogin:[_loginDoubleValuesArray objectAtIndex:indexPath.section] withLogout:[_logoutDoubleValuesArray objectAtIndex:indexPath.section]];
+                    
+                    [edit getCutoffsModel:_cutOffModel];
                     
                     [self.navigationController pushViewController:edit animated:YES];
                 }
@@ -192,7 +197,10 @@
 }
 -(void)viewWillAppear:(BOOL)animated
 {
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"timeCompleted" object:nil];
+    
     
     _scheduleTableView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
     self.title = @"Schedule";
@@ -205,13 +213,13 @@
     
     //    CGRect frame = _scheduleTableView.frame;
     //    _scheduleTableView.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
-    _daysArray = [[NSMutableArray alloc]init];
     
-    _allDatesArray = [self getWeekDays];
     
     _officeIdsArray = [[NSMutableArray alloc]init];
     _officeNamesArray = [[NSMutableArray alloc]init];
     
+    _allDatesArray = [self getWeekDays];
+    _daysArray = [[NSMutableArray alloc]init];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     for (int i=0;i<_allDatesArray.count;i++){
@@ -221,14 +229,12 @@
         NSString *dayString = [formatter stringFromDate:date];
         [_daysArray addObject:dayString];
     }
-
+    
     
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self getCutoffs];
             [self getAllSchedule];
-            [self getCutoffs];
             if (_officeNamesArray.count != 0){
             }else{
                 [self getAllOffices];
@@ -334,22 +340,112 @@
             
             
             
-            if (indexPath.section == 0){
-                if([loginTimrForTodayInString isEqualToString:@"OFF"]){
-                    cell.accessoryView  = emergencyButton;
+            //            if (indexPath.section == 0){
+            //                if([loginTimrForTodayInString isEqualToString:@"OFF"]){
+            //                    cell.accessoryView  = emergencyButton;
+            //                }else{
+            //                    long double currentTime = [[NSDate date] timeIntervalSince1970]*1000;
+            //                    long double loginTime = [doubleValueForLogin doubleValue];
+            //                    if (currentTime > loginTime){
+            //                        cell.accessoryView = emergencyButton;
+            //                    }else{
+            //                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            //                    }
+            //                }
+            //            }else{
+            //                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            //            }
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"today"]){
+                if (indexPath.section == 0){
+                    if ([[_loginDoubleValuesArray objectAtIndex:0] isEqualToString:@"OFF"]){
+                        cell.accessoryView  = emergencyButton;
+                    }else{
+                        NSDate *loginDate = [NSDate dateWithTimeIntervalSince1970:([[_loginDoubleValuesArray objectAtIndex:0] doubleValue]/1000)];
+                        if ([[NSDate date] compare:loginDate] == NSOrderedAscending){
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        }else{
+                            cell.accessoryView  = emergencyButton;
+                        }
+                    }
                 }else{
-                    long double currentTime = [[NSDate date] timeIntervalSince1970]*1000;
-                    long double loginTime = [doubleValueForLogin doubleValue];
-                    if (currentTime > loginTime){
-                        cell.accessoryView = emergencyButton;
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                }
+            }else{
+                NSString *loginForNextday = [_loginDoubleValuesArray objectAtIndex:1];
+                if ([loginForNextday isEqualToString:@"OFF"]){
+                    if (indexPath.section == 0){
+                        if ([[_loginDoubleValuesArray objectAtIndex:0] isEqualToString:@"OFF"]){
+                            cell.accessoryView  = emergencyButton;
+                        }else{
+                            NSDate *loginDate = [NSDate dateWithTimeIntervalSince1970:([[_loginDoubleValuesArray objectAtIndex:0] doubleValue]/1000)];
+                            if ([[NSDate date] compare:loginDate] == NSOrderedAscending){
+                                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                            }else{
+                                cell.accessoryView  = emergencyButton;
+                            }
+                        }
                     }else{
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
+                }else{
+                    NSString *loginTimeForNextDay = [_loginDoubleValuesArray objectAtIndex:1];
+                    NSDate *loginDate = [NSDate dateWithTimeIntervalSince1970:([loginForNextday doubleValue]/1000)];
+                    NSLog(@"%@",loginDate);
+                    
+                    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+                    [cal setTimeZone:[NSTimeZone systemTimeZone]];
+                    
+                    NSDateComponents * comp = [cal components:( NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+                    
+                    [comp setMinute:0];
+                    [comp setHour:8];
+                    
+                    NSDate *eighthoursSdate = [cal dateFromComponents:comp];
+                    NSLog(@"%@",eighthoursSdate);
+                    
+                    if ([loginDate compare:eighthoursSdate] == NSOrderedAscending){
+                        if ([[_logoutDoubleValuesArray objectAtIndex:0] isEqualToString:@"OFF"]){
+                            //                            if (indexPath.section == 1){
+                            //                                cell.accessoryView  = emergencyButton;
+                            //                            }else{
+                            //                                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                            //                            }
+                            if ([[NSDate date] compare:loginDate] == NSOrderedDescending){
+                                if (indexPath.section == 1){
+                                    cell.accessoryView  = emergencyButton;
+                                }else{
+                                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                                }
+                            }else{
+                                if (indexPath.section == 0){
+                                    cell.accessoryView  = emergencyButton;
+                                }else{
+                                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                                }
+                            }
+                        }else{
+                            if ([[NSDate date] compare:loginDate] == NSOrderedDescending){
+                                if (indexPath.section == 1){
+                                    cell.accessoryView  = emergencyButton;
+                                }else{
+                                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                                }
+                            }else{
+                                if (indexPath.section == 0){
+                                    cell.accessoryView  = emergencyButton;
+                                }else{
+                                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                                }
+                            }
+                        }
+                    }else{
+                        if (indexPath.section == 0){
+                            cell.accessoryView  = emergencyButton;
+                        }else{
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        }
+                    }
                 }
-                //                cell.accessoryView  = emergencyButton;
-                //                cell.accessoryType = nil;
-            }else{
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             }
             
             cell.dateLabel.text = [_daysArray objectAtIndex:indexPath.section];
@@ -361,7 +457,6 @@
             
             cell.loginLabel.adjustsFontSizeToFitWidth = YES;
             cell.logoutLabel.adjustsFontSizeToFitWidth = YES;
-            
             if ([_officeIdsArray containsObject:officeId]){
                 int index = [_officeIdsArray indexOfObject:officeId];
                 
@@ -480,21 +575,26 @@ viewForFooterInSection:(NSInteger)section {
                 NSDate *convertedDate = [NSDate dateWithTimeIntervalSince1970:seconds];
                 NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
                 [formatter setDateFormat:@"yyyy-MM-dd"];
-                NSString *finalResult = [formatter stringFromDate:convertedDate];
-                if ([finalResult isEqualToString:[_allDatesArray objectAtIndex:0]]){
+                NSString *finalDate = [formatter stringFromDate:convertedDate];
+                
+                if ([[_allDatesArray objectAtIndex:0] isEqualToString:finalDate]){
                     BOOL emergency = [[eachBand valueForKey:@"emergency"] boolValue];
                     if (emergency){
-                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"emergency"];
+                        //                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"emergency"];
+                        _finalEmergencyDate = finalDate;
                     }else{
-                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"emergency"];
+                        //                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"emergency"];
+                        _finalEmergencyDate = @"OFF";
                     }
                 }
-                
             }
             
+            
         }else{
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"emergency"];
+            //            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"emergency"];
         }
+        
+        
         for (int i=0;i<_allDatesArray.count;i++){
             
             NSMutableArray *datesCountArray = [[NSMutableArray alloc]init];
@@ -613,75 +713,105 @@ viewForFooterInSection:(NSInteger)section {
         
     }
     
-    NSLog(@"%@",[_logoutDoubleValuesArray firstObject]);
+    NSDate* sourceDate = [NSDate date];
+    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:sourceDate];
+    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
+    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+    NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:sourceDate];
+    NSLog(@"%@",destinationDate);
     
-    NSString *firstElement = [_logoutDoubleValuesArray firstObject];
-    if ([firstElement isEqualToString:@"OFF"]){
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    [cal setTimeZone:[NSTimeZone systemTimeZone]];
+    
+    NSDateComponents * comp = [cal components:( NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    
+    [comp setMinute:0];
+    [comp setHour:8];
+    
+    NSDate *startOfToday = [cal dateFromComponents:comp];
+    
+    NSTimeZone* sourceTimeZone12 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSTimeZone* destinationTimeZone12 = [NSTimeZone systemTimeZone];
+    NSInteger sourceGMTOffset12 = [sourceTimeZone12 secondsFromGMTForDate:startOfToday];
+    NSInteger destinationGMTOffset12 = [destinationTimeZone12 secondsFromGMTForDate:startOfToday];
+    NSTimeInterval interval12 = destinationGMTOffset12 - sourceGMTOffset12;
+    NSDate* destinationDate12 = [[NSDate alloc] initWithTimeInterval:interval12 sinceDate:startOfToday];
+    
+    
+    if ([destinationDate compare:destinationDate12] == NSOrderedAscending){
+        NSString *nextdayLoginDoublrValue = [_loginDoubleValuesArray objectAtIndex:1];
+        if ([nextdayLoginDoublrValue isEqualToString:@"OFF"]){
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"today"];
+        }else{
+            NSDate *nextDayLoginDate = [NSDate dateWithTimeIntervalSince1970:([nextdayLoginDoublrValue doubleValue]/1000)];
+            if ([nextDayLoginDate compare:startOfToday] == NSOrderedAscending){
+                if ([[NSDate date] compare:nextDayLoginDate] == NSOrderedAscending){
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"today"];
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"today"];
+                    [_allDatesArray removeObjectAtIndex:0];
+                    [_loginTimesArray removeObjectAtIndex:0];
+                    [_logoutTimesArray removeObjectAtIndex:0];
+                    [_daysArray removeObjectAtIndex:0];
+                    [_loginDoubleValuesArray removeObjectAtIndex:0];
+                    [_logoutDoubleValuesArray removeObjectAtIndex:0];
+                    [_officeIdsFromRoster removeObjectAtIndex:0];
+                }
+            }else{
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"today"];
+            }
+        }
+    }else{
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"today"];
         [_allDatesArray removeObjectAtIndex:0];
         [_loginTimesArray removeObjectAtIndex:0];
         [_logoutTimesArray removeObjectAtIndex:0];
         [_daysArray removeObjectAtIndex:0];
         [_loginDoubleValuesArray removeObjectAtIndex:0];
         [_logoutDoubleValuesArray removeObjectAtIndex:0];
+        [_officeIdsFromRoster removeObjectAtIndex:0];
+    }
+    
+    NSString *logoutDoubleValue = [_logoutTimesArray firstObject];
+    NSLog(@"%@",logoutDoubleValue);
+    if ([logoutDoubleValue isEqualToString:@"OFF"]){
+        
     }else{
-        
-        NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-        [formatter setDateFormat:@"dd MMMM HH:mm"];
-        [formatter setTimeZone:[NSTimeZone systemTimeZone]];
-        NSDate *datefromString = [formatter dateFromString:firstElement];
-        
-        NSDate *final = [NSDate dateWithTimeIntervalSince1970:([firstElement doubleValue]/1000)];
-        NSLog(@"%@",final);
-        
-        NSDate* sourceDate = [NSDate date];
+        long double value = [logoutDoubleValue doubleValue];
+        NSDate *logoutDate = [NSDate dateWithTimeIntervalSince1970:(value/1000.0)];
+        NSLog(@"%@",logoutDate);
         NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
         NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-        NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:sourceDate];
-        NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
+        NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:logoutDate];
+        NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:logoutDate];
         NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-        NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:sourceDate];
-        NSLog(@"%@",destinationDate);
+        NSDate* destinationDate = [[[NSDate alloc] initWithTimeInterval:interval sinceDate:logoutDate] dateByAddingTimeInterval:(2*60*60)];
+        NSLog(@"%@",logoutDate);
         
         NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
         NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
-        NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:final];
-        NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:final];
+        NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+        NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
         NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
-        NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:final];
+        NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
         NSLog(@"%@",destinationDate1);
         
-        NSCalendar* calendar = [NSCalendar currentCalendar];
         
-        unsigned unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit |  NSDayCalendarUnit;
-        NSDateComponents* comp1 = [calendar components:unitFlags fromDate:destinationDate];
-        NSDateComponents* comp2 = [calendar components:unitFlags fromDate:destinationDate1];
-        
-        if ([comp1 day] == [comp2 day] && [comp1 month] == [comp2 month] && [comp1 year] == [comp2 year]){
-            if ([destinationDate compare:destinationDate1] == NSOrderedAscending){
-            }
-            else{
-                [_allDatesArray removeObjectAtIndex:0];
-                [_loginTimesArray removeObjectAtIndex:0];
-                [_logoutTimesArray removeObjectAtIndex:0];
-                [_daysArray removeObjectAtIndex:0];
-                [_loginDoubleValuesArray removeObjectAtIndex:0];
-                [_logoutDoubleValuesArray removeObjectAtIndex:0];
-            }
+        if ([destinationDate compare:destinationDate1] == NSOrderedDescending){
+            NSTimeInterval differenceInSeconds = [destinationDate timeIntervalSinceDate:destinationDate1];
+            NSLog(@"%f",differenceInSeconds);
+            [NSTimer scheduledTimerWithTimeInterval:differenceInSeconds target:self selector:@selector(timeCompleted) userInfo:nil repeats:NO];
         }else{
-            NSLog(@"%@",_loginTimesArray);
             
-            [_allDatesArray removeObjectAtIndex:0];
-            [_loginTimesArray removeObjectAtIndex:0];
-            [_logoutTimesArray removeObjectAtIndex:0];
-            [_daysArray removeObjectAtIndex:0];
-            [_loginDoubleValuesArray removeObjectAtIndex:0];
-            [_logoutDoubleValuesArray removeObjectAtIndex:0];
         }
     }
     
-    
-    
     [_scheduleTableView reloadData];
+}
+-(void)timeCompleted{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"timeCompleted" object:nil];
 }
 - (UIImage *)image:(UIImage*)originalImage scaledToSize:(CGSize)size
 {
@@ -731,7 +861,7 @@ viewForFooterInSection:(NSInteger)section {
     [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
     
     NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-
+    
     NSDictionary *json = @{@"employeeId":userid,@"date":fromDate};
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:json options:kNilOptions error:&error_config];
     [request setHTTPBody:jsonData];
@@ -748,6 +878,7 @@ viewForFooterInSection:(NSInteger)section {
     }else{
         
     }
+    [[NSUserDefaults standardUserDefaults] setValue:[_officeIdsArray firstObject] forKey:@"defaultOfficeId"];
     _scheduleTableView.dataSource = self;
     _scheduleTableView.delegate = self;
     [_scheduleTableView reloadData];
@@ -775,6 +906,17 @@ viewForFooterInSection:(NSInteger)section {
         [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             dispatch_async(dispatch_get_main_queue(), ^{
+                _allDatesArray = [self getWeekDays];
+                _daysArray = [[NSMutableArray alloc]init];
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+                for (int i=0;i<_allDatesArray.count;i++){
+                    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+                    [formatter setDateFormat:@"dd\nEE"];
+                    NSDate *date = [dateFormatter dateFromString:[_allDatesArray objectAtIndex:i]];
+                    NSString *dayString = [formatter stringFromDate:date];
+                    [_daysArray addObject:dayString];
+                }
                 [self getAllSchedule];
                 [self getCutoffs];
                 if (_officeNamesArray.count != 0){
@@ -812,7 +954,9 @@ viewForFooterInSection:(NSInteger)section {
                     NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
                     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
                     [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                    
                     NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                    NSLog(@"%@",userid);
                     
                     NSMutableArray *dataArray = [[NSMutableArray alloc]init];
                     
@@ -831,7 +975,6 @@ viewForFooterInSection:(NSInteger)section {
                     NSDictionary *dict = @{@"_employeeId":userid,@"date":finalDate,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO],@"time":[NSString stringWithFormat:@"%.0Lf",currentTime]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:YES],@"emergency":[NSNumber numberWithBool:YES]};
                     [dataArray addObject:dict];
                     
-                    
                     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
                     [request setHTTPBody:jsonData];
                     
@@ -840,13 +983,12 @@ viewForFooterInSection:(NSInteger)section {
                     NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
                     id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                     NSLog(@"%@",jsonresult);
-                    NSLog(@"%@",responce);
                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
                     NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-
+                    
                     if ([jsonresult isKindOfClass:[NSDictionary class]]){
                         if ([httpResponse statusCode] != 412){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Emergency" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Emergency" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                             [alert show];
                             alert.tag = 2222;
                             
@@ -883,6 +1025,22 @@ viewForFooterInSection:(NSInteger)section {
         });
         
     }
+    if ([sender.name isEqualToString:@"timeCompleted"]){
+        
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self getAllSchedule];
+                [self getCutoffs];
+                if (_officeNamesArray.count != 0){
+                }else{
+                    [self getAllOffices];
+                }
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+            });
+        });
+        
+    }
 }
 -(void)getCutoffs{
     NSString *urlInString;
@@ -914,9 +1072,11 @@ viewForFooterInSection:(NSInteger)section {
     NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error_config];
     id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
     NSLog(@"%@",result);
-    NSDictionary *resultCutoff = result;
-    _cutoffDay = [resultCutoff valueForKey:@"day"];
-    _cutoffTime = [resultCutoff valueForKey:@"time"];
+    _cutOffModel = result;
+    _cutoffDay = [_cutOffModel valueForKey:@"day"];
+    _cutoffTime = [_cutOffModel valueForKey:@"time"];
+    _loginRivisionAllowed = [[_cutOffModel valueForKey:@"loginRevisionAllowed"] boolValue];
+    _logoutRivisionAllowed = [[_cutOffModel valueForKey:@"logoutRevisionAllowed"] boolValue];
 }
 -(void)emergencyPressed:(UIButton *)sender{
     UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Really want to schedule emergency Logout?" delegate:self cancelButtonTitle:@"Yes" otherButtonTitles:@"Cancel", nil];
@@ -926,7 +1086,6 @@ viewForFooterInSection:(NSInteger)section {
 }
 -(NSMutableArray *)getWeekDays{
     
-    NSLog(@"%@",_cutoffDay);
     
     NSDate *now = [NSDate date];
     
@@ -959,9 +1118,7 @@ viewForFooterInSection:(NSInteger)section {
              forDate:nowDate];
     
     endOfWeek = [startOfTheWeek dateByAddingTimeInterval:interval-1];
-    NSLog(@"%@",endOfWeek);
     NSDate *sundayDate = [endOfWeek dateByAddingTimeInterval:24*60*60];
-    NSLog(@"%@",sundayDate);
     
     
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -993,13 +1150,9 @@ viewForFooterInSection:(NSInteger)section {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *yesterdayDateString = [dateFormatter stringFromDate:yesterDayDate];
-    NSLog(@"%@",yesterdayDateString);
-    
-    NSLog(@"%@",array);
     
     [array insertObject:yesterdayDateString atIndex:0];
     
-    NSLog(@"%@",array);
     
     return array;
 }
