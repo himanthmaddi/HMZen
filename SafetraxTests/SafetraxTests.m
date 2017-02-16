@@ -28,7 +28,7 @@
 
 - (void)testChangePassword
 {
-    ChangePasswordViewController *change = [[ChangePasswordViewController alloc] init];
+    ChangePasswordView  Controller *change = [[ChangePasswordViewController alloc] init];
     UITextField *fieldone =[[UITextField alloc] init];
     UITextField *field2 =[[UITextField alloc] init];
     UITextField *field3 =[[UITextField alloc] init];

@@ -34,8 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //    _loginTextField.text = _loginTime;
-    //    _logoutTextField.text = _logoutTime;
+    _officeTextField.text = _officeNameString;
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapped:)];
     [_scrollView addGestureRecognizer:tapRecognizer];
@@ -80,8 +79,9 @@
     
     [_loginTextField setTintColor:[UIColor clearColor]];
     [_logoutTextField setTintColor:[UIColor clearColor]];
-
-
+    [_officeTextField setTintColor:[UIColor clearColor]];
+    
+    
     // Do any additional setup after loading the view.
 }
 
@@ -143,54 +143,68 @@
 }
 
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
+- (void)textFieldDidBeginEditing:(UITextField *)textField;
 {
     if (textField == _loginTextField){
-        
-        if ([_loginDoubleString isEqualToString:@"OFF"]){
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self getLoginTimes];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
-                });
-            });
-
-        }else{
-            NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
-            NSLog(@"%@",loginTimeAsDate);
+        if (_canLoginRevised){
             
-            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
-            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
-            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
-            NSLog(@"%@",destinationDate);
+            //            if ([_loginDoubleString isEqualToString:@"OFF"]){
+            //
+            //            }else{
+            //
+            //            }
+            //            NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
+            //            NSLog(@"%@",loginTimeAsDate);
+            //
+            //            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+            //            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+            //            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+            //            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+            //            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+            //            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+            //            NSLog(@"%@",destinationDate);
+            //
+            //            NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+            //            [formatter setDateFormat:@"dd MMMM HH:mm"];
+            //            [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+            //            [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+            //            NSString *textfieldText = [formatter stringFromDate:destinationDate];
+            //
+            //            NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_loginCutoffTime doubleValue]/1000))];
+            //            NSLog(@"%@",cutoffLoginTime);
+            //
+            //            NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+            //            NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+            //            NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+            //            NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+            //            NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+            //            NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+            //            NSLog(@"%@",destinationDate1);
+            //
+            //
+            //            if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+            //                NSLog(@"yes can edit");
+            //                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
+            //
+            //                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            //                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            //                    dispatch_async(dispatch_get_main_queue(), ^{
+            //                        [self getLoginTimes];
+            //                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+            //                    });
+            //                });
+            //
+            //            }else{
+            //                NSLog(@"no");
+            //                _loginTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+            //                _loginTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+            //                _loginTextField.text = textfieldText;
+            //                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+            //                [[NSUserDefaults standardUserDefaults] setValue:_loginDoubleString forKey:@"loginDoubleValue"];
+            //            }
             
-            NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-            [formatter setDateFormat:@"dd MMMM HH:mm"];
-            [formatter setTimeZone:[NSTimeZone systemTimeZone]];
-            [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-            NSString *textfieldText = [formatter stringFromDate:destinationDate];
-            
-            NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-6*60*60)];
-            NSLog(@"%@",cutoffLoginTime);
-            
-            NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-            NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
-            NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
-            NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
-            NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
-            NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
-            NSLog(@"%@",destinationDate1);
-            
-            
-            if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
-                NSLog(@"yes can edit");
+            if ([_loginDoubleString isEqualToString:@"OFF"]){
                 [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
-
                 [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -198,60 +212,143 @@
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
                     });
                 });
-
+                
             }else{
-                NSLog(@"no");
-                _loginTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
-                _loginTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
-                _loginTextField.text = textfieldText;
-                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+                NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
+                NSLog(@"%@",loginTimeAsDate);
+                
+                NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+                NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+                NSLog(@"%@",destinationDate);
+                
+                NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+                [formatter setDateFormat:@"dd MMMM HH:mm"];
+                [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+                [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+                NSString *textfieldText = [formatter stringFromDate:destinationDate];
+                
+                NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_loginCutoffTime doubleValue]/1000))];
+                NSLog(@"%@",cutoffLoginTime);
+                
+                NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+                NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+                NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+                NSLog(@"%@",destinationDate1);
+                
+                if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+                    NSLog(@"yes can edit");
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
+                    
+                    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self getLoginTimes];
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        });
+                    });
+                    
+                }else{
+                    NSLog(@"no");
+                    _loginTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                    _loginTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                    _loginTextField.text = textfieldText;
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+                    [[NSUserDefaults standardUserDefaults] setValue:_loginDoubleString forKey:@"loginDoubleValue"];
+                }
+                
             }
             
-        }
-
-    }
-    if (textField == _logoutTextField){
-        if ([_logoutDoubleString isEqualToString:@"OFF"])
-        {
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self getLogoutTimes];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
-                });
-            });
-            
         }else{
-            NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_logoutDoubleString doubleValue]/1000)];
-            NSLog(@"%@",loginTimeAsDate);
+            NSLog(@"%@",[NSNumber numberWithBool:_isRevised]);
             
-            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
-            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
-            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
-            NSLog(@"%@",destinationDate);
-            
-            NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-            [formatter setDateFormat:@"dd MMMM HH:mm"];
-            [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-
-            NSString *textfieldText = [formatter stringFromDate:destinationDate];
-            
-            NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-2*60*60)];
-            NSLog(@"%@",cutoffLoginTime);
-            
-            NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-            NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
-            NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
-            NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
-            NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
-            NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
-            NSLog(@"%@",destinationDate1);
-            
-            if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+            if (_isRevised){
+                _loginTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                _loginTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                _loginTextField.text = _loginTime;
+                [[NSUserDefaults standardUserDefaults] setValue:_logoutDoubleString forKey:@"logoutDoubleValue"];
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+                
+                
+            }else{
+                if ([_loginDoubleString isEqualToString:@"OFF"]){
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
+                    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self getLoginTimes];
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        });
+                    });
+                    
+                }else{
+                    NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
+                    NSLog(@"%@",loginTimeAsDate);
+                    
+                    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+                    NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+                    NSLog(@"%@",destinationDate);
+                    
+                    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+                    [formatter setDateFormat:@"dd MMMM HH:mm"];
+                    [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+                    [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+                    NSString *textfieldText = [formatter stringFromDate:destinationDate];
+                    
+                    NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_loginCutoffTime doubleValue]/1000))];
+                    NSLog(@"%@",cutoffLoginTime);
+                    
+                    NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                    NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+                    NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                    NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                    NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+                    NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+                    NSLog(@"%@",destinationDate1);
+                    
+                    
+                    if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+                        NSLog(@"yes can edit");
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
+                        
+                        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self getLoginTimes];
+                                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                            });
+                        });
+                        
+                    }else{
+                        NSLog(@"no");
+                        _loginTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                        _loginTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                        _loginTextField.text = textfieldText;
+                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+                        [[NSUserDefaults standardUserDefaults] setValue:_loginDoubleString forKey:@"loginDoubleValue"];
+                    }
+                    
+                }
+                
+            }
+        }
+        
+    }
+    
+    if (textField == _logoutTextField){
+        if (_canLogoutRevised){
+            if ([_logoutDoubleString isEqualToString:@"OFF"])
+            {
                 [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
                 [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -260,30 +357,188 @@
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
                     });
                 });
-
+                
             }else{
-                NSLog(@"no");
-                _logoutTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
-                _logoutTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
-                _logoutTextField.text = textfieldText;
-                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
+                NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_logoutDoubleString doubleValue]/1000)];
+                NSLog(@"%@",loginTimeAsDate);
+                
+                NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+                NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+                NSLog(@"%@",destinationDate);
+                
+                NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+                [formatter setDateFormat:@"dd MMMM HH:mm"];
+                [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+                
+                NSString *textfieldText = [formatter stringFromDate:destinationDate];
+                
+                NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_logoutCutoffTime doubleValue]/1000))];
+                NSLog(@"%@",cutoffLoginTime);
+                
+                NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+                NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+                NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+                NSLog(@"%@",destinationDate1);
+                
+                if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
+                    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self getLogoutTimes];
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        });
+                    });
+                    
+                }else{
+                    NSLog(@"no");
+                    _logoutTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                    _logoutTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                    _logoutTextField.text = textfieldText;
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
+                    [[NSUserDefaults standardUserDefaults] setValue:_logoutDoubleString forKey:@"logoutDoubleValue"];
+                }
+                
+                
             }
             
-
+        }else{
+            if (_isRevised){
+                _logoutTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                _logoutTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                _logoutTextField.text = _logoutTime;
+                [[NSUserDefaults standardUserDefaults] setValue:_logoutDoubleString forKey:@"logoutDoubleValue"];
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
+                
+            }else{
+                if ([_logoutDoubleString isEqualToString:@"OFF"])
+                {
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
+                    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self getLogoutTimes];
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        });
+                    });
+                    
+                }else{
+                    NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_logoutDoubleString doubleValue]/1000)];
+                    NSLog(@"%@",loginTimeAsDate);
+                    
+                    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+                    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+                    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+                    NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+                    NSLog(@"%@",destinationDate);
+                    
+                    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+                    [formatter setDateFormat:@"dd MMMM HH:mm"];
+                    [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+                    
+                    NSString *textfieldText = [formatter stringFromDate:destinationDate];
+                    
+                    NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_logoutCutoffTime doubleValue]/1000))];
+                    NSLog(@"%@",cutoffLoginTime);
+                    
+                    NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+                    NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+                    NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                    NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+                    NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+                    NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+                    NSLog(@"%@",destinationDate1);
+                    
+                    if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
+                        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self getLogoutTimes];
+                                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                            });
+                        });
+                        
+                    }else{
+                        NSLog(@"no");
+                        _logoutTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                        _logoutTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                        _logoutTextField.text = textfieldText;
+                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
+                        [[NSUserDefaults standardUserDefaults] setValue:_logoutDoubleString forKey:@"logoutDoubleValue"];
+                        
+                    }
+                }
+            }
         }
-        
     }
     if (textField == _officeTextField){
-        
+        NSLog(@"office");
+        if ([_loginDoubleString isEqualToString:@"OFF"]){
+            if ([_logoutDoubleString isEqualToString:@"OFF"]){
+                NSLog(@"ok");
+            }else{
+                NSDate *logoutDate = [NSDate dateWithTimeIntervalSince1970:([_logoutDoubleString doubleValue]/1000)];
+                NSDate *twoHoursBeforeDate = [logoutDate dateByAddingTimeInterval:(-([_logoutCutoffTime doubleValue]/1000))];
+                if ([[NSDate date] compare:twoHoursBeforeDate] == NSOrderedAscending){
+                    
+                }else{
+                    _officeTextField.text = _officeNameString;
+                    _logoutTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                    _logoutTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+                }
+                
+            }
+        }else{
+            NSDate *loginDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
+            NSDate *eightHoursBeforeDate = [loginDate dateByAddingTimeInterval:(-([_loginCutoffTime doubleValue]/1000))];
+            if ([[NSDate date] compare:eightHoursBeforeDate] == NSOrderedAscending){
+                
+            }else{
+                _officeTextField.text = _officeNameString;
+                _officeTextField.inputView = [[UIView alloc]initWithFrame:CGRectZero];
+                _officeTextField.inputAccessoryView = [[UIView alloc]initWithFrame:CGRectZero];
+            }
+            
+            
+        }
     }
-    
 }
 
 -(IBAction)saveButtonClicked:(id)sender{
-        if ([_officeTextField.text isEqualToString:@""]){
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Please select office" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+    
+    
+    NSDate *logoutTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_logoutDoubleString doubleValue]/1000)];
+    
+    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:logoutTimeAsDate];
+    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:logoutTimeAsDate];
+    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+    NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:logoutTimeAsDate];
+    
+    NSDate *cutoffLogoutTime = [destinationDate dateByAddingTimeInterval:(-([_logoutCutoffTime doubleValue]/1000))];
+    
+    NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+    NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+    NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+    NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+    NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+    
+    if ([destinationDate1 compare:cutoffLogoutTime] == NSOrderedAscending){
+        if ([_loginTextField.text isEqualToString:@""] && [_logoutTextField.text isEqualToString:@""]){
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Please select any schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
             [alert show];
-            
         }else{
             NSLog(@"%@",[NSNumber numberWithBool:_isRevised]);
             if (_isRevised){
@@ -294,90 +549,369 @@
                 rivisionAlert.tag = 12345;
                 [rivisionAlert show];
             }else{
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([self connectedToInternet]){
-                    NSString *urlInString;
-                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                    if([Port isEqualToString:@"-1"])
-                    {
-                        urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-                    }
-                    else
-                    {
-                        urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-                    }
-                    
-                    NSURL *scheduleURL = [NSURL URLWithString:urlInString];
-                    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
-                    [request setHTTPMethod:@"POST"];
-                    
-                    NSError *error_config;
-                    
-                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                    
-                    NSMutableArray *dataArray = [[NSMutableArray alloc]init];
-                    for (int i=0;i<2;i++){
-                        if (i == 0){
-                            if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
-                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                [dataArray addObject:dict];
-                            }else{
-                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                [dataArray addObject:dict];
+                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([self connectedToInternet]){
+                            NSString *urlInString;
+                            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                            if([Port isEqualToString:@"-1"])
+                            {
+                                urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                            }
+                            else
+                            {
+                                urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
                             }
                             
-                        }
-                        if (i == 1){
-                            if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
-                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                [dataArray addObject:dict];
-                            }else{
-                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                [dataArray addObject:dict];
+                            NSURL *scheduleURL = [NSURL URLWithString:urlInString];
+                            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
+                            [request setHTTPMethod:@"POST"];
+                            
+                            NSError *error_config;
+                            
+                            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                            NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                            NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                            
+                            NSMutableArray *dataArray = [[NSMutableArray alloc]init];
+                            
+                            if (_canLoginRevised && _canLogoutRevised){
+                                
+                                if ((_loginTextField.text.length >0) && (_logoutTextField.text.length >0)){
+                                    for (int i=0;i<2;i++){
+                                        if (i == 0){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }if (i == 1){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                    }
+                                }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    [dataArray addObject:dict];
+                                }else{
+                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    [dataArray addObject:dict];
+                                }
+                                
+                            }else if (_canLogoutRevised){
+                                if (_isRevised){
+                                    if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                }else{
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                    
+                                }
+                            }else if (_canLoginRevised){
+                                if (_isRevised){
+                                    if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                }else{
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                }
                             }
-                        }
-                    }
-                    NSLog(@"%@",dataArray);
-                    
-                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
-                    [request setHTTPBody:jsonData];
-                    
-                    NSURLResponse *responce;
-                    
-                    NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-                    NSLog(@"%@",responce);
-                    id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
-                    NSLog(@"%@",jsonresult);
-                    if ([jsonresult isKindOfClass:[NSDictionary class]]){
-                        if ([[jsonresult valueForKey:@"status"] isEqualToString:@"ok"]){
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                            [alert show];
-                            alert.tag = 2222;
+                            else if (!_canLoginRevised && !_canLogoutRevised){
+                                if (_isRevised){
+                                    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"You can't modify your schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                    [alertView show];
+                                    alertView.tag = 1234567;
+                                }else{
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                }
+                            }
+                            
+                            NSLog(@"%@",dataArray);
+                            
+                            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
+                            [request setHTTPBody:jsonData];
+                            
+                            NSURLResponse *responce;
+                            
+                            NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+                            NSLog(@"%@",responce);
+                            id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
+                            NSLog(@"%@",jsonresult);
+                            if ([jsonresult isKindOfClass:[NSDictionary class]]){
+                                if ([[jsonresult valueForKey:@"status"] isEqualToString:@"ok"]){
+                                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                    [alert show];
+                                    alert.tag = 2222;
+                                }else{
+                                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                    [alert show];
+                                }
+                            }else{
+                                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                [alert show];
+                            }
                         }else{
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                             [alert show];
                         }
-                    }else{
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }
-                    }else{
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    });
                 });
-            });
+            }
+            
         }
+        
+    }else{
+        if ([_logoutDoubleString isEqualToString:@"OFF"]){
+            if ([_loginTextField.text isEqualToString:@""] && [_logoutTextField.text isEqualToString:@""]){
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Please select any schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                [alert show];
+            }else{
+                NSLog(@"%@",[NSNumber numberWithBool:_isRevised]);
+                if (_isRevised){
+                    UIAlertView *rivisionAlert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Please enter coments for revising schedule" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Submit", nil];
+                    rivisionAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+                    [rivisionAlert textFieldAtIndex:0].delegate = self;
+                    [rivisionAlert textFieldAtIndex:0].placeholder = @"Comments";
+                    rivisionAlert.tag = 12345;
+                    [rivisionAlert show];
+                }else{
+                    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([self connectedToInternet]){
+                                NSString *urlInString;
+                                NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                                if([Port isEqualToString:@"-1"])
+                                {
+                                    urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                                }
+                                else
+                                {
+                                    urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+                                }
+                                
+                                NSURL *scheduleURL = [NSURL URLWithString:urlInString];
+                                NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
+                                [request setHTTPMethod:@"POST"];
+                                
+                                NSError *error_config;
+                                
+                                NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                                NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                                NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                                [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                                NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                                
+                                NSMutableArray *dataArray = [[NSMutableArray alloc]init];
+                                
+                                if (_canLoginRevised && _canLogoutRevised){
+                                    
+                                    if ((_loginTextField.text.length >0) && (_logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                }else if (_canLogoutRevised){
+                                    if (_isRevised){
+                                        if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }else{
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                        
+                                    }else{
+                                        if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                            for (int i=0;i<2;i++){
+                                                if (i == 0){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }if (i == 1){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }
+                                            }
+                                        }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }else{
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                        
+                                        
+                                    }
+                                }else if (_canLoginRevised){
+                                    if (_isRevised){
+                                        if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }else{
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                        
+                                    }else{
+                                        if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                            for (int i=0;i<2;i++){
+                                                if (i == 0){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }if (i == 1){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }
+                                            }
+                                        }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }else{
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                    }
+                                }
+                                else if (!_canLoginRevised && !_canLogoutRevised){
+                                    if (_isRevised){
+                                        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"You can't modify your schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                        [alertView show];
+                                        alertView.tag = 1234567;
+                                    }else{
+                                        if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                            for (int i=0;i<2;i++){
+                                                if (i == 0){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }if (i == 1){
+                                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                                    [dataArray addObject:dict];
+                                                }
+                                            }
+                                        }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }else{
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                            [dataArray addObject:dict];
+                                        }
+                                    }
+                                }
+                                
+                                NSLog(@"%@",dataArray);
+                                
+                                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
+                                [request setHTTPBody:jsonData];
+                                
+                                NSURLResponse *responce;
+                                
+                                NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+                                NSLog(@"%@",responce);
+                                id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
+                                NSLog(@"%@",jsonresult);
+                                if ([jsonresult isKindOfClass:[NSDictionary class]]){
+                                    if ([[jsonresult valueForKey:@"status"] isEqualToString:@"ok"]){
+                                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                        [alert show];
+                                        alert.tag = 2222;
+                                    }else{
+                                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                        [alert show];
+                                    }
+                                }else{
+                                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                    [alert show];
+                                }
+                            }else{
+                                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                [alert show];
+                            }
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        });
+                    });
+                }
+                
+            }
+            
+        }else{
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Schedule can not change at this time" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            [alert show];
+        }
+    }
     
-        }
-
 }
 /////////////////////////////////////////actions for toolbar items//////////////////////////////////
 
@@ -389,6 +923,7 @@
     NSLog(@"%li",(long)indexSelectedForLogin);
     [[NSUserDefaults standardUserDefaults] setValue:[_loginDoubleValues objectAtIndex:indexSelectedForLogin] forKey:@"loginDoubleValue"];
     _loginTextField.text = [_loginTimesArray objectAtIndex:indexSelectedForLogin];
+    _logoutTextField.text = @"";
     [_loginTextField resignFirstResponder];
 }
 -(void)logoutCancel:(UIBarButtonItem *)sender{
@@ -531,27 +1066,29 @@
         
         NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
         
-        //    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-        //    [formatter setDateFormat:@"yyyy-MM-dd"];
-        //    NSDate *date = [NSDate date];
-        //    NSString *dateInStringForWeb = [formatter stringFromDate:date];
-        //    NSDate *resultDate = [formatter dateFromString:dateInStringForWeb];
-        //
-        //    long double today = [resultDate timeIntervalSince1970];
-        //    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-        //    long double mine = [str1 doubleValue]*1000;
-        //    NSDecimalNumber *todayDate = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-        
         NSDictionary *bodyDict;
         
-        if (_loginTextField.text.length != 0 || ![_loginTextField.text isEqualToString:@""]){
+        if (_loginTextField.text && _loginTextField.text.length > 0){
+            
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"]){
-            bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":_loginDoubleString,@"revised":[NSNumber numberWithBool:_isRevised]};
+                bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":_loginDoubleString,@"revised":[NSNumber numberWithBool:_isRevised]};
             }else{
-            bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":[_loginDoubleValues objectAtIndex:indexSelectedForLogin],@"revised":[NSNumber numberWithBool:_isRevised]};
+                if (_canLoginRevised){
+                    bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":[_loginDoubleValues objectAtIndex:indexSelectedForLogin],@"revised":[NSNumber numberWithBool:_isRevised]};
+                }else{
+                    if (_isRevised){
+                        bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":_loginDoubleString,@"revised":[NSNumber numberWithBool:_isRevised]};
+                    }else{
+                        bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":[_loginDoubleValues objectAtIndex:indexSelectedForLogin],@"revised":[NSNumber numberWithBool:_isRevised]};
+                    }
+                }
             }
         }else{
-            bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"revised":[NSNumber numberWithBool:_isRevised]};
+            if ([_loginDoubleString isEqualToString:@"OFF"]){
+                bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"revised":[NSNumber numberWithBool:_isRevised]};
+            }else{
+                bodyDict = @{@"employeeId":userid,@"date":_dateString,@"officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"loginTime":_loginDoubleString,@"revised":[NSNumber numberWithBool:_isRevised]};
+            }
         }
         NSLog(@"%@",bodyDict);
         
@@ -597,49 +1134,7 @@
 }
 -(void)getOffices;
 {
-    //    NSString *urlInString;
-    //    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-    //    if([Port isEqualToString:@"-1"])
-    //    {
-    //        urlInString =[NSString stringWithFormat:@"%@://%@/getRosteringData?requestType=office",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-    //    }
-    //    else
-    //    {
-    //        urlInString =[NSString stringWithFormat:@"%@://%@:%@/getRosteringData?requestType=office",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-    //    }
-    //
-    //    NSURL *scheduleURL = [NSURL URLWithString:urlInString];
-    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
-    //    [request setHTTPMethod:@"POST"];
-    //
-    //    NSError *error_config;
-    //
-    //    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    //    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    //    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    //    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-    //
-    //    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-    //
-    //    long double today = [[NSDate date] timeIntervalSince1970];
-    //    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-    //    long double mine = [str1 doubleValue]*1000;
-    //    NSDecimalNumber *date = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-    //
-    //    NSDictionary *bodyDict = @{@"employeeId":userid,@"date":[date stringValue]};
-    //    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error_config];
-    //    [request setHTTPBody:jsonData];
-    //
-    //    NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error_config];
-    //    id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
-    //    NSLog(@"%@",result);
-    //    if ([result isKindOfClass:[NSArray class]]){
-    //        for (NSDictionary *eachOffice in result){
-    //            [_officesArray addObject:[eachOffice valueForKey:@"name"]];
-    //        }
-    //    }else{
-    //
-    //    }
+    
 }
 
 
@@ -654,13 +1149,17 @@
  */
 -(void)getLoginTime:(NSString *)login withLogoutTime:(NSString *)logout withOffice:(NSString *)office withDate:(NSString *)date withOfficeName:(NSString *)officeName withCutoffDateAndTime:(NSDate *)cutoffDate;
 {
+    NSLog(@"%@",login);
     _loginTime = login;
     _logoutTime = logout;
     _officeIdString = office;
+    NSLog(@"%@",office);
+    [[NSUserDefaults standardUserDefaults] setValue:office forKey:@"defaultOfficeId"];
+    
     _officeNameString = officeName;
-    
     _cutoffDateAndTime = cutoffDate;
-    
+    NSLog(@"%@",_cutoffDateAndTime);
+    NSLog(@"%@",cutoffDate);
     
     
     NSString *selectedDate = date;
@@ -691,13 +1190,14 @@
     NSString *cutoffDateInString = [dateFormatter stringFromDate:_cutoffDateAndTime];
     NSDate *newDateDate = [dateFormatter dateFromString:newDateInString];
     NSDate *cutoffDateDate = [dateFormatter dateFromString:cutoffDateInString];
+    
     NSLog(@"%@",newDateDate);
     NSLog(@"%@",cutoffDateDate);
     
     if ([newDateDate compare:cutoffDateDate] == NSOrderedAscending){
         _isRevised = YES;
     }else{
-    
+        
         NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         unsigned unitFlags = NSCalendarUnitYearForWeekOfYear | NSCalendarUnitWeekOfYear;
         
@@ -712,7 +1212,7 @@
                                                                 fromDate:cutoffDateDate
                                                                   toDate:newDateDate
                                                                  options:0];
-//            NSLog(@"%d",[components day]);
+            //            NSLog(@"%d",[components day]);
             if ([components day] == 1){
                 _isRevised = YES;
             }else{
@@ -723,13 +1223,13 @@
                                                                      options:0];
                 
                 NSDateComponents *components2 = [gregorianCalendar components:NSCalendarUnitDay
-                                                                    fromDate:cutoffDateDate
-                                                                      toDate:newDateDate
-                                                                     options:0];
+                                                                     fromDate:cutoffDateDate
+                                                                       toDate:newDateDate
+                                                                      options:0];
                 
                 
-//                NSLog(@"%d",[components day]);
-//                NSLog(@"%d",[components2 day]);
+                //                NSLog(@"%d",[components day]);
+                //                NSLog(@"%d",[components2 day]);
                 if ([components day] == 0){
                     // Check the time here for current time and cutoff time.
                     NSLog(@"%@",[NSDate date]);
@@ -745,12 +1245,12 @@
                         }
                     }
                     
-            }else if ([components day] == 1){
-                if ([components2 day] > 7){
-                    _isRevised = NO;
-                }else{
-                    _isRevised = YES;
-                }
+                }else if ([components day] == 1){
+                    if ([components2 day] > 7){
+                        _isRevised = NO;
+                    }else{
+                        _isRevised = YES;
+                    }
                 }else{
                     _isRevised = NO;
                 }
@@ -818,7 +1318,7 @@
     
     if (alertView.tag == 2222){
         dispatch_async(dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
+            [self.navigationController popViewControllerAnimated:YES];
         });
     }
     
@@ -845,112 +1345,259 @@
                 UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Rivision comments are mandatory for modify schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                 [alert show];
             }else{
-             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([self connectedToInternet]){
-                    NSString *urlInString;
-                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                    if([Port isEqualToString:@"-1"])
-                    {
-                        urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-                    }
-                    else
-                    {
-                        urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-                    }
-                    
-                    NSURL *scheduleURL = [NSURL URLWithString:urlInString];
-                    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
-                    [request setHTTPMethod:@"POST"];
-                    
-                    NSError *error_config;
-                    
-                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                    
-                    NSMutableArray *dataArray = [[NSMutableArray alloc]init];
-
-                        for (int i=0;i<2;i++){
-                            if (i == 0){
-                                if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
-                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([self connectedToInternet]){
+                            NSString *urlInString;
+                            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                            if([Port isEqualToString:@"-1"])
+                            {
+                                urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                            }
+                            else
+                            {
+                                urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+                            }
+                            
+                            NSURL *scheduleURL = [NSURL URLWithString:urlInString];
+                            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
+                            [request setHTTPMethod:@"POST"];
+                            
+                            NSError *error_config;
+                            
+                            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                            NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                            NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                            
+                            NSMutableArray *dataArray = [[NSMutableArray alloc]init];
+                            
+                            if (_canLoginRevised && _canLogoutRevised){
+                                //                            for (int i=0;i<2;i++){
+                                //                                if (i == 0){
+                                //                                    if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                //                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                //                                        [dataArray addObject:dict];
+                                //                                    }else{
+                                //                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                //                                        [dataArray addObject:dict];
+                                //                                    }
+                                //
+                                //                                }
+                                //                                if (i == 1){
+                                //                                    if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                //                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                //                                        [dataArray addObject:dict];
+                                //                                    }else{
+                                //                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                //                                        [dataArray addObject:dict];
+                                //                                    }
+                                //                                }
+                                //                            }
+                                
+                                if ((_loginTextField.text.length >0) && (_logoutTextField.text.length >0)){
+                                    for (int i=0;i<2;i++){
+                                        if (i == 0){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                            [dataArray addObject:dict];
+                                        }if (i == 1){
+                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                            [dataArray addObject:dict];
+                                        }
+                                    }
+                                }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
                                     [dataArray addObject:dict];
                                 }else{
-                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
                                     [dataArray addObject:dict];
                                 }
                                 
-                            }
-                            if (i == 1){
-                                if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
-                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                    [dataArray addObject:dict];
+                            }else if (_canLogoutRevised){
+                                if (_isRevised){
+                                    if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
                                 }else{
-                                    NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
-                                    [dataArray addObject:dict];
+                                    //                                for (int i=0;i<2;i++){
+                                    //                                    if (i == 0){
+                                    //                                        if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }else{
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }
+                                    //
+                                    //                                    }
+                                    //                                    if (i == 1){
+                                    //                                        if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }else{
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }
+                                    //                                    }
+                                    //                                }
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                    
+                                }
+                            }else if (_canLoginRevised){
+                                if (_isRevised){
+                                    if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }
+                                    
+                                }else{
+                                    //                                for (int i=0;i<2;i++){
+                                    //                                    if (i == 0){
+                                    //                                        if ([_loginTextField.text isEqualToString:@""] || _loginTextField.text.length == 0){
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }else{
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }
+                                    //
+                                    //                                    }
+                                    //                                    if (i == 1){
+                                    //                                        if ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0){
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }else{
+                                    //                                            NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised]};
+                                    //                                            [dataArray addObject:dict];
+                                    //                                        }
+                                    //                                    }
+                                    //                                }
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }
                                 }
                             }
-                        }
-                    NSLog(@"%@",dataArray);
-                    
-                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
-                    [request setHTTPBody:jsonData];
-                    
-                    NSURLResponse *responce;
-                    
-                    NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-                    NSLog(@"%@",responce);
-                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
-                    NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-                        
-                    id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
-                    NSLog(@"%@",jsonresult);
-                    if ([jsonresult isKindOfClass:[NSDictionary class]]){
-                        if ([httpResponse statusCode] != 412){
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                            [alert show];
-                            alert.tag = 2222;
+                            else if (!_canLoginRevised && !_canLogoutRevised){
+                                if (_isRevised){
+                                    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"You can't modify your schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                    [alertView show];
+                                    alertView.tag = 1234567;
+                                }else{
+                                    if ((_loginTextField.text || _loginTextField.text.length >0) && (_logoutTextField.text || _logoutTextField.text.length >0)){
+                                        for (int i=0;i<2;i++){
+                                            if (i == 0){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }if (i == 1){
+                                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                                [dataArray addObject:dict];
+                                            }
+                                        }
+                                    }else if ((_loginTextField.text || _loginTextField.text.length >0) && ([_logoutTextField.text isEqualToString:@""] || _logoutTextField.text.length == 0)){
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"loginDoubleValue"],@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }else{
+                                        NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":[[NSUserDefaults standardUserDefaults] valueForKey:@"logoutDoubleValue"],@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:YES],@"revised":[NSNumber numberWithBool:_isRevised],@"revisionComment":rivisionComments};
+                                        [dataArray addObject:dict];
+                                    }
+                                }
+                            }
+                            
+                            NSLog(@"%@",dataArray);
+                            
+                            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
+                            [request setHTTPBody:jsonData];
+                            
+                            NSURLResponse *responce;
+                            
+                            NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+                            NSLog(@"%@",responce);
+                            id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
+                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
+                            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+                            
+                            NSLog(@"%@",jsonresult);
+                            if ([httpResponse statusCode] != 412){
+                                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule successfully updated" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                [alert show];
+                                alert.tag = 2222;
+                            }
+                            else{
+                                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Failed" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                [alert show];
+                            }
                         }else{
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                             [alert show];
                         }
-                    }else{
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Can not update schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }
-                    }else{
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-
-                    }
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    });
                 });
-            });
             }
         }
+    }
+    if (alertView.tag == 1234567){
+        [self.navigationController popViewControllerAnimated:YES];
     }
     
 }
 
 
 - (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *title = [popup buttonTitleAtIndex:buttonIndex];
-                if ([title isEqualToString:@"Login schedule"]){
-                    if ([_loginDoubleString isEqualToString:@"OFF"]){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your login schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *title = [popup buttonTitleAtIndex:buttonIndex];
+            if ([title isEqualToString:@"Login schedule"]){
+                if ([_loginDoubleString isEqualToString:@"OFF"]){
+                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your login schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                }else{
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"]){
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
                     }else{
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"]){
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                            [alert show];
-                        }else{
                         NSString *urlInString;
                         NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
                         if([Port isEqualToString:@"-1"])
@@ -1000,19 +1647,19 @@
                             [alert show];
                             alert.tag = 0000;
                         }
-                        }
-                        
                     }
+                    
                 }
-                else if ([title isEqualToString:@"Logout schedule"]){
-                    if ([_logoutDoubleString isEqualToString:@"OFF"]){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your logout schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            }
+            else if ([title isEqualToString:@"Logout schedule"]){
+                if ([_logoutDoubleString isEqualToString:@"OFF"]){
+                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your logout schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                }else{
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit1"]){
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
                     }else{
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit1"]){
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                            [alert show];
-                        }else{
                         NSString *urlInString;
                         NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
                         if([Port isEqualToString:@"-1"])
@@ -1065,24 +1712,24 @@
                             [alert show];
                             alert.tag = 0000;
                         }
-                        }
                     }
                 }
-                else if ([title isEqualToString:@"Full schedule"]){
-                    if ([_logoutDoubleString isEqualToString:@"OFF"] && [_loginDoubleString isEqualToString:@"OFF"]){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }else if ([_loginDoubleString isEqualToString:@"OFF"]){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Login schedule is already OFF , please delete schedule for only Logout" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }else if ([_logoutDoubleString isEqualToString:@"OFF"]){
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Logout schedule is already OFF , please delete schedule for only Login" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            }
+            else if ([title isEqualToString:@"Full schedule"]){
+                if ([_logoutDoubleString isEqualToString:@"OFF"] && [_loginDoubleString isEqualToString:@"OFF"]){
+                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                }else if ([_loginDoubleString isEqualToString:@"OFF"]){
+                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Login schedule is already OFF , please delete schedule for only Logout" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                }else if ([_logoutDoubleString isEqualToString:@"OFF"]){
+                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Logout schedule is already OFF , please delete schedule for only Login" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                }else{
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"] || [[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit1"]){
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
                     }else{
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"] || [[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit1"]){
-                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                            [alert show];
-                        }else{
                         NSString *urlInString;
                         NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
                         if([Port isEqualToString:@"-1"])
@@ -1126,12 +1773,8 @@
                         
                         NSURLResponse *responce;
                         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
-                        NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-                        
                         NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-                        NSLog(@"%@",responce);
                         id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
-                        NSLog(@"%@",jsonresult);
                         if ([httpResponse statusCode] != 412){
                             UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                             [alert show];
@@ -1142,18 +1785,18 @@
                             [alert show];
                             alert.tag = 0000;
                         }
-                        }
                     }
                 }
-                
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-            });
+            }
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
-     
-//    }else{
-//        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-//        [alert show];
-//    }
+    });
+    
+    //    }else{
+    //        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+    //        [alert show];
+    //    }
     
 }
 -(void)getDoubleValuesForLogin:(NSString *)login withLogout:(NSString *)logout;
@@ -1166,46 +1809,46 @@
     
     NSString *loginTime = login;
     NSLog(@"%@",loginTime);
-
+    
     
     if ([_loginDoubleString isEqualToString:@"OFF"]){
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
     }else{
-    NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
-    NSLog(@"%@",loginTimeAsDate);
-    
-    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
-    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
-    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-    NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
-    NSLog(@"%@",destinationDate);
-    
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    [formatter setDateFormat:@"dd MMMM HH:mm"];
-    [formatter setTimeZone:[NSTimeZone systemTimeZone]];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-    
-    NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-6*60*60)];
-    NSLog(@"%@",cutoffLoginTime);
-    
-    NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
-    NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
-    NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
-    NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
-    NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
-    NSLog(@"%@",destinationDate1);
-    
-    
-    if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
-        NSLog(@"yes can edit");
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
-    }else{
-        NSLog(@"no");
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
-    }
+        NSDate *loginTimeAsDate = [NSDate dateWithTimeIntervalSince1970:([_loginDoubleString doubleValue]/1000)];
+        NSLog(@"%@",loginTimeAsDate);
+        
+        NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+        NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+        NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:loginTimeAsDate];
+        NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:loginTimeAsDate];
+        NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+        NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:loginTimeAsDate];
+        NSLog(@"%@",destinationDate);
+        
+        NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+        [formatter setDateFormat:@"dd MMMM HH:mm"];
+        [formatter setTimeZone:[NSTimeZone systemTimeZone]];
+        [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+        
+        NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_loginCutoffTime doubleValue]/1000))];
+        NSLog(@"%@",cutoffLoginTime);
+        
+        NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+        NSTimeZone* destinationTimeZone1 = [NSTimeZone systemTimeZone];
+        NSInteger sourceGMTOffset1 = [sourceTimeZone1 secondsFromGMTForDate:[NSDate date]];
+        NSInteger destinationGMTOffset1 = [destinationTimeZone1 secondsFromGMTForDate:[NSDate date]];
+        NSTimeInterval interval1 = destinationGMTOffset1 - sourceGMTOffset1;
+        NSDate* destinationDate1 = [[NSDate alloc] initWithTimeInterval:interval1 sinceDate:[NSDate date]];
+        NSLog(@"%@",destinationDate1);
+        
+        
+        if ([destinationDate1 compare:cutoffLoginTime] == NSOrderedAscending){
+            NSLog(@"yes can edit");
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit"];
+        }else{
+            NSLog(@"no");
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit"];
+        }
     }
     
     if ([_logoutDoubleString isEqualToString:@"OFF"]){
@@ -1227,7 +1870,7 @@
         [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
         
         
-        NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-2*60*60)];
+        NSDate *cutoffLoginTime = [destinationDate dateByAddingTimeInterval:(-([_logoutCutoffTime doubleValue]/1000))];
         NSLog(@"%@",cutoffLoginTime);
         
         NSTimeZone* sourceTimeZone1 = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
@@ -1242,17 +1885,21 @@
             [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"cantEdit1"];
         }else{
             NSLog(@"no");
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"cantEdit1"];
         }
-
+        
     }
-
-
+    
+    
 }
 -(void)getCutoffsModel:(NSDictionary *)cutoffValues;
 {
-    _cutoffLoginTime = [cutoffValues valueForKey:@""];
-    _cutoffLogoutTime = [cutoffValues valueForKey:@""];
-
+    NSLog(@"%@",cutoffValues);
+    
+    _canLoginRevised = [[cutoffValues valueForKey:@"loginRevisionAllowed"] boolValue];
+    _canLogoutRevised = [[cutoffValues valueForKey:@"logoutRevisionAllowed"] boolValue];
+    
+    _loginCutoffTime = [cutoffValues valueForKey:@"revisedLogin"];
+    _logoutCutoffTime = [cutoffValues valueForKey:@"revisedLogout"];
 }
 @end

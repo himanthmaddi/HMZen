@@ -109,7 +109,6 @@ NSString *const SubscriptionTopic = @"/topics/global";
     
     NSLog(@"launched");
     
-        // Launched from push notification
         UILocalNotification *localNotif =
         [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         if (localNotif)
@@ -121,19 +120,8 @@ NSString *const SubscriptionTopic = @"/topics/global";
                 NSString *tripID = [userInfo objectForKey:@"LastTripId"];
                  [[NSUserDefaults standardUserDefaults] setObject:tripID forKey:@"LastTripId"];
                 [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"ShowFeedbackForm"];
-                //CheckFeedbackViewController *CheckFeedback = [[CheckFeedbackViewController alloc] init];
-                //[CheckFeedback downloadConfig];
-            }
+                            }
         }
-       /* if ([notification.userInfo[@"isFeedbackNotification"] isEqualToString:@"Feedback"]) {
-            NSLog(@"received local push");
-            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"ShowFeedbackForm"];
-            
-        }*/
-
-
-    
-    
     if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey])
     {
         if( ![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
@@ -141,45 +129,11 @@ NSString *const SubscriptionTopic = @"/topics/global";
         [self updateLocation];
         }
     }
-    
-    
-    
-    
-//    UIRemoteNotificationType notificationTypes = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-//
-//    if (notificationTypes == UIRemoteNotificationTypeNone) {
-//        NSLog(@"notification denied");
-//    }
-//    BOOL isgranted;
-//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-//    if ([[UIApplication sharedApplication] respondsToSelector:@selector(isRegisteredForRemoteNotifications)])
-//    {
-//        isgranted =  [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-//    }
-//#else
-//    UIRemoteNotificationType types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-//    if (types & UIRemoteNotificationTypeAlert)
-//    {
-//        isgranted = true;
-//    }
-//#endif
-//     NSLog(@"notification granted? %hhd",isgranted);
     isOffline = FALSE;
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-    [GMSServices provideAPIKey:@"AIzaSyBVjiFtamOckXkk_3EVT_KkbiBZyWbJxwg"];
+    [GMSServices provideAPIKey:@"AIzaSyD4P4L-clz8e87Bore8lNDoVY02PgnjUfg"];
     NSUserDefaults *userDefault=[NSUserDefaults standardUserDefaults];
-//    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")){
-//            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeAlert) categories:nil];
-//            [application registerUserNotificationSettings:settings];
-//        }
-//    } else {
-//        UIRemoteNotificationType myTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
-//        [application registerForRemoteNotificationTypes:myTypes];
-//    }
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-
     
     BOOL login = [userDefault boolForKey:@"loginAlready"];
     if (login){
@@ -216,11 +170,9 @@ NSString *const SubscriptionTopic = @"/topics/global";
     
     [[Harpy sharedInstance] setDebugEnabled:YES];
     
-    [[Harpy sharedInstance] setAppID:@"1191713834"];
-    
     [[Harpy sharedInstance] setAlertControllerTintColor:[UIColor blueColor]];
     
-    [[Harpy sharedInstance] setAppName:@"ZenGo"];
+    [[Harpy sharedInstance] setAppName:@"ZenGO"];
     
     [[Harpy sharedInstance] setAlertType:HarpyAlertTypeOption];
     
@@ -247,7 +199,6 @@ NSString *const SubscriptionTopic = @"/topics/global";
                                            cancelButtonTitle:@"OK"
                                            otherButtonTitles:nil];
         serverDownAlert.tag = 444;
-//        [serverDownAlert show];
         isServerDown = TRUE;
         }
     }
@@ -341,9 +292,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
                                                                delegate:self
                                                       cancelButtonTitle:@"Cancel"
                                                       otherButtonTitles:@"Settings", nil];
-//            [alertView show];
         }
-        // The user has not enabled any location services. Request background authorization.
         else if (status == kCLAuthorizationStatusNotDetermined) {
             [self.locationManager requestWhenInUseAuthorization];
         }
@@ -463,22 +412,6 @@ NSString *const SubscriptionTopic = @"/topics/global";
                                         type:FIRInstanceIDAPNSTokenTypeProd];
     
 }
-//-(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-//{
-//    if([userInfo[@"aps"][@"content-available"] intValue]== 1) //it's the silent notification
-//    {
-//        for (id key in userInfo) {
-//            NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
-//        }
-//        completionHandler(UIBackgroundFetchResultNewData);
-//        return;
-//    }
-//    else
-//    {
-//        completionHandler(UIBackgroundFetchResultNoData);
-//        return;
-//    }
-//}
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [self.locationManager startMonitoringSignificantLocationChanges];

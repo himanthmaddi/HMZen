@@ -272,7 +272,13 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(void)methodForGettingHeaders{
     NSRequest = [[NSMutableURLRequest alloc] init];
-    [NSRequest setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]]]];
+    
+    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    if ([Port isEqualToString:@"-1"]){
+        [NSRequest setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]]]];
+    }else{
+        [NSRequest setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]]]];
+    }
     [NSRequest setHTTPMethod:@"HEAD"];
     NSLog(@"%@",[NSRequest URL]);
     [NSRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -327,15 +333,27 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     NSString *ha1 = [self md5:another];
     NSString *final = [NSString stringWithFormat:@"%@:%@",ha1,[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"]];
     NSString *request = [self md5:final];
-    NSString *urlInString = [NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+    
+    NSString *urlInString;
+    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    if ([Port isEqualToString:@"-1"]){
+        urlInString = [NSString stringWithFormat:@"%@://%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+    }else{
+        urlInString = [NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+    }
     NSURL *mainUrl = [NSURL URLWithString:urlInString];
     NSLog(@"%@",mainUrl);
     NSMutableURLRequest *mainRequest = [NSMutableURLRequest requestWithURL:mainUrl];
     [mainRequest setHTTPMethod:@"POST"];
     [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-    NSString *allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
-    NSLog(@"%@",allHeadString);
+    NSNumber *externalAuthNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"externalAuth"];
+    NSString *allHeadString;
+    if (externalAuthNumber.boolValue == YES){
+        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request,@"oauth_password",password.text];
+    }else{
+        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
+    }
     NSString *dataSetInfore = [NSString stringWithFormat:@"%@ %@",@"OAuth",allHeadString];
     [mainRequest setValue:dataSetInfore forHTTPHeaderField:@"Authorization"];
     mainConnection = [[NSURLConnection alloc] initWithRequest:mainRequest delegate:self];
@@ -350,6 +368,7 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     
     NSDictionary *userConfigDictionary = [NSJSONSerialization JSONObjectWithData:userConfigData options:kNilOptions error:&error];
     NSLog(@"%@",userConfigData);
+    if (userConfigDictionary != nil){
     if ([userConfigDictionary valueForKey:@"accessToken"]){
         
         [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
@@ -403,6 +422,8 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"mobile"] forKey:@"phonenum"];
         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"] forKey:@"email"];
         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"_officeId"] forKey:@"officeId"];
+        loginButton.enabled =  YES;
+        [spinner stopAnimating];
 
         [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
         if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){
@@ -426,9 +447,13 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         [invalidCredentials setHidden:NO];
         userNameSeparator.backgroundColor = [UIColor redColor];
         passwordSeparator.backgroundColor = [UIColor redColor];
+        loginButton.enabled =  YES;
+        [spinner stopAnimating];
+
     }
-    loginButton.enabled =  YES;
-    [spinner stopAnimating];
+    }else{
+        [self methodForGettingUserConfig];
+    }
 }
 
 

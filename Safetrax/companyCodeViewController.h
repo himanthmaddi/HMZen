@@ -15,5 +15,6 @@
 - (IBAction)nextClicked:(id)sender;
 - (IBAction)SmoochHelp:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *HelpTextButton;
-
+-(void)downloadConfig:(NSString *)code;
+-(void)refreshCompanyConfig:(NSString *)companyCodeString;
 @end

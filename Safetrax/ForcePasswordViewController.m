@@ -79,9 +79,10 @@ extern MFSideMenuContainerViewController *rootViewController_delegate;
                 [mainRequest setHTTPMethod:@"POST"];
                 [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
                 [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-                NSString *headString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"],@"change_request",passwordFieldOne.text];
-                NSLog(@"%@",headString);
-                [mainRequest setValue:[NSString stringWithFormat:@"%@ %@",@"OAuth",headString] forHTTPHeaderField:@"Authorization"];
+                NSString *allHeadString;
+                                    allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"],@"change_request",passwordFieldOne.text];
+                NSLog(@"%@",allHeadString);
+                [mainRequest setValue:[NSString stringWithFormat:@"%@ %@",@"OAuth",allHeadString] forHTTPHeaderField:@"Authorization"];
                 NSLog(@"%@",[mainRequest allHTTPHeaderFields]);
                 NSURLConnection *connection = [NSURLConnection connectionWithRequest:mainRequest delegate:self];
                 [connection start];
@@ -247,7 +248,6 @@ extern MFSideMenuContainerViewController *rootViewController_delegate;
 }
 -(void)DimissPasswordChangeView
 {
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
 
 #if Parent
     MyChildrenViewController *MyChildren = [[MyChildrenViewController alloc]init];
@@ -291,6 +291,7 @@ extern MFSideMenuContainerViewController *rootViewController_delegate;
                                               otherButtonTitles:nil];
         [alert show];
         [self DimissPasswordChangeView];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
     }
     else{
         NSLog(@"failing call back");
