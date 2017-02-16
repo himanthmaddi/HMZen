@@ -172,7 +172,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
     
     [[Harpy sharedInstance] setAlertControllerTintColor:[UIColor blueColor]];
     
-    [[Harpy sharedInstance] setAppName:@"ZenGo"];
+    [[Harpy sharedInstance] setAppName:@"ZenGO"];
     
     [[Harpy sharedInstance] setAlertType:HarpyAlertTypeOption];
     
