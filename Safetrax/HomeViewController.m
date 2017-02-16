@@ -1370,7 +1370,20 @@ BOOL no_trips = FALSE;
         if (tripArray.count > 0){
             for (NSDictionary *eachTrip in tripArray){
                 long double bufferEndTimeinMS = [[eachTrip valueForKey:@"bufferEndTime"] doubleValue];
+                long double bufferStartTimeinMS = [[eachTrip valueForKey:@"bufferStartTime"] doubleValue];
                 NSDate *bufferEndDate = [NSDate dateWithTimeIntervalSince1970:(bufferEndTimeinMS / 1000.0)];
+                NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:(bufferStartTimeinMS / 1000.0)];
+                NSString *tripType;
+                if ([[eachTrip valueForKey:@"tripLabel"] isEqualToString:@"login"]){
+                    tripType=@"Pickup";
+                }
+                else{
+                    tripType=@"Drop";
+                }
+                
+                if ([[eachTrip valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"]){
+                    [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];                
+                }
                 NSDate *presentDate = [NSDate date];
                 if ([bufferEndDate compare:presentDate] == NSOrderedDescending){
                     
@@ -1401,6 +1414,8 @@ BOOL no_trips = FALSE;
         else{
             
         }
+    }else{
+        
     }
 }
 -(void)pushNotification:(NSTimer *)sender{
@@ -1408,12 +1423,35 @@ BOOL no_trips = FALSE;
     if ([[[NSUserDefaults standardUserDefaults] arrayForKey:@"ratingCompletedTrips"] containsObject:[sender.userInfo valueForKey:@"tripId"]]){
         
     }else{
-        NSArray *userdefaultsArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"ratingCompletedTrips"];
-        userdefaultsArray = [NSArray arrayWithObject:[sender.userInfo valueForKey:@"tripId"]];
-        [[NSUserDefaults standardUserDefaults] setObject:userdefaultsArray forKey:@"ratingCompletedTrips"];
+        NSMutableArray *newArray = [[NSMutableArray alloc]init];
+        [newArray addObject:[sender.userInfo valueForKey:@"tripId"]];
+        NSArray *oldArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"ratingCompletedTrips"];
+        [newArray addObjectsFromArray:oldArray];
+        [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"ratingCompletedTrips"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"tripCompleted" object:sender.userInfo];
+    }
+}
+-(void)presentLocalNotificationWith:(NSDate *)fireDate andWithTripId:(NSString *)tripId andWithTripType:(NSString *)tripType withBufferEndTime:(NSDate *)bufferEndTime{
+    if ([[[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"] containsObject:tripId]){
+        
+    }else{
+        if ([bufferEndTime compare:[NSDate date]] == NSOrderedDescending){
+            UILocalNotification *localNotification = [[UILocalNotification alloc]init];
+            localNotification.alertBody = [NSString stringWithFormat:@"%@ trip starts at %@",tripType,fireDate];
+            localNotification.fireDate = fireDate;
+            localNotification.soundName = UILocalNotificationDefaultSoundName;
+            [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+        }
+        else{
+            
+        }
+        NSMutableArray *array = [[NSMutableArray alloc]init];
+        [array addObject:tripId];
+        NSArray *oldarray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"];
+        [array addObjectsFromArray:oldarray];
+        [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"localNotificationArray"];
     }
 }
 @end
