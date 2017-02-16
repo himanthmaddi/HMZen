@@ -1382,7 +1382,7 @@ BOOL no_trips = FALSE;
                 }
                 
                 if ([[eachTrip valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"]){
-                    [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];                
+                    [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];
                 }
                 NSDate *presentDate = [NSDate date];
                 if ([bufferEndDate compare:presentDate] == NSOrderedDescending){
@@ -1439,7 +1439,17 @@ BOOL no_trips = FALSE;
     }else{
         if ([bufferEndTime compare:[NSDate date]] == NSOrderedDescending){
             UILocalNotification *localNotification = [[UILocalNotification alloc]init];
-            localNotification.alertBody = [NSString stringWithFormat:@"%@ trip starts at %@",tripType,fireDate];
+            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:fireDate];
+            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:fireDate];
+            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:fireDate];
+            NSLog(@"%@",destinationDate);
+            
+            
+            localNotification.alertBody = [NSString stringWithFormat:@"%@ trip starts at %@",tripType,destinationDate];
+
             localNotification.fireDate = fireDate;
             localNotification.soundName = UILocalNotificationDefaultSoundName;
             [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
