@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="splash.png" translatesAutoresizingMaskIntoConstraints="NO" id="G1X-zi-Gmp">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="512X512.png" translatesAutoresizingMaskIntoConstraints="NO" id="G1X-zi-Gmp">
                     <rect key="frame" x="223" y="240" width="155" height="120"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="155" id="8eF-lh-DSf"/>
@@ -43,6 +43,6 @@
         </view>
     </objects>
     <resources>
-        <image name="splash.png" width="311" height="226"/>
+        <image name="512X512.png" width="512" height="512"/>
     </resources>
 </document>

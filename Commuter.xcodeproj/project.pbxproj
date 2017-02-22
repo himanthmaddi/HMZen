@@ -19,6 +19,8 @@
 		0105D8131D8C0AA800F6F234 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0105D80D1D8C0AA800F6F234 /* AFURLSessionManager.m */; };
 		010609CB1E07C29200608EB1 /* ScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 010609C91E07C29200608EB1 /* ScheduleViewController.m */; };
 		010609CC1E07C29200608EB1 /* ScheduleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 010609CA1E07C29200608EB1 /* ScheduleViewController.xib */; };
+		010AABC21E5D547E00F1EF1C /* 512X512.png in Resources */ = {isa = PBXBuildFile; fileRef = 010AABC11E5D547E00F1EF1C /* 512X512.png */; };
+		010AABC41E5D572C00F1EF1C /* 1024X500.png in Resources */ = {isa = PBXBuildFile; fileRef = 010AABC31E5D572C00F1EF1C /* 1024X500.png */; };
 		011CE3361E320B3100EB457D /* Radiobutton_deslected.png in Resources */ = {isa = PBXBuildFile; fileRef = 011CE3341E320B3100EB457D /* Radiobutton_deslected.png */; };
 		011CE3371E320B3100EB457D /* radiobutton_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 011CE3351E320B3100EB457D /* radiobutton_selected.png */; };
 		012006B81E1CCCFD00E726C6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 012006B71E1CCCFC00E726C6 /* GoogleService-Info.plist */; };
@@ -466,6 +468,8 @@
 		010609C81E07C29200608EB1 /* ScheduleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScheduleViewController.h; path = Safetrax/ScheduleViewController.h; sourceTree = "<group>"; };
 		010609C91E07C29200608EB1 /* ScheduleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScheduleViewController.m; path = Safetrax/ScheduleViewController.m; sourceTree = "<group>"; };
 		010609CA1E07C29200608EB1 /* ScheduleViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ScheduleViewController.xib; path = Safetrax/ScheduleViewController.xib; sourceTree = "<group>"; };
+		010AABC11E5D547E00F1EF1C /* 512X512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 512X512.png; sourceTree = "<group>"; };
+		010AABC31E5D572C00F1EF1C /* 1024X500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1024X500.png; sourceTree = "<group>"; };
 		011CE3341E320B3100EB457D /* Radiobutton_deslected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Radiobutton_deslected.png; sourceTree = "<group>"; };
 		011CE3351E320B3100EB457D /* radiobutton_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radiobutton_selected.png; sourceTree = "<group>"; };
 		012006B71E1CCCFC00E726C6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -1468,6 +1472,8 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				010AABC31E5D572C00F1EF1C /* 1024X500.png */,
+				010AABC11E5D547E00F1EF1C /* 512X512.png */,
 				01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */,
 				011CE3341E320B3100EB457D /* Radiobutton_deslected.png */,
 				011CE3351E320B3100EB457D /* radiobutton_selected.png */,
@@ -2136,6 +2142,7 @@
 				84CBE1601A71430E00BB42A4 /* _0008_no-trip-illustration.png in Resources */,
 				84F660C11A5C123C000179C9 /* car.JPG in Resources */,
 				848FE88A1D3CACED00B25866 /* ic_support.png in Resources */,
+				010AABC21E5D547E00F1EF1C /* 512X512.png in Resources */,
 				84CBE1741A71430E00BB42A4 /* _0020_increase.png in Resources */,
 				84CBE14D1A71430E00BB42A4 /* _0001_type-inactive.png in Resources */,
 				013192191E1B839600363E86 /* splashCommuter.png in Resources */,
@@ -2206,6 +2213,7 @@
 				84F660C01A5C123C000179C9 /* startpooint.JPG in Resources */,
 				B7B4F708196A676F0094BD77 /* MenuViewController.xib in Resources */,
 				84B6CDF21A5D3EB8001A33E9 /* data.plist in Resources */,
+				010AABC41E5D572C00F1EF1C /* 1024X500.png in Resources */,
 				84CBE1731A71430E00BB42A4 /* _0019_decrease.png in Resources */,
 				B738075C196BF7CD000078BC /* phone.png in Resources */,
 				847CFB621BE7BA7A00FDCC63 /* Default-568h.png in Resources */,
