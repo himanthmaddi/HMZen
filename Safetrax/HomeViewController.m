@@ -57,8 +57,11 @@ BOOL no_trips = FALSE;
     }
     return self;
 }
+
 - (void)viewDidLoad
 {
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"terminated"]){
         companyCodeViewController *company = [[companyCodeViewController alloc]init];
         [company refreshCompanyConfig:[[NSUserDefaults standardUserDefaults] stringForKey:@"companycode"]];
@@ -78,7 +81,12 @@ BOOL no_trips = FALSE;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"fcmtokenpushed"]){
         
     }else{
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
         [self pushDeviceTokenWithFCM];
+            });
+        });
     }
     
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"login"];
@@ -145,7 +153,7 @@ BOOL no_trips = FALSE;
     self.tripTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tripTable.delegate = self;
     self.tripTable.dataSource =self;
-    self.tripTable.hidden = YES;
+    //    self.tripTable.hidden = YES;
     [super viewDidLoad];
     self.menuContainerViewController.panMode = MFSideMenuPanModeNone;
     //constant = [[Constants alloc]init];
@@ -159,11 +167,11 @@ BOOL no_trips = FALSE;
     NSDate *currDate = [NSDate date];
     NSLog(@"date-- %@",currDate);
     currentDate.text  = [dateFormatter stringFromDate:currDate];
-    [currentDate setHidden:NO];
-    [logoutTime setHidden:NO];
-    [loginTime setHidden:NO];
-    [scheduleImage setHidden:NO];
-    [noScheduleView setHidden:YES];
+    //    [currentDate setHidden:NO];
+    //    [logoutTime setHidden:NO];
+    //    [loginTime setHidden:NO];
+    //    [scheduleImage setHidden:NO];
+    //    [noScheduleView setHidden:YES];
     NSString *showFeedback = [[NSUserDefaults standardUserDefaults] objectForKey:@"ShowFeedbackForm"];
     if([showFeedback isEqualToString:@"YES"])
     {
@@ -171,6 +179,7 @@ BOOL no_trips = FALSE;
         [self performSelector:@selector(ShowFeedback) withObject:nil afterDelay:1.0];
         
     }
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 - (void)appplicationIsActive:(NSNotification *)notification {
     NSLog(@"Application Did Become Active");
@@ -276,6 +285,8 @@ BOOL no_trips = FALSE;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self tripsForRating];
+            [self.tripTable reloadData];
+            [self refresh];
         });
     });
     
@@ -286,15 +297,14 @@ BOOL no_trips = FALSE;
         [self performSelector:@selector(ShowFeedback) withObject:nil afterDelay:1.0];
         
     }
-    if([mainSegment selectedSegmentIndex] == 0){
-        schedule =[[EmpSchedule alloc] init:self];
-    }
-    if([mainSegment selectedSegmentIndex] == 1)
-    {
-        NSLog(@"viewwillload");
-        [self.tripTable reloadData];
-        [self refresh];
-    }
+    //    if([mainSegment selectedSegmentIndex] == 0){
+    //        schedule =[[EmpSchedule alloc] init:self];
+    //    }
+    //    if([mainSegment selectedSegmentIndex] == 1)
+    //    {
+    NSLog(@"viewwillload");
+    
+    //    }
     [super viewWillAppear:NO];
 }
 #pragma mark Sub States
@@ -771,11 +781,11 @@ BOOL no_trips = FALSE;
         
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
-    if([mainSegment selectedSegmentIndex] == 1)
-    {
-        [tripTable reloadData];
-        
-    }
+    //    if([mainSegment selectedSegmentIndex] == 1)
+    //    {
+    [tripTable reloadData];
+    
+    //    }
     if([unique count] > 0){
         NSLog(@"trip mode %@--unique %@--",tripList,unique);
         NSString *tripTime =[unique objectAtIndex:0];
@@ -993,7 +1003,7 @@ BOOL no_trips = FALSE;
 #pragma mark Tableview delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(no_trips == TRUE && [mainSegment selectedSegmentIndex] == 1)
+    if(no_trips == TRUE)
     {
         if([self.view viewWithTag:238])
         {
@@ -1026,27 +1036,25 @@ BOOL no_trips = FALSE;
         return 1;
     else
     {
-        if( [mainSegment selectedSegmentIndex] == 1)
+        if([self.view viewWithTag:238])
         {
-            if([self.view viewWithTag:238])
-            {
-                [[self.view viewWithTag:238] removeFromSuperview];
-            }
-            UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(100, 200, 100, 107)];
-            no_trips.image = [UIImage imageNamed:@"_0008_no-trip-illustration.png"];
-            no_trips.tag = 238;
-            [self.view addSubview:no_trips];
-            
-            if([self.view viewWithTag:223388])
-            {
-                [[self.view viewWithTag:223388] removeFromSuperview];
-            }
-            
-            UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(((self.view.frame.size.width/2)-84), 320, 168, 100)];
-            label1.text = @"No Trips Configured";
-            label1.tag = 223388;
-            [self.view addSubview:label1];
+            [[self.view viewWithTag:238] removeFromSuperview];
         }
+        UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(100, 200, 100, 107)];
+        no_trips.image = [UIImage imageNamed:@"_0008_no-trip-illustration.png"];
+        no_trips.tag = 238;
+        [self.view addSubview:no_trips];
+        
+        if([self.view viewWithTag:223388])
+        {
+            [[self.view viewWithTag:223388] removeFromSuperview];
+        }
+        
+        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(((self.view.frame.size.width/2)-84), 320, 168, 100)];
+        label1.text = @"No Trips Configured";
+        label1.tag = 223388;
+        [self.view addSubview:label1];
+        
         return 0;
     }
 }
@@ -1259,56 +1267,56 @@ BOOL no_trips = FALSE;
 }
 -(void)pushDeviceTokenWithFCM
 {
-//    NSLog(@"push device token");
-//    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-//    NSString *token = [[FIRInstanceID instanceID] token];
-//    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-//    
-//    NSDictionary *findParameters = @{@"empid":userid};
-//    
-//    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
-//    
-//    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-//    NSError *error;
-//    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
-//    
-//    
-//    NSError *error_config;
-//    
-//    
-//    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-//    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-//    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-//    
-//    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-//    NSString *url;
-//    if([Port isEqualToString:@"-1"])
-//    {
-//        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-//    }
-//    else
-//    {
-//        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-//    }
-//    NSURL *URL =[NSURL URLWithString:url];
-//    NSLog(@"%@",URL);
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-//    [request setHTTPMethod:@"POST"];
-//    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-//    [request setHTTPBody:dataJson];
-//    NSURLResponse *responce;
-//    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-//    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-//    NSLog(@"%@",json);
-//    if ([json isKindOfClass:[NSDictionary class]]){
-//        if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
-//            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
-//        }else{
-//            
-//        }
-//    }else{
-//        
-//    }
+    NSLog(@"push device token");
+    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+    NSString *token = [[FIRInstanceID instanceID] token];
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    
+    NSDictionary *findParameters = @{@"empid":userid};
+    
+    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+    
+    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
+    NSError *error;
+    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+    
+    
+    NSError *error_config;
+    
+    
+    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+    
+    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    NSString *url;
+    if([Port isEqualToString:@"-1"])
+    {
+        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+    }
+    else
+    {
+        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+    }
+    NSURL *URL =[NSURL URLWithString:url];
+    NSLog(@"%@",URL);
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+    [request setHTTPBody:dataJson];
+    NSURLResponse *responce;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
+    NSLog(@"%@",json);
+    if ([json isKindOfClass:[NSDictionary class]]){
+        if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+        }else{
+            
+        }
+    }else{
+        
+    }
 }
 
 -(void)tripCompletedNotification:(NSNotification *)sender{
@@ -1373,6 +1381,7 @@ BOOL no_trips = FALSE;
                 long double bufferStartTimeinMS = [[eachTrip valueForKey:@"bufferStartTime"] doubleValue];
                 NSDate *bufferEndDate = [NSDate dateWithTimeIntervalSince1970:(bufferEndTimeinMS / 1000.0)];
                 NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:(bufferStartTimeinMS / 1000.0)];
+                
                 NSString *tripType;
                 if ([[eachTrip valueForKey:@"tripLabel"] isEqualToString:@"login"]){
                     tripType=@"Pickup";
@@ -1383,6 +1392,7 @@ BOOL no_trips = FALSE;
                 
                 if ([[eachTrip valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"]){
                     [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];
+                    
                 }
                 NSDate *presentDate = [NSDate date];
                 if ([bufferEndDate compare:presentDate] == NSOrderedDescending){
@@ -1405,8 +1415,7 @@ BOOL no_trips = FALSE;
                     }
                     
                 }else{
-                    NSDictionary *info = @{@"tripId":[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"]};
-                    [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
+                    
                 }
                 
             }
@@ -1414,8 +1423,6 @@ BOOL no_trips = FALSE;
         else{
             
         }
-    }else{
-        
     }
 }
 -(void)pushNotification:(NSTimer *)sender{
@@ -1434,32 +1441,36 @@ BOOL no_trips = FALSE;
     }
 }
 -(void)presentLocalNotificationWith:(NSDate *)fireDate andWithTripId:(NSString *)tripId andWithTripType:(NSString *)tripType withBufferEndTime:(NSDate *)bufferEndTime{
-//    if ([[[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"] containsObject:tripId]){
-//        
-//    }else{
-//        if ([bufferEndTime compare:[NSDate date]] == NSOrderedDescending){
-//            UILocalNotification *localNotification = [[UILocalNotification alloc]init];
-//            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-//            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-//            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:fireDate];
-//            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:fireDate];
-//            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-//            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:fireDate];
-//            NSLog(@"%@",destinationDate);
-//            localNotification.alertBody = [NSString stringWithFormat:@"%@ trip starts at %@",tripType,destinationDate];
-//
-//            localNotification.fireDate = fireDate;
-//            localNotification.soundName = UILocalNotificationDefaultSoundName;
-//            [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-//        }
-//        else{
-//            
-//        }
-//        NSMutableArray *array = [[NSMutableArray alloc]init];
-//        [array addObject:tripId];
-//        NSArray *oldarray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"];
-//        [array addObjectsFromArray:oldarray];
-//        [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"localNotificationArray"];
-//    }
+    if ([[[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"] containsObject:tripId]){
+        
+    }else{
+        if ([bufferEndTime compare:[NSDate date]] == NSOrderedDescending){
+            UILocalNotification *localNotification = [[UILocalNotification alloc]init];
+            
+            NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+            NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+            NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:fireDate];
+            NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:fireDate];
+            NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+            NSDate* destinationDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:fireDate];
+            NSLog(@"%@",destinationDate);
+            
+            
+            localNotification.alertBody = [NSString stringWithFormat:@"%@ trip starts at %@",tripType,destinationDate];
+            localNotification.fireDate = fireDate;
+            localNotification.timeZone = [NSTimeZone systemTimeZone];
+            localNotification.soundName = UILocalNotificationDefaultSoundName;
+            [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+        }
+        else{
+            
+        }
+        NSMutableArray *array = [[NSMutableArray alloc]init];
+        [array addObject:tripId];
+        NSArray *oldarray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"];
+        [array addObjectsFromArray:oldarray];
+        [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"localNotificationArray"];
+    }
 }
+
 @end

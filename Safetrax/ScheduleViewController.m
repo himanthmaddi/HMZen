@@ -870,7 +870,7 @@ viewForFooterInSection:(NSInteger)section {
     id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
     if ([result isKindOfClass:[NSArray class]]){
         for (NSDictionary *eachOffice in result){
-            NSString *officeName = [eachOffice valueForKey:@"address"];
+            NSString *officeName = [eachOffice valueForKey:@"name"];
             NSString *officeId = [[eachOffice valueForKey:@"_id"] valueForKey:@"$oid"];
             [_officeNamesArray addObject:officeName];
             [_officeIdsArray addObject:officeId];

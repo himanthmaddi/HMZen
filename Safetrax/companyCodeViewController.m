@@ -107,8 +107,8 @@ UIActivityIndicatorView *spinnerIndicator;
     NSString *str= [NSString stringWithFormat:@"%@\n%@", newStr2, newStr4];
     NSData* finalJson = [str dataUsingEncoding:NSUTF8StringEncoding];
     NSMutableURLRequest *request_config = [[NSMutableURLRequest alloc] init];
-    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetraxZensar&colname=companyConfig"]];
-//    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetrexMeteor&colname=companyConfig"]];
+//    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetraxZensar&colname=companyConfig"]];
+    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetrexMeteor&colname=companyConfig"]];
 
     [request_config setHTTPMethod:@"POST"];
     [request_config setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
