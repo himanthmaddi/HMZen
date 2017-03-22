@@ -234,7 +234,7 @@ UIActivityIndicatorView *spinnerIndicator;
     [request_config setHTTPBody:finalJson];
     NSLog(@"final json %@",str);
     NSData *resultData = [NSURLConnection sendSynchronousRequest:request_config returningResponse:nil error:&error_config];
-    
+    if (resultData != nil){
     id config_array= [NSJSONSerialization JSONObjectWithData:resultData options:0 error:nil];
     NSLog(@"%@",config_array);
     
@@ -292,6 +292,7 @@ UIActivityIndicatorView *spinnerIndicator;
             }
         }
         [[NSUserDefaults standardUserDefaults] synchronize];
+    }
     }
 }
 @end

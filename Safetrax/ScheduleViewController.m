@@ -13,6 +13,7 @@
 #import "editViewController.h"
 #import <MBProgressHUD.h>
 #import "SomeViewController.h"
+#import "SessionValidator.h"
 
 @interface ScheduleViewController ()
 {
@@ -29,6 +30,32 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+    NSTimeInterval seconds = expireTime / 1000;
+    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+    NSLog(@"%f",expireTime);
+    
+    
+    NSDate *date = [NSDate date];
+    NSComparisonResult result = [date compare:expireDate];
+    NSLog(@"%@",expireDate);
+    if(result == NSOrderedDescending || result == NSOrderedSame)
+    {
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);    }
+    else if(result == NSOrderedAscending)
+    {
+        NSLog(@"no refresh");
+    }
+
     
     [self getCutoffs];
     
@@ -234,6 +261,30 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+            double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+            NSTimeInterval seconds = expireTime / 1000;
+            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+            
+            NSDate *date = [NSDate date];
+            NSComparisonResult result = [date compare:expireDate];
+            
+            if(result == NSOrderedDescending || result == NSOrderedSame)
+            {
+                SessionValidator *validator = [[SessionValidator alloc]init];
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                    NSLog(@"%@",result);
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            }
+            else if(result == NSOrderedAscending)
+            {
+                NSLog(@"no refresh");
+            }
+
             [self getAllSchedule];
             if (_officeNamesArray.count != 0){
             }else{
@@ -332,8 +383,6 @@
             emergencyButton.frame = CGRectMake(0, 0, 50, 50);
             [emergencyButton sizeToFit];
             
-            NSString *loginTimrForTodayInString = [_loginTimesArray objectAtIndex:0];
-            NSString *doubleValueForLogin = [_loginDoubleValuesArray objectAtIndex:0];
             
             //            NSString *logoutTimrForTodayInString = [_logoutTimesArray objectAtIndex:0];
             //            NSString *doubleValueForLogout = [_logoutDoubleValuesArray objectAtIndex:0];
@@ -388,7 +437,6 @@
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     }
                 }else{
-                    NSString *loginTimeForNextDay = [_loginDoubleValuesArray objectAtIndex:1];
                     NSDate *loginDate = [NSDate dateWithTimeIntervalSince1970:([loginForNextday doubleValue]/1000)];
                     NSLog(@"%@",loginDate);
                     
@@ -870,7 +918,7 @@ viewForFooterInSection:(NSInteger)section {
     id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
     if ([result isKindOfClass:[NSArray class]]){
         for (NSDictionary *eachOffice in result){
-            NSString *officeName = [eachOffice valueForKey:@"address"];
+            NSString *officeName = [eachOffice valueForKey:@"name"];
             NSString *officeId = [[eachOffice valueForKey:@"_id"] valueForKey:@"$oid"];
             [_officeNamesArray addObject:officeName];
             [_officeIdsArray addObject:officeId];

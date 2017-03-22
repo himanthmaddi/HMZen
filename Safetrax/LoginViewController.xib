@@ -89,7 +89,7 @@
                         <action selector="LoginHelp:" destination="-1" eventType="touchUpInside" id="hUh-uC-lpI"/>
                     </connections>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="poweredby.png" translatesAutoresizingMaskIntoConstraints="NO" id="6Zj-l3-crm">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="1024X500.png" translatesAutoresizingMaskIntoConstraints="NO" id="6Zj-l3-crm">
                     <rect key="frame" x="123" y="435" width="354" height="108"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="lessThanOrEqual" constant="354" id="4wC-la-qvt"/>
@@ -207,6 +207,6 @@
         </view>
     </objects>
     <resources>
-        <image name="poweredby.png" width="354" height="108"/>
+        <image name="1024X500.png" width="1024" height="500"/>
     </resources>
 </document>

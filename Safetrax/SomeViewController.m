@@ -21,9 +21,9 @@
     _employeeIdLabel.text = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
     _employeeNameLabel.text = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
     
-    _punctuationString = @"good";
-    _vehicleConditionString = @"good";
-    _driverBehaviourString = @"good";
+    _punctuationString = @"1";
+    _vehicleConditionString = @"1";
+    _driverBehaviourString = @"1";
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -79,7 +79,7 @@
         [_punctualityGoodButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_punctualityBadButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _punctuationString = @"good";
+    _punctuationString = @"1";
 }
 -(IBAction)puctualityBad:(id)sender;
 {
@@ -88,7 +88,7 @@
         [_punctualityBadButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_punctualityGoodButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _punctuationString = @"bad";
+    _punctuationString = @"2";
 
 }
 -(IBAction)driverBehavingGood:(id)sender;
@@ -99,7 +99,7 @@
         [_driverBehavingGoodButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_driverBehavingBadButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _driverBehaviourString = @"good";
+    _driverBehaviourString = @"1";
 
 }
 -(IBAction)driverBehavingBad:(id)sender;
@@ -110,7 +110,7 @@
         [_driverBehavingBadButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_driverBehavingGoodButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _driverBehaviourString = @"bad";
+    _driverBehaviourString = @"2";
 
 }
 
@@ -123,7 +123,7 @@
         [_vehicleConditionGoodButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_vehicleConditionBadButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _vehicleConditionString = @"good";
+    _vehicleConditionString = @"1";
 
 }
 -(IBAction)vehicleConditionBad:(id)sender;
@@ -135,7 +135,7 @@
         [_vehicleConditionBadButton setBackgroundImage:[UIImage imageNamed:@"radiobutton_selected.png"] forState:UIControlStateNormal];
         [_vehicleConditionGoodButton setBackgroundImage:[UIImage imageNamed:@"Radiobutton_deslected.png"] forState:UIControlStateNormal];
     }
-    _vehicleConditionString = @"bad";
+    _vehicleConditionString = @"2";
 
 }
 -(void)getTripId:(NSString *)tripID;

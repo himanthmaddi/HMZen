@@ -10,7 +10,7 @@
 #import <MBProgressHUD.h>
 #import "SomeViewController.h"
 #import "ScheduleViewController.h"
-
+#import "SessionValidator.h"
 
 @interface editViewController ()
 {
@@ -33,6 +33,32 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+    NSTimeInterval seconds = expireTime / 1000;
+    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+    
+    NSDate *date = [NSDate date];
+    NSComparisonResult result = [date compare:expireDate];
+    
+    if(result == NSOrderedDescending || result == NSOrderedSame)
+    {
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }
+    else if(result == NSOrderedAscending)
+    {
+        NSLog(@"no refresh");
+    }
+
     
     _officeTextField.text = _officeNameString;
     

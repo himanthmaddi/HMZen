@@ -78,23 +78,7 @@
 {
     id status = [NSJSONSerialization JSONObjectWithData:_responseData options:0 error:nil];
     NSLog(@"%@",status);
-//    if([loginStatus_dictionary objectForKey:@"status"]){
-//        NSString *value  = [loginStatus_dictionary objectForKey:@"status"];
-//        if([value isEqualToString:@"valid"])
-//        {
-//            [homeObject didFinishvalidation];
-//        }
-//        else
-//        {
-//            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-//            [appDelegate dismiss_delegate:nil];
-//            [homeObject didFinishvalidation];
-
-//        }
-        
-//    }
-    NSString *localFcmToken = [[FIRInstanceID instanceID]token];
-    
+    NSString *localFcmToken = [[FIRInstanceID instanceID]token];    
     if ([status isKindOfClass:[NSArray class]]){
         NSArray *array = status;
         if (array.count == 1){
@@ -103,8 +87,6 @@
                 if ([localFcmToken isEqualToString:dbFcmToken]){
                     [homeObject didFinishvalidation];
                 }else{
-//                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-//                    [appDelegate dismiss_delegate:nil];
                     [homeObject didFinishvalidation];
 
                 }

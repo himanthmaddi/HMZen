@@ -7,6 +7,7 @@
 //
 
 #import "MapViewController.h"
+#import "SessionValidator.h"
 #import "SomeViewController.h"
 #import "RestClientTask.h"
 #import "GCMRequest.h"
@@ -102,6 +103,31 @@ int isRefresh =0;
      forControlEvents:UIControlEventTouchUpInside];
     [button setTitle:@"Refresh" forState:UIControlStateNormal];
     button.frame = CGRectMake(80.0, 210.0, 80, 40.0);
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+    NSTimeInterval seconds = expireTime / 1000;
+    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+    
+    NSDate *date = [NSDate date];
+    NSComparisonResult result = [date compare:expireDate];
+    
+    if(result == NSOrderedDescending || result == NSOrderedSame)
+    {
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }
+    else if(result == NSOrderedAscending)
+    {
+        NSLog(@"no refresh");
+    }
+
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -488,6 +514,30 @@ int isRefresh =0;
             if (buttonIndex == 1) {
                 if(alertView.tag == 2001)
                 {
+                    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                    NSTimeInterval seconds = expireTime / 1000;
+                    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                    
+                    NSDate *date = [NSDate date];
+                    NSComparisonResult result = [date compare:expireDate];
+                    
+                    if(result == NSOrderedDescending || result == NSOrderedSame)
+                    {
+                        SessionValidator *validator = [[SessionValidator alloc]init];
+                        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                            NSLog(@"%@",result);
+                            dispatch_semaphore_signal(semaphore);
+                        }];
+                        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);                    }
+                    else if(result == NSOrderedAscending)
+                    {
+                        NSLog(@"no refresh");
+                    }
+
+                    
                     long double today = [[NSDate date] timeIntervalSince1970];
                     NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
                     long double mine = [str1 doubleValue]*1000;
@@ -579,6 +629,29 @@ int isRefresh =0;
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                            double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                            NSTimeInterval seconds = expireTime / 1000;
+                            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                            
+                            NSDate *date = [NSDate date];
+                            NSComparisonResult result = [date compare:expireDate];
+                            
+                            if(result == NSOrderedDescending || result == NSOrderedSame)
+                            {
+                                SessionValidator *validator = [[SessionValidator alloc]init];
+                                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                    NSLog(@"%@",result);
+                                    dispatch_semaphore_signal(semaphore);
+                                }];
+                                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);                    }
+                            else if(result == NSOrderedAscending)
+                            {
+                                NSLog(@"no refresh");
+                            }
+
                     long double today = [[NSDate date] timeIntervalSince1970];
                     NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
                     long double mine = [str1 doubleValue]*1000;
@@ -719,6 +792,28 @@ int isRefresh =0;
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                            double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                            NSTimeInterval seconds = expireTime / 1000;
+                            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                            
+                            NSDate *date = [NSDate date];
+                            NSComparisonResult result = [date compare:expireDate];
+                            
+                            if(result == NSOrderedDescending || result == NSOrderedSame)
+                            {
+                                SessionValidator *validator = [[SessionValidator alloc]init];
+                                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                    NSLog(@"%@",result);
+                                    dispatch_semaphore_signal(semaphore);
+                                }];
+                                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);                    }
+                            else if(result == NSOrderedAscending)
+                            {
+                                NSLog(@"no refresh");
+                            }
                     long double today = [[NSDate date] timeIntervalSince1970];
                     NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
                     long double mine = [str1 doubleValue]*1000;
