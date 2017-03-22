@@ -367,7 +367,7 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     NSError *error;
     
     NSDictionary *userConfigDictionary = [NSJSONSerialization JSONObjectWithData:userConfigData options:kNilOptions error:&error];
-    NSLog(@"%@",userConfigData);
+    NSLog(@"%@",userConfigDictionary);
     if (userConfigDictionary != nil){
     if ([userConfigDictionary valueForKey:@"accessToken"]){
         

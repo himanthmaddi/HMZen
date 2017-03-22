@@ -72,7 +72,31 @@ BOOL no_trips = FALSE;
             companyCodeViewController *company = [[companyCodeViewController alloc]init];
             [company refreshCompanyConfig:[[NSUserDefaults standardUserDefaults] stringForKey:@"companycode"]];
         }
-        NSLog(@"opkoo");
+    }
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    localNotifications = [[NSMutableArray alloc]init];
+    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+    NSTimeInterval seconds = expireTime / 1000;
+    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+    
+    NSDate *date = [NSDate date];
+    NSComparisonResult result = [date compare:expireDate];
+    
+    if(result == NSOrderedDescending || result == NSOrderedSame)
+    {
+                SessionValidator *validator = [[SessionValidator alloc]init];
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                    NSLog(@"%@",result);
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    }
+    else if(result == NSOrderedAscending)
+    {
+        
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
@@ -87,36 +111,6 @@ BOOL no_trips = FALSE;
         [self pushDeviceTokenWithFCM];
             });
         });
-    }
-    
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"login"];
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-    localNotifications = [[NSMutableArray alloc]init];
-    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
-    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
-    NSTimeInterval seconds = expireTime / 1000;
-    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
-    NSLog(@"%@",[dateFormat stringFromDate:expireDate]);
-    
-    NSDate *date = [NSDate date];
-    NSComparisonResult result = [date compare:expireDate];
-    if(result == NSOrderedDescending)
-    {
-        //        self.view.backgroundColor = [UIColor clearColor];
-        //        [self.view removeFromSuperview];
-        //        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-        //        [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-        //        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-        //        [appDelegate dismiss_delegate:nil];
-        //        [self.view removeFromSuperview];
-    }
-    else if(result == NSOrderedAscending)
-    {
-    }
-    else
-    {
-        //        SessionValidator *validator = [[SessionValidator alloc]init];
-        //        [validator validateAccessToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1269,53 +1263,69 @@ BOOL no_trips = FALSE;
 {
     NSLog(@"push device token");
     NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+    NSLog(@"%@",userid);
     NSString *token = [[FIRInstanceID instanceID] token];
+    
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     
-    NSDictionary *findParameters = @{@"empid":userid};
+    NSDictionary *findParameters;
     
-    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+    NSDictionary *setParameters;
     
-    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-    NSError *error;
-    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
-    
-    
-    NSError *error_config;
-    
-    
-    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    
-    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-    NSString *url;
-    if([Port isEqualToString:@"-1"])
-    {
-        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-    }
-    else
-    {
-        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-    }
-    NSURL *URL =[NSURL URLWithString:url];
-    NSLog(@"%@",URL);
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-    [request setHTTPBody:dataJson];
-    NSURLResponse *responce;
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-    NSLog(@"%@",json);
-    if ([json isKindOfClass:[NSDictionary class]]){
-        if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
-        }else{
-            
-        }
+    if (token == nil || userid == nil){
+        NSLog(@"null values are came");
     }else{
+        findParameters = @{@"empid":userid};
+        setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+        NSLog(@"%@",setParameters);
+        NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
+        NSError *error;
+        NSLog(@"%@",array);
+        NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
         
+        
+        NSError *error_config;
+        
+        
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *url;
+        if([Port isEqualToString:@"-1"])
+        {
+            url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+        }
+        else
+        {
+            url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+        }
+        NSURL *URL =[NSURL URLWithString:url];
+        NSLog(@"%@",URL);
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+        [request setHTTPMethod:@"POST"];
+        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        [request setHTTPBody:dataJson];
+        NSURLResponse *responce;
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+        if (data != nil){
+            id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
+            NSLog(@"%@",json);
+            if ([json isKindOfClass:[NSDictionary class]]){
+                if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+                }else{
+                    
+                }
+            }else{
+                
+            }
+            
+        }else{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
 }
 

@@ -107,8 +107,8 @@ UIActivityIndicatorView *spinnerIndicator;
     NSString *str= [NSString stringWithFormat:@"%@\n%@", newStr2, newStr4];
     NSData* finalJson = [str dataUsingEncoding:NSUTF8StringEncoding];
     NSMutableURLRequest *request_config = [[NSMutableURLRequest alloc] init];
-//    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetraxZensar&colname=companyConfig"]];
-    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetrexMeteor&colname=companyConfig"]];
+    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetraxZensar&colname=companyConfig"]];
+//    [request_config setURL:[NSURL URLWithString: @"https://raptor.safetrax.in/mongoser/query?dbname=safetrexMeteor&colname=companyConfig"]];
 
     [request_config setHTTPMethod:@"POST"];
     [request_config setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -234,7 +234,7 @@ UIActivityIndicatorView *spinnerIndicator;
     [request_config setHTTPBody:finalJson];
     NSLog(@"final json %@",str);
     NSData *resultData = [NSURLConnection sendSynchronousRequest:request_config returningResponse:nil error:&error_config];
-    
+    if (resultData != nil){
     id config_array= [NSJSONSerialization JSONObjectWithData:resultData options:0 error:nil];
     NSLog(@"%@",config_array);
     
@@ -292,6 +292,7 @@ UIActivityIndicatorView *spinnerIndicator;
             }
         }
         [[NSUserDefaults standardUserDefaults] synchronize];
+    }
     }
 }
 @end
