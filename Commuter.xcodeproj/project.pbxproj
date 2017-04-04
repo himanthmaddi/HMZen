@@ -1894,7 +1894,7 @@
 					};
 					B7D0FB5219696F6000971470 = {
 						DevelopmentTeam = VS69383GKM;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2923,10 +2923,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.ZenGo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "22804085-cb60-4ebc-bee0-d12e27b45283";
-				PROVISIONING_PROFILE_SPECIFIER = ZenGoDevelopment;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2942,7 +2942,7 @@
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -2962,7 +2962,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.ZenGo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

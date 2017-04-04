@@ -23,7 +23,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter Company Code " minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="d84-Xu-WgZ">
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="zensar" placeholder="Enter Company Code " minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="d84-Xu-WgZ">
                     <rect key="frame" x="50" y="172" width="500" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="CFW-yK-xJK"/>

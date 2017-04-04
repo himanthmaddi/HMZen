@@ -27,9 +27,9 @@
 #import "FeedbackViewController.h"
 #endif
 #import <QuartzCore/QuartzCore.h>
-#import <FIRInstanceID.h>
+#import <FirebaseInstanceID/FirebaseInstanceID.h>
 #import "MBProgressHUD.h"
-
+#import "Reachability.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 EmpSchedule *schedule;
@@ -44,6 +44,9 @@ BOOL no_trips = FALSE;
     UIActivityIndicatorView *activityIndicator;
     MBProgressHUD *hud;
     NSMutableArray *startTimesArray;
+    NSMutableArray *bufferStartTimesArray;
+    NSMutableArray *bufferEndTimesArray;
+    NSMutableArray *actualTimeArray;
 }
 @end
 @implementation HomeViewController
@@ -74,6 +77,21 @@ BOOL no_trips = FALSE;
         }
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
+    
+    startTimesArray = [[NSMutableArray alloc]init];
+    bufferEndTimesArray = [[NSMutableArray alloc]init];
+    bufferStartTimesArray = [[NSMutableArray alloc]init];
+    actualTimeArray = [[NSMutableArray alloc]init];
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"fcmtokenpushed"]){
+        
+    }else{
+        [self pushDeviceTokenWithFCM];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"login"];
+    
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
     localNotifications = [[NSMutableArray alloc]init];
     [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
@@ -86,31 +104,17 @@ BOOL no_trips = FALSE;
     
     if(result == NSOrderedDescending || result == NSOrderedSame)
     {
-                SessionValidator *validator = [[SessionValidator alloc]init];
-                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                    NSLog(@"%@",result);
-                    dispatch_semaphore_signal(semaphore);
-                }];
-                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
     else if(result == NSOrderedAscending)
     {
         
-    }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
-    
-    startTimesArray = [[NSMutableArray alloc]init];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"fcmtokenpushed"]){
-        
-    }else{
-        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-        [self pushDeviceTokenWithFCM];
-            });
-        });
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -173,7 +177,6 @@ BOOL no_trips = FALSE;
         [self performSelector:@selector(ShowFeedback) withObject:nil afterDelay:1.0];
         
     }
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 - (void)appplicationIsActive:(NSNotification *)notification {
     NSLog(@"Application Did Become Active");
@@ -228,35 +231,45 @@ BOOL no_trips = FALSE;
 }
 -(void)didFinishvalidation
 {
-    NSString *idToken = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-    _responseData = nil;
-    _responseData = [[NSMutableData alloc] init];
-    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSLog(@"%@",tokenString);
-    long double today = [[[NSDate date] dateByAddingTimeInterval:-5*60*60] timeIntervalSince1970];
-    long double yesterday = [[[NSDate date] dateByAddingTimeInterval: 48*60*60] timeIntervalSince1970];
-    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-    NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
-    long double mine = [str1 doubleValue]*1000;
-    long double mine2 = [str2 doubleValue]*1000;
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-    NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
-    BOOL falsef = false;
-    NSDictionary *running1 = @{@"runningStatus":@{@"$exists":[NSNumber numberWithBool:false]}};
-    NSDictionary *running2 = @{@"runningStatus":@{@"$ne":@"completed"}};
-    NSMutableArray *addingArray = [[NSMutableArray alloc]initWithObjects:running1,running2, nil];
-    NSDictionary *postDictionary = @{@"$or":addingArray,@"employees._employeeId":idToken,@"startTime":@{@"$gte":todayTime,@"$lte":beforeDayTime}};
-    NSLog(@"%@",postDictionary);
-    MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"query" withMethod:@"POST" andColumnName:@"trips"];
-    [requestWraper setBody:postDictionary];
-    [requestWraper setAuthString:finalAuthString];
-    [requestWraper print];
-    RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
-    [RestClient setDelegate:self];
-    _responseData = [[NSMutableData alloc] init];
-    [RestClient execute];
+    if ([self connectedToInternet]){
+        NSString *idToken = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+        _responseData = nil;
+        _responseData = [[NSMutableData alloc] init];
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSLog(@"%@",tokenString);
+        long double today = [[[NSDate date] dateByAddingTimeInterval:-5*60*60] timeIntervalSince1970];
+        long double yesterday = [[[NSDate date] dateByAddingTimeInterval: 48*60*60] timeIntervalSince1970];
+        NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
+        NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
+        long double mine = [str1 doubleValue]*1000;
+        long double mine2 = [str2 doubleValue]*1000;
+        NSString *headerString;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+        }else{
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        }
+        
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
+        NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
+        BOOL falsef = false;
+        NSDictionary *running1 = @{@"runningStatus":@{@"$exists":[NSNumber numberWithBool:false]}};
+        NSDictionary *running2 = @{@"runningStatus":@{@"$ne":@"completed"}};
+        NSMutableArray *addingArray = [[NSMutableArray alloc]initWithObjects:running1,running2, nil];
+        NSDictionary *postDictionary = @{@"$or":addingArray,@"employees._employeeId":idToken,@"startTime":@{@"$gte":todayTime,@"$lte":beforeDayTime}};
+        NSLog(@"%@",postDictionary);
+        MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"query" withMethod:@"POST" andColumnName:@"trips"];
+        [requestWraper setBody:postDictionary];
+        [requestWraper setAuthString:finalAuthString];
+        [requestWraper print];
+        RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
+        [RestClient setDelegate:self];
+        _responseData = [[NSMutableData alloc] init];
+        [RestClient execute];
+    }else{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }
 }
 #pragma mark Menu Event
 - (void)menuStateEventOccurred:(NSNotification *)notification {
@@ -300,6 +313,7 @@ BOOL no_trips = FALSE;
     
     //    }
     [super viewWillAppear:NO];
+    
 }
 #pragma mark Sub States
 -(void)attendance
@@ -640,6 +654,7 @@ BOOL no_trips = FALSE;
 }
 -(void)onFailure
 {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     refreshInProgress = FALSE;
     NSLog(@"Failure callback");
 }
@@ -650,6 +665,7 @@ BOOL no_trips = FALSE;
 }
 -(void)onFinishLoading
 {
+    
     NSString* newStr = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
     NSLog(@"trip %@",newStr);
     NSMutableDictionary *historyDictionary =[[NSMutableDictionary alloc] init];
@@ -673,10 +689,62 @@ BOOL no_trips = FALSE;
         NSArray *result = [NSJSONSerialization JSONObjectWithData:_responseData options:kNilOptions error:&error];
         for (NSDictionary *dict in result){
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"startTime"]doubleValue] / 1000.0)];
+            
+            NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"startTime"]  doubleValue]/1000.0)];
+            
+            NSDate *bufferEndDate = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"endTime"] doubleValue]/1000.0)];
+            
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
             NSString *string = [dateFormatter stringFromDate:date];
-            [startTimesArray addObject:string];
+            
+            NSString *bufferStartString = [dateFormatter stringFromDate:bufferStartDate];
+            NSString *bufferEndString = [dateFormatter stringFromDate:bufferEndDate];
+            
+            if ([startTimesArray containsObject:string]){
+                
+            }else{
+                [startTimesArray addObject:string];
+            }
+            if ([bufferEndTimesArray containsObject:bufferEndString]){
+                
+            }else{
+                [bufferEndTimesArray addObject:bufferEndString];
+            }
+            if ([bufferStartTimesArray containsObject:bufferStartString]){
+                
+            }else{
+                [bufferStartTimesArray addObject:bufferStartString];
+            }
+            NSArray *stoppages = [dict valueForKey:@"stoppages"];
+            for (NSDictionary *dict2 in stoppages){
+                NSLog(@"%@",dict2);
+                if ([[dict valueForKey:@"tripLabel"] isEqualToString:@"login"]){
+                    NSArray *pickup = [dict2 valueForKey:@"_pickup"];
+                    if ([pickup containsObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"]]){
+                        NSLog(@"%@",[dict2 valueForKey:@"time"]);
+                        NSDate *time = [NSDate dateWithTimeIntervalSince1970:([[dict2 valueForKey:@"time"]  doubleValue]/1000.0)];
+                        NSString *stringintime = [dateFormatter stringFromDate:time];
+                        if ([actualTimeArray containsObject:stringintime]){
+                            
+                        }else{
+                            [actualTimeArray addObject:stringintime];
+                        }
+                    }
+                }else{
+                    NSArray *pickup = [dict2 valueForKey:@"_drop"];
+                    if ([pickup containsObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"]]){
+                        NSDate *time = [NSDate dateWithTimeIntervalSince1970:([[dict2 valueForKey:@"time"]  doubleValue]/1000.0)];
+                        NSString *stringintime = [dateFormatter stringFromDate:time];
+                        if ([actualTimeArray containsObject:stringintime]){
+                            
+                        }else{
+                            [actualTimeArray addObject:stringintime];
+                        }
+                    }
+                    
+                }
+            }
         }
         [self addTrip];
     }
@@ -1098,20 +1166,35 @@ BOOL no_trips = FALSE;
     }
     else
     {
-        
         StringArray = [[tripsSection2 objectAtIndex:indexPath.row]  componentsSeparatedByString:@"&&"];
         Cell.textLabel.text = StringArray[0];
         dateString = StringArray[2];
         endTime = StringArray[1];
-        
     }
+    
     tripId = StringArray[3];
     
+    
     [self ScheduleTripEndNotification:StringArray[1] withTripID:tripId];
-    dateString =  [dateString substringFromIndex: [dateString length] - 2];
-    NSLog(@"string date is %@",[StringArray objectAtIndex:2]);
-    //    int i = [self CheckActiveTrips:[StringArray objectAtIndex:2] with:1];
-    int i = [self CheckActiveTrips:[startTimesArray objectAtIndex:indexPath.row] with:1];
+    //    dateString =  [dateString substringFromIndex: [dateString length] - 2];
+    
+    NSString *bufferendtime;
+    NSString *bufferstarttime;
+    
+    NSLog(@"%@",actualTimeArray);
+    NSLog(@"%@",dateString);
+    NSLog(@"%@",startTimesArray);
+    for (int i =0; i<actualTimeArray.count;i++){
+        if ([actualTimeArray containsObject:dateString]){
+            int index = [actualTimeArray indexOfObject:dateString];
+            bufferstarttime = [bufferStartTimesArray objectAtIndex:index];
+            bufferendtime = [bufferEndTimesArray objectAtIndex:index];
+            NSLog(@"%@",bufferendtime);
+            NSLog(@"%@",bufferstarttime);
+        }
+    }
+    
+    int i = [self CheckActiveTrips:bufferstarttime with:1];
     label = [[UILabel alloc] init];
     UIFont *myFont = [ UIFont fontWithName: @"Arial" size: 12.0 ];
     label.font = myFont;
@@ -1130,8 +1213,8 @@ BOOL no_trips = FALSE;
         Cell.accessoryView = label;
         Cell.accessoryView.tag = 1;
     }
-    //    i = [self CheckActiveTrips:endTime:2];
-    i = [self CheckActiveTrips:endTime with:2];
+    //        i = [self CheckActiveTrips:endTime:2];
+    i = [self CheckActiveTrips:bufferendtime with:2];
     if(i == 2)
     {
         //ActiveTrip = 0;
@@ -1148,30 +1231,17 @@ BOOL no_trips = FALSE;
     }
     
     [Cell.accessoryView setFrame:CGRectMake(0, 0, 75, 30)];
-    //    NSInteger time =[dateString integerValue];
-    
-    
-    //    if(time >=5 && time <18)
-    //    {
-    //        Cell.accessoryView = [[ UIImageView alloc ] initWithImage:[UIImage imageNamed:@"_0013_sun.png"]];
-    //    }
-    //    else
-    //    {
-    //        Cell.accessoryView = [[ UIImageView alloc ] initWithImage:[UIImage imageNamed:@"_0014_moon.png"]];
-    //    }
-    
-    //    [Cell.accessoryView setFrame:CGRectMake(0, 0, 24, 24)];
     Cell.textLabel.numberOfLines = 0;
-    
     
     return Cell;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (Cell.accessoryView.tag == 1){
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell.accessoryView.tag == 1){
         NSLog(@"ok it is in active so we can enable it");
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"activeInState"];
     }
-    else if (Cell.accessoryView.tag == 2){
+    else if (cell.accessoryView.tag == 2){
         NSLog(@"no it is not active so we have to disable all values");
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"activeInState"];
         
@@ -1222,12 +1292,12 @@ BOOL no_trips = FALSE;
 
 -(int)CheckActiveTrips:(NSString *)scheduleDate with:(int)type
 {
-    NSLog(@"%@",scheduleDate);
+    NSLog(@"%@ %i",scheduleDate,type);
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
     [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
     dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-    NSDate *tripDate=[dateFormatter dateFromString:scheduleDate];
+    NSDate *tripDate = [dateFormatter dateFromString:scheduleDate];
     NSDate *date = [NSDate date];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     NSTimeZone *zone = [NSTimeZone localTimeZone];
@@ -1263,18 +1333,25 @@ BOOL no_trips = FALSE;
 {
     NSLog(@"push device token");
     NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-    NSLog(@"%@",userid);
-    NSString *token = [[FIRInstanceID instanceID] token];
     
+    if(userid == nil || userid.length == 0 || ![userid isKindOfClass:[NSString class]]){
+        userid = @"";
+    }else{
+        userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+    }
+    NSString *token = [[FIRInstanceID instanceID] token];
+
+    if(token == nil || token.length == 0 || ![token isKindOfClass:[NSString class]]){
+        token = @"";
+    }else{
+        token = [[FIRInstanceID instanceID] token];
+    }
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     
     NSDictionary *findParameters;
     
     NSDictionary *setParameters;
     
-    if (token == nil || userid == nil){
-        NSLog(@"null values are came");
-    }else{
         findParameters = @{@"empid":userid};
         setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
         NSLog(@"%@",setParameters);
@@ -1326,7 +1403,7 @@ BOOL no_trips = FALSE;
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }
+    
 }
 
 -(void)tripCompletedNotification:(NSNotification *)sender{
@@ -1334,9 +1411,13 @@ BOOL no_trips = FALSE;
     NSLog(@"%@",myDictionary);
     if ([sender.name isEqualToString:@"tripCompleted"]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            SomeViewController *some = [[SomeViewController alloc]init];
-            [some getTripId:[myDictionary valueForKey:@"tripId"]];
-            [self presentViewController:some animated:YES completion:nil];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"tripFeedbackForm"]){
+                SomeViewController *some1 = [[SomeViewController alloc]init];
+                [some1 getTripId:[myDictionary valueForKey:@"tripId"]];
+                [self presentViewController:some1 animated:YES completion:nil];
+            }else{
+                
+            }
         });
     }
 }
@@ -1381,58 +1462,64 @@ BOOL no_trips = FALSE;
     [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
     
     NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-    id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error];
-    NSLog(@"%@",result);
-    if ([result isKindOfClass:[NSArray class]]){
-        NSArray *tripArray = result;
-        if (tripArray.count > 0){
-            for (NSDictionary *eachTrip in tripArray){
-                long double bufferEndTimeinMS = [[eachTrip valueForKey:@"bufferEndTime"] doubleValue];
-                long double bufferStartTimeinMS = [[eachTrip valueForKey:@"bufferStartTime"] doubleValue];
-                NSDate *bufferEndDate = [NSDate dateWithTimeIntervalSince1970:(bufferEndTimeinMS / 1000.0)];
-                NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:(bufferStartTimeinMS / 1000.0)];
-                
-                NSString *tripType;
-                if ([[eachTrip valueForKey:@"tripLabel"] isEqualToString:@"login"]){
-                    tripType=@"Pickup";
-                }
-                else{
-                    tripType=@"Drop";
-                }
-                
-                if ([[eachTrip valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"]){
-                    [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];
+    if (resultData != nil){
+        id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error];
+        NSLog(@"%@",result);
+        if ([result isKindOfClass:[NSArray class]]){
+            NSArray *tripArray = result;
+            if (tripArray.count > 0){
+                for (NSDictionary *eachTrip in tripArray){
+                    long double bufferEndTimeinMS = [[eachTrip valueForKey:@"bufferEndTime"] doubleValue];
+                    long double bufferStartTimeinMS = [[eachTrip valueForKey:@"bufferStartTime"] doubleValue];
+                    NSDate *bufferEndDate = [NSDate dateWithTimeIntervalSince1970:(bufferEndTimeinMS / 1000.0)];
+                    NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:(bufferStartTimeinMS / 1000.0)];
                     
-                }
-                NSDate *presentDate = [NSDate date];
-                if ([bufferEndDate compare:presentDate] == NSOrderedDescending){
+                    NSString *tripType;
+                    if ([[eachTrip valueForKey:@"tripLabel"] isEqualToString:@"login"]){
+                        tripType=@"Pickup";
+                    }
+                    else{
+                        tripType=@"Drop";
+                    }
                     
-                    NSArray *allEmployeesArray = [eachTrip valueForKey:@"employees"];
-                    for (NSDictionary *eachEmployee in allEmployeesArray){
-                        NSString *employeeId = [eachEmployee valueForKey:@"_employeeId"];
-                        if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"] isEqualToString:employeeId]){
-                            if ([eachEmployee valueForKey:@"reached"]){
+                    if ([[eachTrip valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"]){
+                        [self presentLocalNotificationWith:bufferStartDate andWithTripId:[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"] andWithTripType:tripType withBufferEndTime:bufferEndDate];
+                        
+                    }
+                    NSDate *presentDate = [NSDate date];
+                    if ([bufferEndDate compare:presentDate] == NSOrderedDescending){
+                        
+                        NSArray *allEmployeesArray = [eachTrip valueForKey:@"employees"];
+                        for (NSDictionary *eachEmployee in allEmployeesArray){
+                            NSString *employeeId = [eachEmployee valueForKey:@"_employeeId"];
+                            if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"] isEqualToString:employeeId]){
+                                if ([eachEmployee valueForKey:@"reached"]){
+                                    NSDictionary *info = @{@"tripId":[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"]};
+                                    [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
+                                }
+                            }else{
+                                NSTimeInterval differenceInSeconds = [bufferEndDate timeIntervalSinceDate:presentDate];
+                                NSLog(@"%.0f",differenceInSeconds);
                                 NSDictionary *info = @{@"tripId":[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"]};
-                                [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
+                                [NSTimer scheduledTimerWithTimeInterval:differenceInSeconds target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
                             }
-                        }else{
-                            NSTimeInterval differenceInSeconds = [bufferEndDate timeIntervalSinceDate:presentDate];
-                            NSLog(@"%.0f",differenceInSeconds);
-                            NSDictionary *info = @{@"tripId":[[eachTrip valueForKey:@"_id"] valueForKey:@"$oid"]};
-                            [NSTimer scheduledTimerWithTimeInterval:differenceInSeconds target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
+                            
                         }
+                        
+                    }else{
                         
                     }
                     
-                }else{
-                    
                 }
+            }
+            else{
                 
             }
         }
-        else{
-            
-        }
+    }else{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        //        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please check your connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        //        [alert show];
     }
 }
 -(void)pushNotification:(NSTimer *)sender{
@@ -1480,6 +1567,16 @@ BOOL no_trips = FALSE;
         NSArray *oldarray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"localNotificationArray"];
         [array addObjectsFromArray:oldarray];
         [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"localNotificationArray"];
+    }
+}
+-(BOOL)connectedToInternet
+{
+    Reachability *networkReachability = [Reachability reachabilityWithHostName:@"www.google.com"];
+    NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
+    if (networkStatus == NotReachable) {
+        return NO;
+    } else {
+        return YES;
     }
 }
 

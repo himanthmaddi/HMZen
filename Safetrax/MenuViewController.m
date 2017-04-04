@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <Smooch/Smooch.h>
 #import "ScheduleViewController.h"
+#import <MBProgressHUD.h>
 
 @interface MenuViewController (){
     UINavigationController *navigationVC2;
@@ -73,11 +74,27 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(IBAction)home:(id)sender
 {
-    home = nil;
-    home = [[HomeViewController alloc]
-            initWithNibName:@"HomeViewController" bundle:nil];
-    [self.menuContainerViewController setCenterViewController:home];
-    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+//    home = nil;
+//    home = [[HomeViewController alloc]
+//            initWithNibName:@"HomeViewController" bundle:nil];
+//    [self.menuContainerViewController setCenterViewController:home];
+//    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+    
+    
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            home = nil;
+            home = [[HomeViewController alloc]
+                    initWithNibName:@"HomeViewController" bundle:nil];
+            [self.menuContainerViewController setCenterViewController:home];
+            [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+
 }
 -(IBAction)history:(id)sender
 {
@@ -128,8 +145,20 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(IBAction)mySchedulePressed:(id)sender
 {
-    [self.menuContainerViewController setCenterViewController:navigationVC2];
-    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+//    [self.menuContainerViewController setCenterViewController:navigationVC2];
+//    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.menuContainerViewController setCenterViewController:navigationVC2];
+            [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+
 }
 -(BOOL)connectedToInternet
 {
