@@ -22,19 +22,26 @@
 @property (nonatomic , strong) NSMutableArray *officesArray;
 @property (nonatomic , strong) NSMutableArray *officeIdsArray;
 
-
 @property (nonatomic , strong) NSMutableArray *loginDoubleValues;
 @property (nonatomic , strong) NSMutableArray *logoutDoubleValues;
 
+@property (nonatomic , assign) BOOL loginCancellationAllowed;
+@property (nonatomic , assign) BOOL logoutCancellationAllowed;
+@property (nonatomic , assign) NSString *loginCancellationCutoffTime;
+@property (nonatomic , assign) NSString *logoutCancellationCutoffTime;
 
 @property (nonatomic , strong) NSString *loginTime;
 @property (nonatomic , strong) NSString *logoutTime;
 @property (nonatomic , strong) NSString *officeIdString;
 @property (nonatomic , strong) NSString *dateString;
 @property (nonatomic , strong) NSString *officeNameString;
+@property (nonatomic , strong) NSString *loginRosterIdString;
+@property (nonatomic , strong) NSString *logoutRoasterIdString;
 
 @property (nonatomic , strong) NSString *loginDoubleString;
 @property (nonatomic , strong) NSString *logoutDoubleString;
+
+@property (nonatomic , strong) NSString *selectedDate;
 
 @property (nonatomic , strong) NSDate *cutoffDateAndTime;
 @property (nonatomic , strong) NSString *loginCutoffTime;
@@ -47,7 +54,15 @@
 @property (nonatomic , strong) NSString *cutoffLoginTime;
 @property (nonatomic , strong) NSString *cutoffLogoutTime;
 
+@property (nonatomic ,strong) IBOutlet UIButton *loginCancelButton;
+@property (nonatomic ,strong) IBOutlet UIButton *logoutCancelButton;
 
+//@property (nonatomic, strong) IBOutlet UILabel *loginLabel;
+//@property (nonatomic, strong) IBOutlet UILabel *logoutLabel;
+
+
+-(IBAction)loginCancelAction:(id)sender;
+-(IBAction)logoutCancelAction:(id)sender;
 -(IBAction)saveButtonClicked:(id)sender;
 
 -(void)getLoginTimes;
@@ -60,4 +75,5 @@
 
 -(void)getDoubleValuesForLogin:(NSString *)login withLogout:(NSString *)logout;
 -(void)getCutoffsModel:(NSDictionary *)cutoffValues;
+-(void)getLoginRosterId:(NSString *)loginRoasterId withLogoutRosterId:(NSString *)logoutRoasterId;
 @end

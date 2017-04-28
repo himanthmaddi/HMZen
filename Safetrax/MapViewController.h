@@ -11,21 +11,26 @@
 #import "TripModel.h"
 #import "RestClientTask.h"
 @class HomeViewController;
-@interface MapViewController : UIViewController<RestCallBackDelegate,GMSMapViewDelegate>
+@interface MapViewController : UIViewController<RestCallBackDelegate,GMSMapViewDelegate,UIAlertViewDelegate>
 {
-     GMSMapView *mapView_;
+    GMSMapView *mapView_;
     TripModel *tripModel;
     NSTimer *timer;
     __weak IBOutlet UIView *mapView;
     GMSMarker *marker_current;
-     NSMutableData *_responseData;
+    NSMutableData *_responseData;
     NSMutableArray *markers;
     GMSMarker *marker_driver;
     HomeViewController *home;
 }
+@property (nonatomic , strong) IBOutlet UIButton *sosMainButton;
 @property (weak, nonatomic) IBOutlet UIButton *reachedButton;
 @property (weak, nonatomic) IBOutlet UIButton *waitingButton;
 @property (weak, nonatomic) IBOutlet UIButton *boardedButton;
+@property (weak, nonatomic) IBOutlet UIButton *callButton;
+
+@property (weak, nonatomic) IBOutlet UIView *buttonsView;
+
 @property (nonatomic, retain) IBOutlet UILabel *DriverName;
 @property (nonatomic, retain) IBOutlet UIButton *MapHelpText;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollview;

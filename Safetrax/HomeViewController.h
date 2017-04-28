@@ -2,7 +2,7 @@
 //  HomeViewController.h
 //  Safetrax
 //
-//  
+//
 //  Copyright (c) 2014 iOpex. All rights reserved.
 //
 
@@ -39,8 +39,9 @@
     NSMutableData *_responseData;
     UIRefreshControl *refreshControl;
     UILabel *label;
-    
+    IBOutlet UIButton *sosbutton;
 }
+@property (nonatomic , strong) NSArray *ratingSubmittedTripsArray;
 @property (weak, nonatomic) IBOutlet UILabel *logoutLabel;
 @property (weak, nonatomic) IBOutlet UILabel *loginLable;
 @property (weak, nonatomic) IBOutlet UIView *noScheduleView;
@@ -50,6 +51,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *currentDate;
 @property (nonatomic, retain) IBOutlet UITableView *tripTable;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *mainSegment;
+
+@property (weak , nonatomic) IBOutlet UIButton *sosMainButton;
+
 - (IBAction)mainSegmentedTypeChanged:(id)sender;
 -(IBAction)openMenu:(id)sender;
 -(IBAction)attending:(id)sender;

@@ -2,7 +2,7 @@
 //  LoginViewController.h
 //  Safetrax
 //
-//  
+//
 //  Copyright (c) 2014 iOpex. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import "RestClientTask.h"
-@interface LoginViewController : UIViewController <CLLocationManagerDelegate,RestCallBackDelegate,UITextFieldDelegate>
+@interface LoginViewController : UIViewController <CLLocationManagerDelegate,RestCallBackDelegate,UITextFieldDelegate,UIAlertViewDelegate>
 {
     NSMutableURLRequest *NSRequest;
     NSString *finalNonceString;
@@ -36,4 +36,5 @@
 -(IBAction)LoginHelp:(id)sender;
 -(void)userConfiguration:(NSDictionary *)detailDictionary;
 -(void)getHeadBundlerValue:(NSString *)bundlerValue;
+-(void)methodForGettingHeaders;
 @end

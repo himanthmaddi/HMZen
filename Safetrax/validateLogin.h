@@ -13,7 +13,6 @@
     NSMutableData *_responseData;
     id homeObject;
 }
--(void)validateLogin;
 -(void)validate;
 - (void)setDelegate:(id)newDelegate;
 @end
