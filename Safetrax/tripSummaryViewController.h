@@ -39,6 +39,7 @@
     NSMutableArray *pickupWayPointCoveredEmployees;
     NSMutableArray *DropWayPointCoveredEmployees;
 }
+@property (nonatomic , strong) IBOutlet UIButton *sosMainButton;
 @property (nonatomic , strong) NSMutableArray *totalTripIDSarray;
 @property (weak, nonatomic) IBOutlet UILabel *tripLabel;
 @property (weak, nonatomic) IBOutlet UIButton *reachedButton;
@@ -56,6 +57,17 @@
 @property (nonatomic, retain) IBOutlet UILabel *endPoint;
 @property (nonatomic, retain) IBOutlet UIButton *boardedCab;
 
+@property (nonatomic, retain) IBOutlet UILabel *waitingLabel;
+@property (nonatomic, retain) IBOutlet UILabel *boardedLabel;
+@property (nonatomic, retain) IBOutlet UILabel *reachedLabel;
+
+@property (nonatomic , strong) IBOutlet UILabel *round1;
+@property (nonatomic , strong) IBOutlet UILabel *round2;
+
+@property (nonatomic , strong) IBOutlet UILabel *pinLabel;
+@property (nonatomic , strong) IBOutlet UIImageView *pinImageView;
+@property (nonatomic , strong) IBOutlet UIButton *tripConfirmationsButton;
+
 @property (nonatomic, strong) IBOutlet UIButton *callButton;
 @property (nonatomic, strong) IBOutlet UILabel *callLabel;
 
@@ -67,4 +79,8 @@
 -(void)mockModel:(NSString *)mockModelData;
 -(IBAction)boarded:(id)sender;
 -(void)getSyncTripsFromFCM:(NSArray *)result;
+-(void)getTripsArray:(NSArray *)trips selectedIndex:(int)Index withHome:(HomeViewController *)homeobject;
+
+-(IBAction)tripConfirmationsButton:(id)sender;
+
 @end

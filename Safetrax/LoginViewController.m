@@ -2,7 +2,7 @@
 //  LoginViewController.m
 //  Safetrax
 //
-// 
+//
 //  Copyright (c) 2014 iOpex. All rights reserved.
 //
 #import "ForcePasswordViewController.h"
@@ -19,7 +19,8 @@
 #import "MyChildrenViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <Smooch/Smooch.h>
-#import <FIRInstanceID.h>
+#import <MBProgressHUD.h>
+#import <FirebaseInstanceID/FirebaseInstanceID.h>
 
 #if Parent
 #import "LoginHelpViewController.h"
@@ -47,13 +48,13 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 - (void)viewDidLoad
 {
     NSLog(@"string %@",[[NSUserDefaults standardUserDefaults] stringForKey:@"feedbackRequired"]);
-    #if Parent
+#if Parent
     LoginHelpButton.hidden = NO;
-    #endif
+#endif
     password.autocorrectionType = UITextAutocorrectionTypeNo;
     userName.autocorrectionType = UITextAutocorrectionTypeNo;
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-//    [center addObserver:self selector:@selector(keyboardOnScreen:) name:UIKeyboardDidShowNotification object:nil];
+    //    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    //    [center addObserver:self selector:@selector(keyboardOnScreen:) name:UIKeyboardDidShowNotification object:nil];
     [password setDelegate:self];
     [userName setDelegate:self];
     [invalidCredentials setHidden:YES];
@@ -115,11 +116,12 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 {
     LoginHelpViewController *SchoolCodeFaq = [[LoginHelpViewController alloc] initWithNibName:@"LoginHelpViewController" bundle:nil];
     [self presentViewController:SchoolCodeFaq animated:YES completion:nil];
-
+    
 }
 #endif
 -(IBAction)login:(id)sender
 {
+    
     spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     CGRect frame = spinner.frame;
     frame.origin.x = self.view.frame.size.width / 2 - frame.size.width / 2;
@@ -133,7 +135,6 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     [invalidCredentials setHidden:YES];
     [spinner startAnimating];
     [self methodForGettingHeaders];
-
 }
 - (void)didReceiveMemoryWarning
 {
@@ -145,51 +146,50 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 -(void)onResponseReceived:(NSData *)data
 {
     NSDictionary *auth_dictionary= [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    NSLog(@"auth %@",auth_dictionary);
     if([auth_dictionary objectForKey:@"email"]){
-    CATransition* transition = [CATransition animation];
-    transition.duration = 1;
-    transition.type = kCATransitionFade;
-    transition.subtype = kCATransitionFromBottom;
-    [[NSUserDefaults standardUserDefaults] setObject:[userName.text lowercaseString] forKey:@"username"];
-    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"emgcontact"] forKey:@"emgcontact"];
-    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary valueForKey:@""] forKey:@"phonenum"];
-    [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
-//    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"empid"] forKey:@"empid"];
-//    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"name"] forKey:@"name"];
-    #if Parent
-    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"imageLink"] forKey:@"imageLinkMainInfo"];
-    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"extras"] forKey:@"extras"];
-    #endif
-    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"email"] forKey:@"email"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    NSLog(@"%@",[auth_dictionary objectForKey:@"onetimepass"] );
-    NSNumber *onetimepass = [auth_dictionary objectForKey:@"onetimepass"];
-    NSLog(@"force change pass- %@",onetimepass);
-    [self.view.window.layer addAnimation:transition forKey:kCATransition];
-      if(onetimepass.intValue == 1){
-           NSLog(@"force change pass");
-//        [self showChangePassowrd];
-      }
+        CATransition* transition = [CATransition animation];
+        transition.duration = 1;
+        transition.type = kCATransitionFade;
+        transition.subtype = kCATransitionFromBottom;
+        [[NSUserDefaults standardUserDefaults] setObject:[userName.text lowercaseString] forKey:@"username"];
+        [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"emgcontact"] forKey:@"emgcontact"];
+        [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary valueForKey:@""] forKey:@"phonenum"];
+        [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
+        //    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"empid"] forKey:@"empid"];
+        //    [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"name"] forKey:@"name"];
+#if Parent
+        [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"imageLink"] forKey:@"imageLinkMainInfo"];
+        [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"extras"] forKey:@"extras"];
+#endif
+        [[NSUserDefaults standardUserDefaults] setObject:[auth_dictionary objectForKey:@"email"] forKey:@"email"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSLog(@"%@",[auth_dictionary objectForKey:@"onetimepass"] );
+        NSNumber *onetimepass = [auth_dictionary objectForKey:@"onetimepass"];
+        NSLog(@"force change pass- %@",onetimepass);
+        [self.view.window.layer addAnimation:transition forKey:kCATransition];
+        if(onetimepass.intValue == 1){
+            NSLog(@"force change pass");
+            //        [self showChangePassowrd];
+        }
         else
         {
-       #if Parent
-        MyChildrenViewController *MyChildren = [[MyChildrenViewController alloc]init];
-        MenuViewControllerParent *menu = [[MenuViewControllerParent alloc]init];
-        rootViewControllerParent_delegate = [MFSideMenuContainerViewController
-                                        containerWithCenterViewController:MyChildren
-                                           leftMenuViewController:menu
-                                           rightMenuViewController:nil];
-        
-       #else
-             HomeViewController *home = [[HomeViewController alloc]init];
-             MenuViewController *menu = [[MenuViewController alloc]init];
-             rootViewControllerParent_delegate = [MFSideMenuContainerViewController
-             containerWithCenterViewController:home
-             leftMenuViewController:menu
-             rightMenuViewController:nil];
-       #endif
-             [self presentViewController:rootViewControllerParent_delegate animated:NO completion:nil];
+#if Parent
+            MyChildrenViewController *MyChildren = [[MyChildrenViewController alloc]init];
+            MenuViewControllerParent *menu = [[MenuViewControllerParent alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                 containerWithCenterViewController:MyChildren
+                                                 leftMenuViewController:menu
+                                                 rightMenuViewController:nil];
+            
+#else
+            HomeViewController *home = [[HomeViewController alloc]init];
+            MenuViewController *menu = [[MenuViewController alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                 containerWithCenterViewController:home
+                                                 leftMenuViewController:menu
+                                                 rightMenuViewController:nil];
+#endif
+            [self presentViewController:rootViewControllerParent_delegate animated:NO completion:nil];
         }
     }
     else
@@ -212,47 +212,47 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(void)pushDeviceToken
 {
-//    NSLog(@"push device token");
-//    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-//    NSString *token = [[FIRInstanceID instanceID] token];
-//       NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-//    
-//    NSDictionary *findParameters = @{@"empid":userid};
-//    
-//    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
-//    
-//    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-//    NSError *error;
-//    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
-//
-//    
-//    NSError *error_config;
-//
-//    
-//    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-//    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-//    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-//    
-//    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-//    NSString *url;
-//    if([Port isEqualToString:@"-1"])
-//    {
-//        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-//    }
-//    else
-//    {
-//        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-//    }
-//   NSURL *URL =[NSURL URLWithString:url];
-//    NSLog(@"%@",URL);
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-//    [request setHTTPMethod:@"POST"];
-//    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-//    [request setHTTPBody:dataJson];
-//    NSURLResponse *responce;
-//    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-//    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-//    NSLog(@"%@",json);
+    //    NSLog(@"push device token");
+    //    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+    //    NSString *token = [[FIRInstanceID instanceID] token];
+    //       NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    //
+    //    NSDictionary *findParameters = @{@"empid":userid};
+    //
+    //    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+    //
+    //    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
+    //    NSError *error;
+    //    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+    //
+    //
+    //    NSError *error_config;
+    //
+    //
+    //    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+    //    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    //    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+    //
+    //    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    //    NSString *url;
+    //    if([Port isEqualToString:@"-1"])
+    //    {
+    //        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+    //    }
+    //    else
+    //    {
+    //        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+    //    }
+    //   NSURL *URL =[NSURL URLWithString:url];
+    //    NSLog(@"%@",URL);
+    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+    //    [request setHTTPMethod:@"POST"];
+    //    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+    //    [request setHTTPBody:dataJson];
+    //    NSURLResponse *responce;
+    //    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+    //    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
+    //    NSLog(@"%@",json);
 }
 -(void)onFailure
 {
@@ -272,7 +272,6 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(void)methodForGettingHeaders{
     NSRequest = [[NSMutableURLRequest alloc] init];
-    
     NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
     if ([Port isEqualToString:@"-1"]){
         [NSRequest setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]]]];
@@ -291,8 +290,8 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         NSLog(@"%@",response);
     }else if (connection == connectionForSchedules){
         NSLog(@"%@",response);
-        }
-        else{
+    }
+    else{
         NSLog(@"response %@",response);
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         if ([response respondsToSelector:@selector(allHeaderFields)]) {
@@ -309,17 +308,15 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     //only main connection will go to data another connection wont go to get data it will give only header files
     if (connection == mainConnection){
         NSString *newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"%@",newStr);
         NSData *newData = [newStr dataUsingEncoding:NSUTF8StringEncoding];
         
         if (newStr == (id)[NSNull null] || newStr.length == 0){
             NSLog(@"received null responce");
         }
-            [self OnDataReceivedForUserConfig:newData];
+        [self OnDataReceivedForUserConfig:newData];
     }
     else if (connection == connectionForSchedules){
         schedulesArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-        NSLog(@"jsonArray is == %@",schedulesArray);
     }
 }
 -(void)methodForGettingUserConfig{
@@ -333,7 +330,6 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     NSString *ha1 = [self md5:another];
     NSString *final = [NSString stringWithFormat:@"%@:%@",ha1,[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"]];
     NSString *request = [self md5:final];
-    
     NSString *urlInString;
     NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
     if ([Port isEqualToString:@"-1"]){
@@ -342,18 +338,11 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         urlInString = [NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
     }
     NSURL *mainUrl = [NSURL URLWithString:urlInString];
-    NSLog(@"%@",mainUrl);
     NSMutableURLRequest *mainRequest = [NSMutableURLRequest requestWithURL:mainUrl];
     [mainRequest setHTTPMethod:@"POST"];
     [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-    NSNumber *externalAuthNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"externalAuth"];
-    NSString *allHeadString;
-    if (externalAuthNumber.boolValue == YES){
-        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request,@"oauth_password",password.text];
-    }else{
-        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
-    }
+    NSString *allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
     NSString *dataSetInfore = [NSString stringWithFormat:@"%@ %@",@"OAuth",allHeadString];
     [mainRequest setValue:dataSetInfore forHTTPHeaderField:@"Authorization"];
     mainConnection = [[NSURLConnection alloc] initWithRequest:mainRequest delegate:self];
@@ -368,93 +357,139 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     
     NSDictionary *userConfigDictionary = [NSJSONSerialization JSONObjectWithData:userConfigData options:kNilOptions error:&error];
     NSLog(@"%@",userConfigDictionary);
+    
     if (userConfigDictionary != nil){
-    if ([userConfigDictionary valueForKey:@"accessToken"]){
         
-        [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
-
-        NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-        [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
-        double expireTime = [[userConfigDictionary valueForKey:@"expiresAt"] doubleValue];
-        NSTimeInterval seconds = expireTime / 1000;
-        NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
-        NSLog(@"%@",[dateFormat stringFromDate:expireDate]);
-        
-//        NSDate *date = [NSDate date];
-//        NSComparisonResult result = [date compare:expireDate];
-//        if(result == NSOrderedDescending)
-//        {
-//            SessionValidator *validator = [[SessionValidator alloc]init];
-//            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
-//        }
-//        else if(result == NSOrderedAscending)
-//        {
+        if ([userConfigDictionary valueForKey:@"accessToken"]){
+            
+            [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
+            
+            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+            double expireTime = [[userConfigDictionary valueForKey:@"expiresAt"] doubleValue];
+            NSTimeInterval seconds = expireTime / 1000;
+            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+            NSLog(@"%@",[dateFormat stringFromDate:expireDate]);
+            
+            //        NSDate *date = [NSDate date];
+            //        NSComparisonResult result = [date compare:expireDate];
+            //        if(result == NSOrderedDescending)
+            //        {
+            //            SessionValidator *validator = [[SessionValidator alloc]init];
+            //            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
+            //        }
+            //        else if(result == NSOrderedAscending)
+            //        {
             [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"accessToken"] forKey:@"userAccessToken"];
             NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]);
             [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"expiresAt"] forKey:@"expiredTime"];
-//        }
-//        else
-//        {
-//            SessionValidator *validator = [[SessionValidator alloc]init];
-//            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
-//        }
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
-        
-//        [Smooch initWithSettings:[SKTSettings settingsWithAppToken:@"772558t0t0rm25k0a1zov7kq6"]];
-        [Smooch initWithSettings:[SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]]];
-
-//        SKTSettings* settings = [SKTSettings settingsWithAppToken:@"772558t0t0rm25k0a1zov7kq6"];
-        SKTSettings* settings = [SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]];
-
-        settings.conversationAccentColor = [UIColor redColor];
-        settings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
-        
-        [SKTUser currentUser].firstName = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"];
-        [SKTUser currentUser].email = [[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"];
-        [[SKTUser currentUser] addProperties:@{[[NSUserDefaults standardUserDefaults] valueForKey:@"company"]:@"Company"}];
-
-        [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"username"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"name"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"userId"] forKey:@"empid"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"_referenceId"] valueForKey:@"$oid"] forKey:@"employeeId"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"imageLink"] forKey:@"userImageUrl"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"mobile"] forKey:@"phonenum"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"] forKey:@"email"];
-        [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"_officeId"] forKey:@"officeId"];
-        loginButton.enabled =  YES;
-        [spinner stopAnimating];
-
-        [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
-        if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){
-            [self showChangePassowrd];
+            //        }
+            //        else
+            //        {
+            //            SessionValidator *validator = [[SessionValidator alloc]init];
+            //            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
+            //        }
+            
+            [SKTUser currentUser].firstName = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"];
+            [SKTUser currentUser].email = [[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"];
+            [[SKTUser currentUser] addProperties:@{[[NSUserDefaults standardUserDefaults] valueForKey:@"company"]:@"Company"}];
+            
+            [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"username"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"name"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"userId"] forKey:@"empid"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"_referenceId"] valueForKey:@"$oid"] forKey:@"employeeId"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"imageLink"] forKey:@"userImageUrl"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"mobile"] forKey:@"phonenum"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"] forKey:@"email"];
+            [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"_officeId"] forKey:@"officeId"];
+            loginButton.enabled =  YES;
+            [spinner stopAnimating];
+            [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
+            if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){
+                [self showChangePassowrd];
+            }
+            else{
+                HomeViewController *home = [[HomeViewController alloc]init];
+                MenuViewController *menu = [[MenuViewController alloc]init];
+                rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                     containerWithCenterViewController:home
+                                                     leftMenuViewController:menu
+                                                     rightMenuViewController:nil];
+                rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+                rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            }
         }
         else{
-        HomeViewController *home = [[HomeViewController alloc]init];
-        MenuViewController *menu = [[MenuViewController alloc]init];
-        rootViewControllerParent_delegate = [MFSideMenuContainerViewController
-                                             containerWithCenterViewController:home
-                                             leftMenuViewController:menu
-                                             rightMenuViewController:nil];
-            rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-            rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
-    }
-    }
-    else{
-        NSLog(@"login failed");
-        [invalidCredentials setText:@"Oops! Invalid Credentials"];
-        [invalidCredentials setHidden:NO];
-        userNameSeparator.backgroundColor = [UIColor redColor];
-        passwordSeparator.backgroundColor = [UIColor redColor];
-        loginButton.enabled =  YES;
-        [spinner stopAnimating];
-
-    }
+            
+            NSLog(@"login failed");
+            [invalidCredentials setText:@"Oops! Invalid Credentials"];
+            [invalidCredentials setHidden:NO];
+            userNameSeparator.backgroundColor = [UIColor redColor];
+            passwordSeparator.backgroundColor = [UIColor redColor];
+            loginButton.enabled =  YES;
+            [spinner stopAnimating];
+        }
     }else{
         [self methodForGettingUserConfig];
     }
+    
+}
+-(IBAction)forgotPassword:(id)sender{
+    UIAlertView *av = [[UIAlertView alloc]initWithTitle:@"Forgot Password" message:@"Please enter your Id" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+    av.alertViewStyle = UIAlertViewStylePlainTextInput;
+    [av textFieldAtIndex:0].delegate = self;
+    [av textFieldAtIndex:0].placeholder = @"UserId";
+    [av show];
+    av.tag = 123456;
 }
 
-
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex NS_DEPRECATED_IOS(2_0, 9_0);  // after animation
+{
+    if (alertView.tag == 123456){
+        if (buttonIndex == 1){
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSString *userid = [alertView textFieldAtIndex:0].text;
+                    NSLog(@"%@",userid);
+                    NSString *urlInString;
+                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                    if ([Port isEqualToString:@"-1"]){
+                        urlInString = [NSString stringWithFormat:@"%@://%@/auth?type=reset_password&siteUrl=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                    }else{
+                        urlInString = [NSString stringWithFormat:@"%@://%@:%@/auth?type=reset_password&siteUrl=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                    }
+                    NSURL *mainUrl = [NSURL URLWithString:urlInString];
+                    NSMutableURLRequest *mainRequest = [NSMutableURLRequest requestWithURL:mainUrl];
+                    [mainRequest setHTTPMethod:@"POST"];
+                    [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+                    [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+                    NSString *allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_username",userid,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"]];
+                    NSString *dataSetInfore = [NSString stringWithFormat:@"%@ %@",@"OAuth",allHeadString];
+                    [mainRequest setValue:dataSetInfore forHTTPHeaderField:@"Authorization"];
+                    NSError *error;
+                    NSLog(@"%@",mainRequest.allHTTPHeaderFields);
+                    NSLog(@"%@",mainUrl);
+                    NSHTTPURLResponse *response;
+                    NSData *resultData = [NSURLConnection sendSynchronousRequest:mainRequest returningResponse:&response error:&error];
+                    NSLog(@"%@",response);
+                    id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error];
+                    NSLog(@"%@",result);
+                    NSHTTPURLResponse *resultResponse = (NSHTTPURLResponse *)response;
+                    if ([resultResponse statusCode] == 200){
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Forgot Password" message:@"Email sent successfully" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        [alert show];
+                    }else{
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Forgot Password" message:@"No records found for this Id" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        [alert show];
+                    }
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                });
+            });
+        }
+    }
+    
+}
 @end

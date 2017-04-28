@@ -2,7 +2,7 @@
 //  MenuViewController.h
 //  Safetrax
 //
-//  
+//
 //  Copyright (c) 2014 iOpex. All rights reserved.
 //
 
@@ -11,6 +11,7 @@
 #import "HomeViewController.h"
 #import "HistoryViewController.h"
 #import "ScheduleViewController.h"
+#import "AdminContactsViewController.h"
 
 @interface MenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>{
     UITableView *menuView;
@@ -20,6 +21,7 @@
     HomeViewController *home;
     HistoryViewController *history;
     ScheduleViewController *schedule;
+    AdminContactsViewController *adminContacts;
 }
 
 -(IBAction)settings:(id)sender;
