@@ -167,6 +167,15 @@ NSMutableArray *ChildrenList;
         
     }
     
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"employeePin"]){
+        _pinImageView.hidden = NO;
+        _pinLabel.hidden = NO;
+    }else{
+        _pinImageView.hidden = YES;
+        _pinLabel.hidden = YES;
+    }
+
+    
     [super viewWillAppear:animated];
     
 }
@@ -1333,7 +1342,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                         [newArray addObjectsFromArray:oldArray];
                         [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"notAvailTrips"];
                         
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"You are no longer avail for this trip" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You are no longer avail for this trip" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
                         alert.tag = 2222;
                         
@@ -1343,133 +1352,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                 }
             }];
             [dataTask resume];
-            
-            /*
-             
-             NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-             NSString *url;
-             if([Port isEqualToString:@"-1"])
-             {
-             url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"employees.rosters"];
-             }
-             else
-             {
-             url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"employees.rosters"];
-             }
-             NSURL *URL = [NSURL URLWithString:url];
-             
-             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-             [request setHTTPMethod:@"POST"];
-             
-             NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-             NSString *headerString;
-             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-             headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
-             }else{
-             headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-             }
-             NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-             [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-             
-             NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-             
-             NSDictionary *deploymentBand = model.deploymentBand;
-             NSLog(@"%@",deploymentBand);
-             BOOL login = [[deploymentBand valueForKey:@"login"] boolValue];
-             
-             NSDictionary *bodyDict = @{@"_employeeId":employeeId,@"deploymentBand._officeId":[deploymentBand valueForKey:@"_officeId"],@"deploymentBand.time":[deploymentBand valueForKey:@"time"],@"deploymentBand.login":[NSNumber numberWithBool:login]};
-             NSLog(@"%@",bodyDict);
-             
-             NSError *error;
-             NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
-             
-             [request setHTTPBody:jsonData];
-             
-             NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-             [config setTimeoutIntervalForRequest:30.0];
-             
-             NSURLSession *Session = [NSURLSession sessionWithConfiguration:config];
-             
-             NSURLSessionDataTask *dataTask = [Session dataTaskWithRequest:request completionHandler:^(NSData *data , NSURLResponse *response , NSError *error){
-             if (error){
-             NSLog(@"%@",error.localizedDescription);
-             }else{
-             NSString *idObject;
-             NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
-             NSArray *result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-             for (NSDictionary *dict in result){
-             idObject = [[dict valueForKey:@"_id"] valueForKey:@"$oid"];
-             }
-             NSLog(@"%@",idObject);
-             
-             NSString *urlInString;
-             NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-             if([Port isEqualToString:@"-1"])
-             {
-             urlInString =[NSString stringWithFormat:@"%@://%@/removeroster?type=single",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-             }
-             else
-             {
-             urlInString =[NSString stringWithFormat:@"%@://%@:%@/removeroster?type=single",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-             }
-             
-             NSURL *scheduleURL = [NSURL URLWithString:urlInString];
-             NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
-             [request setHTTPMethod:@"POST"];
-             
-             NSError *error_config;
-             
-             NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-             NSString *headerString;
-             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-             headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
-             }else{
-             headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-             }
-             NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-             [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-             
-             NSDictionary *dict = @{@"rosterId":idObject};
-             
-             NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:&error_config];
-             [request setHTTPBody:jsonData];
-             
-             NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-             [config setTimeoutIntervalForRequest:30.0];
-             
-             NSURLSession *Session = [NSURLSession sessionWithConfiguration:config];
-             
-             NSURLSessionDataTask *dataTask = [Session dataTaskWithRequest:request completionHandler:^(NSData *data , NSURLResponse *response , NSError *error){
-             if (error){
-             
-             }else{
-             NSLog(@"%@",response);
-             NSHTTPURLResponse *httpresponse = (NSHTTPURLResponse *)response;
-             if ((long)[httpresponse statusCode] == 200){
-             
-             NSMutableArray *newArray = [[NSMutableArray alloc]init];
-             [newArray addObject:model.tripid];
-             NSArray *oldArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"notAvailTrips"];
-             [newArray addObjectsFromArray:oldArray];
-             [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"notAvailTrips"];
-             
-             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"You are no longer avail for this trip" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-             [alert show];
-             alert.tag = 2222;
-             
-             }else{
-             
-             }
-             NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
-             }
-             }];
-             [dataTask resume];
-             
-             }
-             }];
-             [dataTask resume];
-             
-             */
             
         }
         if (alertView.tag == 2002){
