@@ -1388,7 +1388,12 @@ BOOL no_trips = FALSE;
             
             
             NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-            NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+            NSString *headerString;
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+            }else{
+                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+            }
             NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
             
             NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
@@ -1460,7 +1465,12 @@ BOOL no_trips = FALSE;
     NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
     long double mine = [str1 doubleValue]*1000;
     long double mine2 = [str2 doubleValue]*1000;
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    NSString *headerString;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+    }else{
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    }
     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
     NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
     NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];

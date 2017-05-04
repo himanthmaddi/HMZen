@@ -1331,6 +1331,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response , id jsonObject , NSError *error){
                 if (error){
                     NSLog(@"%@",response);
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Can not cancel this trip" message:@"" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [alert show];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
                 }else{
                     NSLog(@"%@",jsonObject);
                     NSLog(@"%@",response);
@@ -1347,7 +1350,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                         alert.tag = 2222;
                         
                     }else{
-                        
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Can not cancel this trip" message:@"" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        [alert show];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
                     }
                 }
             }];
