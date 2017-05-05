@@ -1230,7 +1230,6 @@
                             
                             NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
                             if (result != nil){
-                                id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
                                 
                                 if ([httpResponse statusCode] != 412){
@@ -1314,8 +1313,11 @@
                         if (result != nil){
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
                             
-                            id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                             if ([httpResponse statusCode] == 200){
+                                [_loginTextField resignFirstResponder];
+                                [_logoutTextField resignFirstResponder];
+                                [_officeTextField resignFirstResponder];
+                                
                                 UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                                 [alert show];
                                 alert.tag = 0000;
@@ -1385,8 +1387,10 @@
                             NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
                             if (result != nil){
                                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
-                                id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                                 if ([httpResponse statusCode] == 200){
+                                    [_loginTextField resignFirstResponder];
+                                    [_logoutTextField resignFirstResponder];
+                                    [_officeTextField resignFirstResponder];
                                     UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                                     [alert show];
                                     alert.tag = 0000;
@@ -1458,8 +1462,10 @@
                         if (result != nil){
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
                             
-                            id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                             if ([httpResponse statusCode] == 200){
+                                [_loginTextField resignFirstResponder];
+                                [_logoutTextField resignFirstResponder];
+                                [_officeTextField resignFirstResponder];
                                 UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                                 [alert show];
                                 alert.tag = 0000;
@@ -1535,8 +1541,10 @@
                             if (result != nil){
                                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
                                 
-                                id jsonresult = [NSJSONSerialization JSONObjectWithData:result options:kNilOptions error:&error_config];
                                 if ([httpResponse statusCode] == 200){
+                                    [_loginTextField resignFirstResponder];
+                                    [_logoutTextField resignFirstResponder];
+                                    [_officeTextField resignFirstResponder];
                                     UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                                     [alert show];
                                     alert.tag = 0000;
@@ -1559,85 +1567,13 @@
                 }
             }
             else if ([title isEqualToString:@"Full schedule"]){
-                //                if ([_logoutDoubleString isEqualToString:@"OFF"] && [_loginDoubleString isEqualToString:@"OFF"]){
-                //                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your schedule is already OFF" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                    [alert show];
-                //                }else if ([_loginDoubleString isEqualToString:@"OFF"]){
-                //                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Login schedule is already OFF , please delete schedule for only Logout" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                    [alert show];
-                //                }else if ([_logoutDoubleString isEqualToString:@"OFF"]){
-                //                    UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Modify Schedule" message:@"Your Logout schedule is already OFF , please delete schedule for only Login" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                    [alert show];
-                //                }else{
-                //                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit"] || [[NSUserDefaults standardUserDefaults] boolForKey:@"cantEdit1"]){
-                //                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"can not delete schedule" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                        [alert show];
-                //                    }else{
-                //                        NSString *urlInString;
-                //                        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                //                        if([Port isEqualToString:@"-1"])
-                //                        {
-                //                            urlInString =[NSString stringWithFormat:@"%@://%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-                //                        }
-                //                        else
-                //                        {
-                //                            urlInString =[NSString stringWithFormat:@"%@://%@:%@/saverosters",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-                //                        }
-                //
-                //                        NSURL *scheduleURL = [NSURL URLWithString:urlInString];
-                //                        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:scheduleURL];
-                //                        [request setHTTPMethod:@"POST"];
-                //
-                //                        NSError *error_config;
-                //
-                //                        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                //                        NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                //                        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                //                        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                //                        NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                //
-                //                        NSMutableArray *dataArray = [[NSMutableArray alloc]init];
-                //
-                //                        for (int i=0;i<2;i++){
-                //                            if (i == 0){
-                //                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":_loginDoubleString,@"login":[NSNumber numberWithBool:YES]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
-                //                                [dataArray addObject:dict];
-                //                            }
-                //                            if (i == 1){
-                //                                NSDictionary *dict = @{@"_employeeId":userid,@"date":_dateString,@"deploymentBand":@{@"_officeId":[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultOfficeId"],@"time":_logoutDoubleString,@"login":[NSNumber numberWithBool:NO]},@"transportRequired":[NSNumber numberWithBool:NO],@"revised":[NSNumber numberWithBool:_isRevised]};
-                //                                [dataArray addObject:dict];
-                //                            }
-                //                        }
-                //
-                //
-                //                        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dataArray options:kNilOptions error:&error_config];
-                //                        [request setHTTPBody:jsonData];
-                //
-                //                        NSURLResponse *responce;
-                //                        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) responce;
-                //                        NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-                //                        if ([httpResponse statusCode] != 412){
-                //                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Success" message:@"Schedule deleted successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                            [alert show];
-                //                            alert.tag = 0000;
-                //                        }
-                //                        else{
-                //                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Failed" message:@"Clash happens due to other schedule" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                //                            [alert show];
-                //                            alert.tag = 0000;
-                //                        }
-                //                    }
-                //                }
+
             }
             
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
-    
-    //    }else{
-    //        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Connection problem" message:@"Please check your data connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-    //        [alert show];
-    //    }
+
     
 }
 -(void)getDoubleValuesForLogin:(NSString *)login withLogout:(NSString *)logout;
