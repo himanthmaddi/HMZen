@@ -250,6 +250,17 @@ UIActivityIndicatorView *spinnerIndicator;
                 [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"sosOnTrip"];
             }
             
+            if (config[@"employeePin"]){
+                if ([[config valueForKey:@"employeePin"] boolValue]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"employeePin"];
+                }
+            }else{
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
+            }
+
+            
             
             if ([config[@"authType"] isEqualToString:@"azure"]){
                 
@@ -428,6 +439,17 @@ UIActivityIndicatorView *spinnerIndicator;
                 }else{
                     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"sosOnTrip"];
                 }
+                
+                if (config[@"employeePin"]){
+                    if ([[config valueForKey:@"employeePin"] boolValue]){
+                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
+                    }else{
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"employeePin"];
+                    }
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
+                }
+
                 
             }
             [[NSUserDefaults standardUserDefaults] synchronize];

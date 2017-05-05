@@ -63,6 +63,8 @@ BOOL no_trips = FALSE;
 
 - (void)viewDidLoad
 {
+    
+    
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"terminated"]){
@@ -217,9 +219,9 @@ BOOL no_trips = FALSE;
         refreshInProgress = TRUE;
         [self didFinishvalidation];
         [self tripsForRating];
+        [tripTable reloadData];
     }
     [refreshControl endRefreshing];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
@@ -244,7 +246,54 @@ BOOL no_trips = FALSE;
 -(void)didFinishvalidation
 {
     if ([self connectedToInternet]){
-
+        //    NSString *idToken = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+        //    _responseData = nil;
+        //    _responseData = [[NSMutableData alloc] init];
+        //    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        //    NSLog(@"%@",tokenString);
+        //    long double today = [[[NSDate date] dateByAddingTimeInterval:-5*60*60] timeIntervalSince1970];
+        //    long double yesterday = [[[NSDate date] dateByAddingTimeInterval: 48*60*60] timeIntervalSince1970];
+        //    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
+        //    NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
+        //    long double mine = [str1 doubleValue]*1000;
+        //    long double mine2 = [str2 doubleValue]*1000;
+        //        NSString *headerString;
+        //        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        //                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+        //        }else{
+        //                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        //        }
+        //
+        //    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        //    NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
+        //    NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
+        //    BOOL falsef = false;
+        //    NSDictionary *running1 = @{@"runningStatus":@{@"$exists":[NSNumber numberWithBool:false]}};
+        //    NSDictionary *running2 = @{@"runningStatus":@{@"$ne":@"completed"}};
+        //    NSMutableArray *addingArray = [[NSMutableArray alloc]initWithObjects:running1,running2, nil];
+        //    NSDictionary *postDictionary = @{@"$or":addingArray,@"employees._employeeId":idToken,@"startTime":@{@"$gte":todayTime,@"$lte":beforeDayTime}};
+        //    NSLog(@"%@",postDictionary);
+        //
+        //        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        //        NSString *url;
+        //        if([Port isEqualToString:@"-1"])
+        //        {
+        //            url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
+        //        }
+        //        else
+        //        {
+        //            url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
+        //        }
+        //       NSURL *URL =[NSURL URLWithString:url];
+        //
+        //        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+        //        [request setHTTPMethod:@"POST"];
+        //        NSError *error;
+        //        [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:postDictionary options:kNilOptions error:&error]];
+        //        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        //
+        //        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+        //        [self onFinishLoadingwithData:data];
         
     }else{
         [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -646,11 +695,14 @@ BOOL no_trips = FALSE;
                     }
                 }else{
                     for (NSDictionary *eachStoppage in [dict objectForKey:@"stoppages"]){
+                        NSLog(@"%@",eachStoppage);
+                        NSLog(@"%@",dict);
                         if ([[eachStoppage objectForKey:@"_drop"] containsObject:employeeId]){
-                            date = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"time"]doubleValue] / 1000.0)];
+                            date = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"startTime"]doubleValue] / 1000.0)];
                         }
                     }
                 }
+                NSLog(@"%@",date);
                 
                 NSDate *bufferStartDate = [NSDate dateWithTimeIntervalSince1970:([[dict valueForKey:@"bufferStartTime"]  doubleValue]/1000.0)];
                 
@@ -661,7 +713,7 @@ BOOL no_trips = FALSE;
                 NSString *string = [dateFormatter stringFromDate:date];
                 NSString *bufferStartString = [dateFormatter stringFromDate:bufferStartDate];
                 NSString *bufferEndString = [dateFormatter stringFromDate:bufferEndDate];
-                
+                NSLog(@"%@",string);
                 if ([startTimesArray containsObject:string]){
                     
                 }else{
@@ -1152,6 +1204,8 @@ BOOL no_trips = FALSE;
     NSString *bufferendtime;
     NSString *bufferstarttime;
     
+    NSLog(@"%@",startTimesArray);
+    NSLog(@"%@",dateString);
     
     for (int i =0; i<startTimesArray.count;i++){
         if ([startTimesArray containsObject:dateString]){
@@ -1304,73 +1358,82 @@ BOOL no_trips = FALSE;
 }
 -(void)pushDeviceTokenWithFCM
 {
-    NSLog(@"push device token");
-    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-    NSLog(@"%@",userid);
-    NSString *token = [[FIRInstanceID instanceID] token];
-    NSLog(@"%@",token);
-    NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"GCMToken"]);
-    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    
-    NSDictionary *findParameters;
-    
-    NSDictionary *setParameters;
-    
-    if(token == nil || userid == nil){
+    if ([self connectedToInternet]){
+        NSLog(@"push device token");
+        NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+        NSLog(@"%@",userid);
+        NSString *token = [[FIRInstanceID instanceID] token];
+        NSLog(@"%@",token);
+        NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"GCMToken"]);
+        NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
         
-    }else{
+        NSDictionary *findParameters;
         
-        findParameters = @{@"empid":userid};
-        setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
-        NSLog(@"%@",setParameters);
-        NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-        NSError *error;
-        NSLog(@"%@",array);
-        NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+        NSDictionary *setParameters;
         
-        
-        NSError *error_config;
-        
-        
-        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-        NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-        
-        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-        NSString *url;
-        if([Port isEqualToString:@"-1"])
-        {
-            url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-        }
-        else
-        {
-            url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-        }
-        NSURL *URL =[NSURL URLWithString:url];
-        NSLog(@"%@",URL);
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-        [request setHTTPMethod:@"POST"];
-        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-        [request setHTTPBody:dataJson];
-        NSURLResponse *responce;
-        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-        if (data != nil){
-            id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-            NSLog(@"%@",json);
-            if ([json isKindOfClass:[NSDictionary class]]){
-                if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
-                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+        if(token == nil || userid == nil){
+            
+        }else{
+            
+            findParameters = @{@"empid":userid};
+            setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+            NSLog(@"%@",setParameters);
+            NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
+            NSError *error;
+            NSLog(@"%@",array);
+            NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+            
+            
+            NSError *error_config;
+            
+            
+            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+            NSString *headerString;
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+            }else{
+                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+            }
+            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+            
+            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+            NSString *url;
+            if([Port isEqualToString:@"-1"])
+            {
+                url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+            }
+            else
+            {
+                url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+            }
+            NSURL *URL =[NSURL URLWithString:url];
+            NSLog(@"%@",URL);
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+            [request setHTTPMethod:@"POST"];
+            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+            [request setHTTPBody:dataJson];
+            NSURLResponse *responce;
+            NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+            if (data != nil){
+                id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
+                NSLog(@"%@",json);
+                if ([json isKindOfClass:[NSDictionary class]]){
+                    if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
+                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+                    }else{
+                        
+                    }
                 }else{
                     
                 }
-            }else{
                 
+            }else{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
-            
-        }else{
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }else{
+        
     }
 }
 
@@ -1402,7 +1465,12 @@ BOOL no_trips = FALSE;
     NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
     long double mine = [str1 doubleValue]*1000;
     long double mine2 = [str2 doubleValue]*1000;
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    NSString *headerString;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+    }else{
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    }
     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
     NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
     NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
