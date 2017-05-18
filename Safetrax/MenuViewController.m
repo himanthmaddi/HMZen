@@ -61,6 +61,14 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         _roasterImageView.hidden = YES;
         _roasterButton.hidden = YES;
     }
+    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
+                                       stringForKey:@"name"];
+    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
+                                   stringForKey:@"email"];
+    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
+    smoochSettings.conversationAccentColor = [UIColor redColor];
+    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
+
     
     //    picLabel.text = [Name.text substringToIndex:1];
 }
@@ -145,6 +153,14 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     }
 }
 -(IBAction)help:(id)sender{
+    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
+                                       stringForKey:@"name"];
+    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
+                                   stringForKey:@"email"];
+    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
+    smoochSettings.conversationAccentColor = [UIColor blueColor];
+    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
+    [Smooch initWithSettings:smoochSettings];
     [Smooch show];
 }
 -(IBAction)mySchedulePressed:(id)sender

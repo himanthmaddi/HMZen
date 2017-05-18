@@ -25,6 +25,7 @@
 }
 
 -(IBAction)settings:(id)sender;
+-(IBAction)help:(id)sender;
 @property (weak, nonatomic) IBOutlet UILabel *picLabel;
 @property (weak, nonatomic) IBOutlet UITextField *Name;
 @property (weak, nonatomic) IBOutlet UITextField *empId;
