@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SessionValidator : NSObject
+@interface SessionValidator : NSObject <NSURLConnectionDelegate>
 {
 }
 @property (nonatomic , strong) NSString *refreshesAccessToken;
--(void)validateAccessToken:(NSString *)userToken;
+
+-(void)getNoncewithToken:(NSString *)tokenFrom :(void(^)(NSDictionary *))completionHandler;
+
 @end

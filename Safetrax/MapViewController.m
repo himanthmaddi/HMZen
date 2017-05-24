@@ -14,11 +14,14 @@
 #import "SOSMainViewController.h"
 #import <MBProgressHUD.h>
 #import "HomeViewController.h"
+
 #if Parent
 #import "MapHelpViewController.h"
 #endif
 #import "AFURLSessionManager.h"
 #import "tripIDModel.h"
+#import "SessionValidator.h"
+
 int isRefresh =0;
 @interface MapViewController ()
 {
@@ -30,6 +33,7 @@ int isRefresh =0;
 @implementation MapViewController
 @synthesize DriverName,scrollview,boardedButton,reachedButton,waitingButton,MapHelpText;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil model:(TripModel*)model withHome:(HomeViewController*)homeobject {
+    _buttonsView.hidden = YES;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         tripModel = model;
@@ -40,6 +44,8 @@ int isRefresh =0;
 }
 #if Parent
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil model:(TripModel*)model {
+    _buttonsView.hidden = YES;
+    
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         tripModel = model;
@@ -50,6 +56,8 @@ int isRefresh =0;
 #endif
 -(void)viewDidAppear:(BOOL)animated
 {
+    _buttonsView.hidden = YES;
+    
     isRefresh = 0;
     _responseData = [[NSMutableData alloc] init];
     markers = [[NSMutableArray alloc] init];
@@ -65,6 +73,89 @@ int isRefresh =0;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _buttonsView.hidden = YES;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"OneTripIsInActive"]){
+                _sosMainButton.hidden = NO;
+            }else{
+                _sosMainButton.hidden = YES;
+            }
+        }else{
+            _sosMainButton.hidden = NO;
+        }
+    }else{
+        _sosMainButton.hidden = YES;
+    }
+    
+    if([[NSUserDefaults standardUserDefaults] boolForKey:@"tripConfirmationsButtons"]){
+        reachedButton.hidden = NO;
+        waitingButton.hidden = NO;
+        boardedButton.hidden = NO;
+    }else{
+        reachedButton.hidden = YES;
+        waitingButton.hidden = YES;
+        boardedButton.hidden = YES;
+    }
+    
+    NSNumber *callEnabledBool = [[NSUserDefaults standardUserDefaults] objectForKey:@"callEnabled"];
+    if (callEnabledBool.boolValue == YES){
+        
+        _callButton.hidden = NO;
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"]){
+            _callButton.enabled = YES;
+        }else{
+            _callButton.enabled = NO;
+        }
+        
+    }else{
+        _callButton.hidden = YES;
+    }
+    
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"tripConfirmationsButtons"] && callEnabledBool.boolValue == NO){
+        _buttonsView.hidden = YES;
+    }else{
+        _buttonsView.hidden = NO;
+    }
+    
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+    NSTimeInterval seconds = expireTime / 1000;
+    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+    
+    NSDate *date = [NSDate date];
+    NSComparisonResult result = [date compare:expireDate];
+    
+    if(result == NSOrderedDescending || result == NSOrderedSame)
+    {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+            }
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
+            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate dismiss_delegate:nil];
+            [self.view removeFromSuperview];
+        }else{
+            SessionValidator *validator = [[SessionValidator alloc]init];
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                NSLog(@"%@",result);
+                dispatch_semaphore_signal(semaphore);
+            }];
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        }
+    }
+    else if(result == NSOrderedAscending)
+    {
+        NSLog(@"no refresh");
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
     
     totalTripIDSarray = [[NSMutableArray alloc]init];
@@ -141,7 +232,12 @@ int isRefresh =0;
     NSLog(@"%@",vehicleId);
     NSString *columnName =@"vehicles.lastlocation";
     NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    NSString *headerString;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+    }else{
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    }
     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
     NSDictionary *postDict = @{@"_vehicleId":vehicleId};
     MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"query" withMethod:@"POST" andColumnName:columnName];
@@ -250,15 +346,49 @@ int isRefresh =0;
 }
 -(IBAction)call:(id)sender
 {
-    NSString *phNo = tripModel.driverPhone;
-    NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
-    if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-        [[UIApplication sharedApplication] openURL:phoneUrl];
-    } else
-    {
-        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-        [calert show];
-    }
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSString *phNo = tripModel.driverPhone;
+            NSLog(@"%@",phNo);
+            NSNumber *callmaskEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"callMaskEnabled"];
+            if (callmaskEnabled.boolValue == NO){
+                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
+                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+                    if ([phNo isEqualToString:@""] || phNo.length == 0 || phNo == (id)[NSNull null] || [phNo isEqual:nil]){
+                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        [calert show];
+                    }else{
+                        [[UIApplication sharedApplication] openURL:phoneUrl];
+                    }
+                } else
+                {
+                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [calert show];
+                }
+                
+            }else{
+                NSLog(@"number");
+                NSString *callMaskNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"callMaskNumber"];
+                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",callMaskNumber]];
+                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+                    if ([callMaskNumber isEqualToString:@""] || phNo.length == 0 || phNo == (id)[NSNull null] || [phNo isEqual:nil]){
+                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                        [calert show];
+                    }else{
+                        [[UIApplication sharedApplication] openURL:phoneUrl];
+                    }
+                } else
+                {
+                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                    [calert show];
+                }
+            }
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+    
 }
 #if Parent
 -(IBAction)Help:(id)sender
@@ -469,14 +599,14 @@ int isRefresh =0;
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 2002){
         if (buttonIndex == 0){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                SomeViewController *some = [[SomeViewController alloc]init];
-                [self presentViewController:some animated:YES completion:nil];
-            });
+            //            dispatch_async(dispatch_get_main_queue(), ^{
+            //                TripRatingViewController *some = [[TripRatingViewController alloc]init];
+            //                [self presentViewController:some animated:YES completion:nil];
+            //            });
         }
     }
     else{
-        if (alertView.tag == 2002){
+        if (alertView.tag == 2003){
             if (buttonIndex == 0){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     SomeViewController *some = [[SomeViewController alloc]init];
@@ -488,6 +618,43 @@ int isRefresh =0;
             if (buttonIndex == 1) {
                 if(alertView.tag == 2001)
                 {
+                    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                    [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                    double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                    NSTimeInterval seconds = expireTime / 1000;
+                    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                    
+                    NSDate *date = [NSDate date];
+                    NSComparisonResult result = [date compare:expireDate];
+                    
+                    if(result == NSOrderedDescending || result == NSOrderedSame)
+                    {
+                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+                                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+                            }
+                            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+                            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+                            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
+                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                            [appDelegate dismiss_delegate:nil];
+                            [self.view removeFromSuperview];
+                        }else{
+                            SessionValidator *validator = [[SessionValidator alloc]init];
+                            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                NSLog(@"%@",result);
+                                dispatch_semaphore_signal(semaphore);
+                            }];
+                            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                        }
+                    }
+                    else if(result == NSOrderedAscending)
+                    {
+                        NSLog(@"no refresh");
+                    }
+                    
                     long double today = [[NSDate date] timeIntervalSince1970];
                     NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
                     long double mine = [str1 doubleValue]*1000;
@@ -497,7 +664,12 @@ int isRefresh =0;
                     NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
                     NSLog(@"%@",employeeId);
                     NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                    NSString *headerString;
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                    }else{
+                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                    }
                     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
                     //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
                     //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
@@ -579,258 +751,343 @@ int isRefresh =0;
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                         dispatch_async(dispatch_get_main_queue(), ^{
-                    long double today = [[NSDate date] timeIntervalSince1970];
-                    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-                    long double mine = [str1 doubleValue]*1000;
-                    NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-                    NSString *tripId = tripModel.tripid;
-                    NSLog(@"%@",tripId);
-                    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                    NSLog(@"%@",employeeId);
-                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                    //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
-                    //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
-                    //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
-                    
-                    NSDictionary *bodyDict = @{@"type":@"boarded",@"tripId":tripId,@"employeeId":employeeId};
-                    //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
-                    //            [requestWraper setAuthString:finalAuthString];
-                    //            [requestWraper setBodyFromArray:finalArry];
-                    //            [requestWraper print];
-                    //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
-                    //            [RestClient setDelegate:self];
-                    //            BOOL isDone = [RestClient execute];
-                    
-                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                    NSString *url;
-                    if([Port isEqualToString:@"-1"])
-                    {
-                        url =[NSString stringWithFormat:@"%@://%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-                    }
-                    else
-                    {
-                        url =[NSString stringWithFormat:@"%@://%@:%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-                    }
-                    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-                    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-                    
-                    NSURL *URL = [NSURL URLWithString:url];
-                    NSLog(@"%@",URL);
-                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-                    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-                    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                    [request setHTTPMethod:@"POST"];
-                    NSError *error;
-                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
-                    [request setHTTPBody:jsonData];
-                    NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
-                    NSLog(@"%@",finalAuthString);
-                    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-                        if (error) {
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-                            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-                            if ((long)[httpResponse statusCode] == 409){
-                                UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already boarded cab with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
-                                [aler show];
-                                tripModel.empstatus = @"incab";
-                                [home refresh];
-                                [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
-                                [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
-                                waitingButton.enabled = FALSE;
-                                reachedButton.enabled =TRUE;
-                                UIButton *button=(UIButton *)[self.view viewWithTag:602];
-                                button.selected =YES;
-                                if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
-                                {
-                                    NSLog(@"start tracking home");
+                            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                            double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                            NSTimeInterval seconds = expireTime / 1000;
+                            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                            
+                            NSDate *date = [NSDate date];
+                            NSComparisonResult result = [date compare:expireDate];
+                            
+                            if(result == NSOrderedDescending || result == NSOrderedSame)
+                            {
+                                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+                                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+                                    }
+                                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+                                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+                                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
                                     AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                    [appDelegate updateLocation];
+                                    [appDelegate dismiss_delegate:nil];
+                                    [self.view removeFromSuperview];
+                                }else{
+                                    SessionValidator *validator = [[SessionValidator alloc]init];
+                                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                        NSLog(@"%@",result);
+                                        dispatch_semaphore_signal(semaphore);
+                                    }];
+                                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
                                 }
                             }
-                        } else {
-                            NSLog(@"%@ %@", response, responseObject);
-                            
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-                            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-                            if ((long)[httpResponse statusCode] == 409){
-                                UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already boarded cab with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
-                                [aler show];
-                            }
-                            //                    tripModel.empstatus = @"incab";
-                            //                    [home refresh];
-                            //                    [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
-                            //                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
-                            //                    waitingButton.enabled = FALSE;
-                            //                    reachedButton.enabled =TRUE;
-                            //                    UIButton *button=(UIButton *)[self.view viewWithTag:502];
-                            //                    button.selected =YES;
-                            //                    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
-                            //                    {
-                            //                        NSLog(@"start tracking home");
-                            //                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            //                        [appDelegate updateLocation];
-                            //                    }
-                            tripModel.empstatus = @"incab";
-                            [home refresh];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
-                            waitingButton.enabled = FALSE;
-                            reachedButton.enabled =TRUE;
-                            UIButton *button=(UIButton *)[self.view viewWithTag:602];
-                            button.selected =YES;
-                            if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
+                            else if(result == NSOrderedAscending)
                             {
-                                NSLog(@"start tracking home");
-                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                [appDelegate updateLocation];
+                                NSLog(@"no refresh");
                             }
-                        }
-                    }];
-                    [dataTask resume];
-                    
-                    
-                    //           BOOL isDone = [RestClient execute];
-                    //           if(isDone){
-                    //             model.empstatus = @"incab";
-                    //           [home refresh];
-                    //               [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
-                    //               [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
-                    //               waitingButton.enabled = FALSE;
-                    //               reachedButton.enabled =TRUE;
-                    //               UIButton *button=(UIButton *)[self.view viewWithTag:502];
-                    //               button.selected =YES;
-                    //               if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
-                    //               {
-                    //                   NSLog(@"start tracking home");
-                    //                   AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    //                   [appDelegate updateLocation];
-                    //               }
-                    //           }
+                            
+                            long double today = [[NSDate date] timeIntervalSince1970];
+                            NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
+                            long double mine = [str1 doubleValue]*1000;
+                            NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
+                            NSString *tripId = tripModel.tripid;
+                            NSLog(@"%@",tripId);
+                            NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                            NSLog(@"%@",employeeId);
+                            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                            NSString *headerString;
+                            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                            }else{
+                                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                            }
+                            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                            //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
+                            //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
+                            //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
+                            
+                            NSDictionary *bodyDict = @{@"type":@"boarded",@"tripId":tripId,@"employeeId":employeeId};
+                            //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
+                            //            [requestWraper setAuthString:finalAuthString];
+                            //            [requestWraper setBodyFromArray:finalArry];
+                            //            [requestWraper print];
+                            //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
+                            //            [RestClient setDelegate:self];
+                            //            BOOL isDone = [RestClient execute];
+                            
+                            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                            NSString *url;
+                            if([Port isEqualToString:@"-1"])
+                            {
+                                url =[NSString stringWithFormat:@"%@://%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                            }
+                            else
+                            {
+                                url =[NSString stringWithFormat:@"%@://%@:%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+                            }
+                            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                            AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+                            
+                            NSURL *URL = [NSURL URLWithString:url];
+                            NSLog(@"%@",URL);
+                            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+                            [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                            [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+                            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                            [request setHTTPMethod:@"POST"];
+                            NSError *error;
+                            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
+                            [request setHTTPBody:jsonData];
+                            NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
+                            NSLog(@"%@",finalAuthString);
+                            NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+                                if (error) {
+                                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                                    NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+                                    if ((long)[httpResponse statusCode] == 409){
+                                        UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already boarded cab with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
+                                        [aler show];
+                                        tripModel.empstatus = @"incab";
+                                        [home refresh];
+                                        [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
+                                        [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
+                                        waitingButton.enabled = FALSE;
+                                        reachedButton.enabled =TRUE;
+                                        UIButton *button=(UIButton *)[self.view viewWithTag:602];
+                                        button.selected =YES;
+                                        if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
+                                        {
+                                            NSLog(@"start tracking home");
+                                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                            [appDelegate updateLocation];
+                                        }
+                                    }
+                                } else {
+                                    NSLog(@"%@ %@", response, responseObject);
+                                    
+                                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                                    NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+                                    if ((long)[httpResponse statusCode] == 409){
+                                        UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already boarded cab with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
+                                        [aler show];
+                                    }
+                                    //                    tripModel.empstatus = @"incab";
+                                    //                    [home refresh];
+                                    //                    [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
+                                    //                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
+                                    //                    waitingButton.enabled = FALSE;
+                                    //                    reachedButton.enabled =TRUE;
+                                    //                    UIButton *button=(UIButton *)[self.view viewWithTag:502];
+                                    //                    button.selected =YES;
+                                    //                    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
+                                    //                    {
+                                    //                        NSLog(@"start tracking home");
+                                    //                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                    //                        [appDelegate updateLocation];
+                                    //                    }
+                                    tripModel.empstatus = @"incab";
+                                    [home refresh];
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
+                                    waitingButton.enabled = FALSE;
+                                    reachedButton.enabled =TRUE;
+                                    UIButton *button=(UIButton *)[self.view viewWithTag:602];
+                                    button.selected =YES;
+                                    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
+                                    {
+                                        NSLog(@"start tracking home");
+                                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                        [appDelegate updateLocation];
+                                    }
+                                }
+                            }];
+                            [dataTask resume];
+                            
+                            
+                            //           BOOL isDone = [RestClient execute];
+                            //           if(isDone){
+                            //             model.empstatus = @"incab";
+                            //           [home refresh];
+                            //               [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
+                            //               [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
+                            //               waitingButton.enabled = FALSE;
+                            //               reachedButton.enabled =TRUE;
+                            //               UIButton *button=(UIButton *)[self.view viewWithTag:502];
+                            //               button.selected =YES;
+                            //               if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
+                            //               {
+                            //                   NSLog(@"start tracking home");
+                            //                   AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                            //                   [appDelegate updateLocation];
+                            //               }
+                            //           }
                             [MBProgressHUD hideHUDForView:self.view animated:YES];
                         });
                     });
-
+                    
                 }
                 else if(alertView.tag == 2003)
                 {
                     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                         dispatch_async(dispatch_get_main_queue(), ^{
-                    long double today = [[NSDate date] timeIntervalSince1970];
-                    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-                    long double mine = [str1 doubleValue]*1000;
-                    NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-                    NSString *tripId = tripModel.tripid;
-                    NSLog(@"%@",tripId);
-                    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                    NSLog(@"%@",employeeId);
-                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                    //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
-                    //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
-                    //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
-                    
-                    NSDictionary *bodyDict = @{@"type":@"reached",@"tripId":tripId,@"employeeId":employeeId};
-                    //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
-                    //            [requestWraper setAuthString:finalAuthString];
-                    //            [requestWraper setBodyFromArray:finalArry];
-                    //            [requestWraper print];
-                    //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
-                    //            [RestClient setDelegate:self];
-                    //            BOOL isDone = [RestClient execute];
-                    
-                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                    NSString *url;
-                    if([Port isEqualToString:@"-1"])
-                    {
-                        url =[NSString stringWithFormat:@"%@://%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
-                    }
-                    else
-                    {
-                        url =[NSString stringWithFormat:@"%@://%@:%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
-                    }
-                    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-                    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-                    
-                    NSURL *URL = [NSURL URLWithString:url];
-                    NSLog(@"%@",URL);
-                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-                    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-                    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                    [request setHTTPMethod:@"POST"];
-                    NSError *error;
-                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
-                    [request setHTTPBody:jsonData];
-                    NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
-                    NSLog(@"%@",finalAuthString);
-                    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-                        if (error) {
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-                            NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
-                            if ((long)[httpResponse statusCode] == 409){
-                                UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already reached destination with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
-                                [aler show];
-                                [home refresh];
-                                [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
-                                [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
-                                waitingButton.enabled = FALSE;
-                                boardedButton.selected = TRUE;
-                                boardedButton.enabled = FALSE;
-                                UIButton *button=(UIButton *)[self.view viewWithTag:603];
-                                button.selected =YES;
-                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                [appDelegate stopUpdateLocation];
+                            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+                            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+                            double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+                            NSTimeInterval seconds = expireTime / 1000;
+                            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+                            
+                            NSDate *date = [NSDate date];
+                            NSComparisonResult result = [date compare:expireDate];
+                            
+                            if(result == NSOrderedDescending || result == NSOrderedSame)
+                            {
+                                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+                                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+                                    }
+                                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+                                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+                                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
+                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                    [appDelegate dismiss_delegate:nil];
+                                    [self.view removeFromSuperview];
+                                }else{
+                                    SessionValidator *validator = [[SessionValidator alloc]init];
+                                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                        NSLog(@"%@",result);
+                                        dispatch_semaphore_signal(semaphore);
+                                    }];
+                                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                                }
                             }
-                        } else {
-                            [home refresh];
+                            else if(result == NSOrderedAscending)
+                            {
+                                NSLog(@"no refresh");
+                            }
+                            
+                            long double today = [[NSDate date] timeIntervalSince1970];
+                            NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
+                            long double mine = [str1 doubleValue]*1000;
+                            NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
+                            NSString *tripId = tripModel.tripid;
+                            NSLog(@"%@",tripId);
+                            NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                            NSLog(@"%@",employeeId);
+                            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                            NSString *headerString;
+                            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                            }else{
+                                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                            }
+                            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                            //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
+                            //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
+                            //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
+                            
+                            NSDictionary *bodyDict = @{@"type":@"reached",@"tripId":tripId,@"employeeId":employeeId};
+                            //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
+                            //            [requestWraper setAuthString:finalAuthString];
+                            //            [requestWraper setBodyFromArray:finalArry];
+                            //            [requestWraper print];
+                            //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
+                            //            [RestClient setDelegate:self];
+                            //            BOOL isDone = [RestClient execute];
+                            
+                            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                            NSString *url;
+                            if([Port isEqualToString:@"-1"])
+                            {
+                                url =[NSString stringWithFormat:@"%@://%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+                            }
+                            else
+                            {
+                                url =[NSString stringWithFormat:@"%@://%@:%@/markconfirmation?mode=app",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+                            }
+                            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                            AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+                            
+                            NSURL *URL = [NSURL URLWithString:url];
+                            NSLog(@"%@",URL);
+                            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+                            [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                            [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+                            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                            [request setHTTPMethod:@"POST"];
+                            NSError *error;
+                            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
+                            [request setHTTPBody:jsonData];
+                            NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
+                            NSLog(@"%@",finalAuthString);
+                            NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+                                if (error) {
+                                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                                    NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+                                    if ((long)[httpResponse statusCode] == 409){
+                                        UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already reached destination with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
+                                        [aler show];
+                                        [home refresh];
+                                        [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
+                                        [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
+                                        waitingButton.enabled = FALSE;
+                                        boardedButton.selected = TRUE;
+                                        boardedButton.enabled = FALSE;
+                                        UIButton *button=(UIButton *)[self.view viewWithTag:603];
+                                        button.selected =YES;
+                                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                        [appDelegate stopUpdateLocation];
+                                    }
+                                } else {
+                                    [home refresh];
+                                    
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
+                                    [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
+                                    waitingButton.enabled = FALSE;
+                                    boardedButton.selected = TRUE;
+                                    boardedButton.enabled = FALSE;
+                                    UIButton *button=(UIButton *)[self.view viewWithTag:603];
+                                    button.selected =YES;
+                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                    [appDelegate stopUpdateLocation];
+                                }
+                            }];
+                            [dataTask resume];
+                            
+                            //            BOOL isDone = [RestClient execute];
+                            //            if(isDone){
+                            //            [home refresh];
+                            //            boardedButton.selected = TRUE;
+                            //            boardedButton.enabled = FALSE;
+                            //            waitingButton.enabled = FALSE;
+                            //            tripModelClass = [[tripIDModel alloc]init];
+                            //            [tripModelClass addIdToMutableArray:model.tripid];
+                            //
+                            //                NSLog(@"%@",tripModelClass.tripIdArray);
+                            //                [_totalTripIDSarray addObject:tripModelClass.tripIdArray];
+                            //                [[NSUserDefaults standardUserDefaults] setObject:_totalTripIDSarray forKey:@"allTrips"];
+                            //
+                            //            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
+                            //            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
+                            //            UIButton *button=(UIButton *)[self.view viewWithTag:503];
+                            //            button.selected =YES;
+                            //            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                            //            [appDelegate stopUpdateLocation];
+                            //            }
                             NSDictionary *info = @{@"tripId":tripModel.tripid};
                             [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
-                            waitingButton.enabled = FALSE;
-                            boardedButton.selected = TRUE;
-                            boardedButton.enabled = FALSE;
-                            UIButton *button=(UIButton *)[self.view viewWithTag:603];
-                            button.selected =YES;
-                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            [appDelegate stopUpdateLocation];
-                        }
-                    }];
-                    [dataTask resume];
-                    
-                    //            BOOL isDone = [RestClient execute];
-                    //            if(isDone){
-                    //            [home refresh];
-                    //            boardedButton.selected = TRUE;
-                    //            boardedButton.enabled = FALSE;
-                    //            waitingButton.enabled = FALSE;
-                    //            tripModelClass = [[tripIDModel alloc]init];
-                    //            [tripModelClass addIdToMutableArray:model.tripid];
-                    //
-                    //                NSLog(@"%@",tripModelClass.tripIdArray);
-                    //                [_totalTripIDSarray addObject:tripModelClass.tripIdArray];
-                    //                [[NSUserDefaults standardUserDefaults] setObject:_totalTripIDSarray forKey:@"allTrips"];
-                    //
-                    //            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"incab"];
-                    //            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
-                    //            UIButton *button=(UIButton *)[self.view viewWithTag:503];
-                    //            button.selected =YES;
-                    //            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    //            [appDelegate stopUpdateLocation];
-                    //            }
                             [MBProgressHUD hideHUDForView:self.view animated:YES];
                         });
                     });
-
+                    
                 }
-                                       
+                
             }
-                }
+        }
     }
 }
 
@@ -918,6 +1175,8 @@ int isRefresh =0;
     [timer invalidate];
 }
 -(void)viewWillAppear:(BOOL)animated{
+    _buttonsView.hidden = YES;
+    
     NSMutableArray *myArray;
     for (NSArray *tempArray in [[NSUserDefaults standardUserDefaults] objectForKey:@"allTrips"])
     {
@@ -980,11 +1239,14 @@ int isRefresh =0;
     NSLog(@"%@",myDictionary);
     if ([sender.name isEqualToString:@"tripCompleted"]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            SomeViewController *some = [[SomeViewController alloc]init];
-            [some getTripId:[myDictionary valueForKey:@"tripId"]];
-            [self presentViewController:some animated:YES completion:nil];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"tripFeedbackForm"]){
+                SomeViewController *some1 = [[SomeViewController alloc]init];
+                [some1 getTripId:[myDictionary valueForKey:@"tripId"]];
+                [self presentViewController:some1 animated:YES completion:nil];
+            }else{
+                
+            }
         });
-        
     }
 }
 -(void)pushNotification:(NSTimer *)sender{

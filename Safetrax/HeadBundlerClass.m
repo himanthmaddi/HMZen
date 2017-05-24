@@ -37,7 +37,7 @@
     //here we are deleting special characters from main string
     value = [[[myArray objectAtIndex:1] componentsSeparatedByCharactersInSet: doNotWant] componentsJoinedByString: @""];
     finalNonceString = [[[secondArray objectAtIndex:1] componentsSeparatedByCharactersInSet: doNotWant] componentsJoinedByString: @""];
-//    finalNonceString = [NSString stringWithFormat:@"%@%@",finalNonceString,@"=="];
+    //    finalNonceString = [NSString stringWithFormat:@"%@%@",finalNonceString,@"=="];
     LoginViewController *logIn = [[LoginViewController alloc]init];
     NSLog(@"final nonce string %@",finalNonceString);
     [[NSUserDefaults standardUserDefaults] setObject:finalNonceString forKey:@"nonceValue"];

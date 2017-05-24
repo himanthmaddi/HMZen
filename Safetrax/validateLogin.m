@@ -11,13 +11,12 @@
 #import  "HomeViewController.h"
 #import "MyChildrenViewController.h"
 #import "MyTripParentViewController.h"
-#import <FIRInstanceID.h>
-
+#import <FirebaseInstanceID/FirebaseInstanceID.h>
 @implementation validateLogin
 - (id) init {
     self = [super init];
     if(self) {
-
+        
     }
     return self;
 }
@@ -28,17 +27,8 @@
 -(void)validate
 {
     _responseData = [[NSMutableData alloc] init];
-//    NSString *token = [[NSUserDefaults standardUserDefaults] stringForKey:@"deviceToken"];
-//    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-//    NSString *queryString = [NSString stringWithFormat:@"gcmidreg?gcmid=%@&empid=%@",token,userid];
-//    NSString *url =[NSString stringWithFormat:@"%@://%@:%@/%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"gcmScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"gcmHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"gcmPort"],queryString];
-//    NSURL *Url = [[NSURL alloc]initWithString:url];
-//    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:Url];
-//    [request setHTTPMethod:@"GET"];
-//    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-//    [connection start];
     NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-
+    
     NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
     NSString *url;
     if([Port isEqualToString:@"-1"])
@@ -54,17 +44,54 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
     [request setHTTPMethod:@"POST"];
     NSError *error_config;
-
+    
     NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    NSString *headerString;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+    }else{
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    }
     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
     [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
     
     NSDictionary *findParameters = @{@"empid":userid};
     NSData *data = [NSJSONSerialization dataWithJSONObject:findParameters options:kNilOptions error:&error_config];
     [request setHTTPBody:data];
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    [connection start];
+    
+    NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error_config];
+    if (resultData != nil){
+        id status = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
+        NSLog(@"%@",status);
+        //        NSString *localFcmToken = [[FIRInstanceID instanceID]token];
+        
+        if ([status isKindOfClass:[NSArray class]]){
+            NSArray *array = status;
+            if (array.count == 1){
+                for (NSDictionary *dict in array){
+                    if ([[dict valueForKey:@"app"] isEqualToString:@"iOS"]){
+                        
+                    }else{
+                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                        [appDelegate dismiss_delegate:nil];
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+                    }
+                }
+            }else{
+                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                [appDelegate dismiss_delegate:nil];
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+            }
+        }else{
+            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate dismiss_delegate:nil];
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+        }
+    }else{
+        
+    }
+    //    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    //    [connection start];
 }
 -(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
@@ -78,21 +105,6 @@
 {
     id status = [NSJSONSerialization JSONObjectWithData:_responseData options:0 error:nil];
     NSLog(@"%@",status);
-//    if([loginStatus_dictionary objectForKey:@"status"]){
-//        NSString *value  = [loginStatus_dictionary objectForKey:@"status"];
-//        if([value isEqualToString:@"valid"])
-//        {
-//            [homeObject didFinishvalidation];
-//        }
-//        else
-//        {
-//            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-//            [appDelegate dismiss_delegate:nil];
-//            [homeObject didFinishvalidation];
-
-//        }
-        
-//    }
     NSString *localFcmToken = [[FIRInstanceID instanceID]token];
     
     if ([status isKindOfClass:[NSArray class]]){
@@ -100,20 +112,21 @@
         if (array.count == 1){
             for (NSDictionary *dict in array){
                 NSString *dbFcmToken = [dict valueForKey:@"fcmtoken"];
-                if ([localFcmToken isEqualToString:dbFcmToken]){
+                if ([localFcmToken isEqualToString:dbFcmToken] && [[dict valueForKey:@"app"] isEqualToString:@"iOS"]){
                     [homeObject didFinishvalidation];
                 }else{
-//                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-//                    [appDelegate dismiss_delegate:nil];
-                    [homeObject didFinishvalidation];
-
+                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                    [appDelegate dismiss_delegate:nil];
+                    //                    [homeObject didFinishvalidation];
+                    
                 }
             }
         }else{
-            [homeObject didFinishvalidation];
-        }
+            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate dismiss_delegate:nil];        }
     }else{
-        [homeObject didFinishvalidation];
+        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+        [appDelegate dismiss_delegate:nil];
     }
 }
 @end

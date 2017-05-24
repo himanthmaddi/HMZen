@@ -19,12 +19,21 @@
     IBOutlet UIBarButtonItem *sideDrawer;
 }
 
+@property (weak , nonatomic) IBOutlet UIButton *sosMainButton;
+
+-(IBAction)sos:(id)sender;
+
 @property (nonatomic , strong) NSString *cutoffDay;
 @property (nonatomic , strong) NSString *cutoffTime;
 @property (nonatomic , strong) NSDate *cutoffDateAndTime;
 
-@property (nonatomic , assign) BOOL loginRivisionAllowed;
-@property (nonatomic , assign) BOOL logoutRivisionAllowed;
+//@property (nonatomic , assign) BOOL loginRivisionAllowed;
+//@property (nonatomic , assign) BOOL logoutRivisionAllowed;
+
+@property (nonatomic , assign) BOOL loginCancellationAllowed;
+@property (nonatomic , assign) BOOL logoutCancellationAllowed;
+@property (nonatomic , assign) BOOL loginCancellationCutoffTime;
+@property (nonatomic , assign) BOOL logoutCancellationCutoffTime;
 
 @property (nonatomic , strong) NSDictionary *cutOffModel;
 
@@ -36,6 +45,8 @@
 @property (nonatomic , strong) NSMutableArray *officeNamesArray;
 @property (nonatomic , strong) NSMutableArray *officeIdsFromRoster;
 @property (nonatomic , strong) NSMutableArray *allOfficeIdsFromCells;
+@property (nonatomic , strong) NSMutableArray *rosterLoginIdsArray;
+@property (nonatomic , strong) NSMutableArray *rosterLogoutIdsArray;
 
 @property (nonatomic , strong) NSMutableArray *loginDoubleValuesArray;
 @property (nonatomic , strong) NSMutableArray *logoutDoubleValuesArray;

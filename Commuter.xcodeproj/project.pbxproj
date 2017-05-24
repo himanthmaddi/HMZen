@@ -19,17 +19,27 @@
 		0105D8131D8C0AA800F6F234 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0105D80D1D8C0AA800F6F234 /* AFURLSessionManager.m */; };
 		010609CB1E07C29200608EB1 /* ScheduleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 010609C91E07C29200608EB1 /* ScheduleViewController.m */; };
 		010609CC1E07C29200608EB1 /* ScheduleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 010609CA1E07C29200608EB1 /* ScheduleViewController.xib */; };
+		010AABC21E5D547E00F1EF1C /* 512X512.png in Resources */ = {isa = PBXBuildFile; fileRef = 010AABC11E5D547E00F1EF1C /* 512X512.png */; };
+		010AABC41E5D572C00F1EF1C /* 1024X500.png in Resources */ = {isa = PBXBuildFile; fileRef = 010AABC31E5D572C00F1EF1C /* 1024X500.png */; };
 		011CE3361E320B3100EB457D /* Radiobutton_deslected.png in Resources */ = {isa = PBXBuildFile; fileRef = 011CE3341E320B3100EB457D /* Radiobutton_deslected.png */; };
 		011CE3371E320B3100EB457D /* radiobutton_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 011CE3351E320B3100EB457D /* radiobutton_selected.png */; };
 		012006B81E1CCCFD00E726C6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 012006B71E1CCCFC00E726C6 /* GoogleService-Info.plist */; };
 		012006BA1E1CD32300E726C6 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 012006B91E1CD32300E726C6 /* splash.png */; };
 		012006BC1E1CD48700E726C6 /* poweredby.png in Resources */ = {isa = PBXBuildFile; fileRef = 012006BB1E1CD48700E726C6 /* poweredby.png */; };
+		012E02BB1EB20F0900993C1B /* shield_03apr.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02BA1EB20F0900993C1B /* shield_03apr.png */; };
+		012E02BD1EB20F3C00993C1B /* Trip status_FAB.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02BC1EB20F3C00993C1B /* Trip status_FAB.png */; };
+		012E02BF1EB20F4600993C1B /* lock.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02BE1EB20F4600993C1B /* lock.png */; };
+		012E02C11EB20F6500993C1B /* Call icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02C01EB20F6500993C1B /* Call icon.png */; };
+		012E02C31EB20F7300993C1B /* Refresh Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02C21EB20F7300993C1B /* Refresh Icon.png */; };
+		012E02C51EB20F7C00993C1B /* Map Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 012E02C41EB20F7C00993C1B /* Map Icon.png */; };
 		012F79FB1E0A5DED00DA6586 /* editViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 012F79FA1E0A5DEC00DA6586 /* editViewController.m */; };
 		013192151E1A6F6A00363E86 /* Recurring Appointment-64-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 013192141E1A6F6A00363E86 /* Recurring Appointment-64-2.png */; };
 		013192171E1A709A00363E86 /* ETAREFRESH.png in Resources */ = {isa = PBXBuildFile; fileRef = 013192161E1A709A00363E86 /* ETAREFRESH.png */; };
 		013192191E1B839600363E86 /* splashCommuter.png in Resources */ = {isa = PBXBuildFile; fileRef = 013192181E1B839600363E86 /* splashCommuter.png */; };
 		015525C41DE6C10A00DEC862 /* boarded.png in Resources */ = {isa = PBXBuildFile; fileRef = 015525C21DE6C10A00DEC862 /* boarded.png */; };
 		015525C51DE6C10A00DEC862 /* notboarded.png in Resources */ = {isa = PBXBuildFile; fileRef = 015525C31DE6C10A00DEC862 /* notboarded.png */; };
+		016457491EB344380062291C /* AdminContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 016457481EB344380062291C /* AdminContactsViewController.m */; };
+		017AFC251ED5A04C00821552 /* helpdesk.png in Resources */ = {isa = PBXBuildFile; fileRef = 017AFC241ED5A04C00821552 /* helpdesk.png */; };
 		01C63B691E302C8300A5EE3A /* _0009_schedule copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */; };
 		01C63B6A1E302C8300A5EE3A /* siren copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B681E302C8300A5EE3A /* siren copy.png */; };
 		01C63B6E1E302EE400A5EE3A /* SomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C63B6C1E302EE400A5EE3A /* SomeViewController.m */; };
@@ -466,11 +476,19 @@
 		010609C81E07C29200608EB1 /* ScheduleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScheduleViewController.h; path = Safetrax/ScheduleViewController.h; sourceTree = "<group>"; };
 		010609C91E07C29200608EB1 /* ScheduleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScheduleViewController.m; path = Safetrax/ScheduleViewController.m; sourceTree = "<group>"; };
 		010609CA1E07C29200608EB1 /* ScheduleViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ScheduleViewController.xib; path = Safetrax/ScheduleViewController.xib; sourceTree = "<group>"; };
+		010AABC11E5D547E00F1EF1C /* 512X512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 512X512.png; sourceTree = "<group>"; };
+		010AABC31E5D572C00F1EF1C /* 1024X500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1024X500.png; sourceTree = "<group>"; };
 		011CE3341E320B3100EB457D /* Radiobutton_deslected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Radiobutton_deslected.png; sourceTree = "<group>"; };
 		011CE3351E320B3100EB457D /* radiobutton_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radiobutton_selected.png; sourceTree = "<group>"; };
 		012006B71E1CCCFC00E726C6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		012006B91E1CD32300E726C6 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash.png; sourceTree = "<group>"; };
 		012006BB1E1CD48700E726C6 /* poweredby.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = poweredby.png; sourceTree = "<group>"; };
+		012E02BA1EB20F0900993C1B /* shield_03apr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shield_03apr.png; sourceTree = "<group>"; };
+		012E02BC1EB20F3C00993C1B /* Trip status_FAB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Trip status_FAB.png"; sourceTree = "<group>"; };
+		012E02BE1EB20F4600993C1B /* lock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lock.png; sourceTree = "<group>"; };
+		012E02C01EB20F6500993C1B /* Call icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Call icon.png"; sourceTree = "<group>"; };
+		012E02C21EB20F7300993C1B /* Refresh Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Refresh Icon.png"; sourceTree = "<group>"; };
+		012E02C41EB20F7C00993C1B /* Map Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Map Icon.png"; sourceTree = "<group>"; };
 		012F79F91E0A5DEC00DA6586 /* editViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = editViewController.h; sourceTree = "<group>"; };
 		012F79FA1E0A5DEC00DA6586 /* editViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = editViewController.m; sourceTree = "<group>"; };
 		013192141E1A6F6A00363E86 /* Recurring Appointment-64-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Recurring Appointment-64-2.png"; sourceTree = "<group>"; };
@@ -478,6 +496,9 @@
 		013192181E1B839600363E86 /* splashCommuter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splashCommuter.png; sourceTree = "<group>"; };
 		015525C21DE6C10A00DEC862 /* boarded.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boarded.png; sourceTree = "<group>"; };
 		015525C31DE6C10A00DEC862 /* notboarded.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notboarded.png; sourceTree = "<group>"; };
+		016457471EB344380062291C /* AdminContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdminContactsViewController.h; sourceTree = "<group>"; };
+		016457481EB344380062291C /* AdminContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdminContactsViewController.m; sourceTree = "<group>"; };
+		017AFC241ED5A04C00821552 /* helpdesk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = helpdesk.png; sourceTree = "<group>"; };
 		01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_0009_schedule copy.png"; sourceTree = "<group>"; };
 		01C63B681E302C8300A5EE3A /* siren copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "siren copy.png"; sourceTree = "<group>"; };
 		01C63B6B1E302EE400A5EE3A /* SomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SomeViewController.h; sourceTree = "<group>"; };
@@ -1102,6 +1123,15 @@
 			name = Edit;
 			sourceTree = "<group>";
 		};
+		0164574A1EB3443F0062291C /* AdminContacts */ = {
+			isa = PBXGroup;
+			children = (
+				016457471EB344380062291C /* AdminContactsViewController.h */,
+				016457481EB344380062291C /* AdminContactsViewController.m */,
+			);
+			name = AdminContacts;
+			sourceTree = "<group>";
+		};
 		01C63B701E302EEC00A5EE3A /* Rating */ = {
 			isa = PBXGroup;
 			children = (
@@ -1468,17 +1498,26 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				017AFC241ED5A04C00821552 /* helpdesk.png */,
+				010AABC31E5D572C00F1EF1C /* 1024X500.png */,
+				010AABC11E5D547E00F1EF1C /* 512X512.png */,
 				01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */,
 				011CE3341E320B3100EB457D /* Radiobutton_deslected.png */,
 				011CE3351E320B3100EB457D /* radiobutton_selected.png */,
+				012E02BC1EB20F3C00993C1B /* Trip status_FAB.png */,
 				01C63B731E30300B00A5EE3A /* Driver-48 copy.png */,
 				01C63B751E30301700A5EE3A /* vehicle.png */,
 				01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */,
+				012E02C21EB20F7300993C1B /* Refresh Icon.png */,
 				01C63B681E302C8300A5EE3A /* siren copy.png */,
+				012E02C41EB20F7C00993C1B /* Map Icon.png */,
 				012006B71E1CCCFC00E726C6 /* GoogleService-Info.plist */,
+				012E02C01EB20F6500993C1B /* Call icon.png */,
 				01019AD81E091823003E1F26 /* sideDrawer.png */,
 				012006B91E1CD32300E726C6 /* splash.png */,
+				012E02BA1EB20F0900993C1B /* shield_03apr.png */,
 				012006BB1E1CD48700E726C6 /* poweredby.png */,
+				012E02BE1EB20F4600993C1B /* lock.png */,
 				013192181E1B839600363E86 /* splashCommuter.png */,
 				013192141E1A6F6A00363E86 /* Recurring Appointment-64-2.png */,
 				013192161E1A709A00363E86 /* ETAREFRESH.png */,
@@ -1568,6 +1607,7 @@
 		B7D0FB5C19696F6000971470 /* Safetrax */ = {
 			isa = PBXGroup;
 			children = (
+				0164574A1EB3443F0062291C /* AdminContacts */,
 				01C63B701E302EEC00A5EE3A /* Rating */,
 				0105D8001D8C0AA800F6F234 /* AFNetworking */,
 				846D6D281D24EFF000C4EB1C /* StoppagesViewController.h */,
@@ -1887,6 +1927,7 @@
 						TestTargetID = 84E9BB701C18435C00D0839F;
 					};
 					B7D0FB5219696F6000971470 = {
+						DevelopmentTeam = 2D47VGCJHU;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Push = {
@@ -2089,9 +2130,11 @@
 				84CBE1641A71430E00BB42A4 /* _0010_Home_inactive.png in Resources */,
 				012006BA1E1CD32300E726C6 /* splash.png in Resources */,
 				84CBE15A1A71430E00BB42A4 /* _0006_power-button-settings.png in Resources */,
+				012E02C31EB20F7300993C1B /* Refresh Icon.png in Resources */,
 				84F660C21A5C123C000179C9 /* endpoint.JPG in Resources */,
 				01019AD71E091038003E1F26 /* Main2.storyboard in Resources */,
 				84CBE1751A71430E00BB42A4 /* _0021_call.png in Resources */,
+				017AFC251ED5A04C00821552 /* helpdesk.png in Resources */,
 				84B694931AA70DCE000EE11C /* _0000_location-marker_red.png in Resources */,
 				011CE3371E320B3100EB457D /* radiobutton_selected.png in Resources */,
 				84CBE1141A71229A00BB42A4 /* help.png in Resources */,
@@ -2104,6 +2147,7 @@
 				84B694941AA70DCE000EE11C /* _0001_location-marker_green.png in Resources */,
 				84CBE1571A71430E00BB42A4 /* _0005_mic-active.png in Resources */,
 				84D5FCBC1BB429BF0063EF00 /* ForcePasswordViewController.xib in Resources */,
+				012E02C11EB20F6500993C1B /* Call icon.png in Resources */,
 				849404051C5614CE0042302D /* FeedbackViewController.xib in Resources */,
 				84CBE1761A71430E00BB42A4 /* _0022_i-am-safe.png in Resources */,
 				84CBE14E1A71430E00BB42A4 /* _0002_mic-inactive.png in Resources */,
@@ -2114,6 +2158,7 @@
 				84CBE1511A71430E00BB42A4 /* _0003_not-attending-inactive.png in Resources */,
 				84CBE1551A71430E00BB42A4 /* _0005_attending.png in Resources */,
 				84CBE16B1A71430E00BB42A4 /* _0014_moon.png in Resources */,
+				012E02BF1EB20F4600993C1B /* lock.png in Resources */,
 				84CBE16F1A71430E00BB42A4 /* _0016_moon.png in Resources */,
 				84DEB99A1C23051C00C01299 /* Map Filled-25.png in Resources */,
 				B7B4F70D196A6C0F0094BD77 /* LoginViewController.xib in Resources */,
@@ -2129,6 +2174,7 @@
 				01C63B6F1E302EE400A5EE3A /* SomeViewController.xib in Resources */,
 				84EF22C41C46B54300701D47 /* Default@2x.png in Resources */,
 				84CBE1711A71430E00BB42A4 /* _0017_front.png in Resources */,
+				012E02BD1EB20F3C00993C1B /* Trip status_FAB.png in Resources */,
 				84CBE1581A71430E00BB42A4 /* _0006_camera-active.png in Resources */,
 				011CE3361E320B3100EB457D /* Radiobutton_deslected.png in Resources */,
 				84BB6CC11ACE879700D14E7D /* companyCodeViewController.xib in Resources */,
@@ -2136,6 +2182,7 @@
 				84CBE1601A71430E00BB42A4 /* _0008_no-trip-illustration.png in Resources */,
 				84F660C11A5C123C000179C9 /* car.JPG in Resources */,
 				848FE88A1D3CACED00B25866 /* ic_support.png in Resources */,
+				010AABC21E5D547E00F1EF1C /* 512X512.png in Resources */,
 				84CBE1741A71430E00BB42A4 /* _0020_increase.png in Resources */,
 				84CBE14D1A71430E00BB42A4 /* _0001_type-inactive.png in Resources */,
 				013192191E1B839600363E86 /* splashCommuter.png in Resources */,
@@ -2186,6 +2233,7 @@
 				B7380763196BF89E000078BC /* Strips@2x.png in Resources */,
 				84E9BD261C1866B600D0839F /* InfoPlist.strings in Resources */,
 				84C1FC3C1A7FA0D000DBA874 /* SosViewController.xib in Resources */,
+				012E02BB1EB20F0900993C1B /* shield_03apr.png in Resources */,
 				84CBE1691A71430E00BB42A4 /* _0013_back.png in Resources */,
 				84F0957F1A726A0A001DEA2B /* back_.png in Resources */,
 				84B97E091AA47AC7002F5102 /* AboutViewController.xib in Resources */,
@@ -2194,6 +2242,7 @@
 				B7B4F703196A67590094BD77 /* HomeViewController.xib in Resources */,
 				B738075D196BF7CD000078BC /* phone@2x.png in Resources */,
 				848FE8891D3CACED00B25866 /* ic_home.png in Resources */,
+				012E02C51EB20F7C00993C1B /* Map Icon.png in Resources */,
 				84F660C81A5C1360000179C9 /* back.JPG in Resources */,
 				84F660C61A5C123C000179C9 /* dial.JPG in Resources */,
 				84CF3A731AC2CA9800F5E074 /* Localizable.strings in Resources */,
@@ -2206,6 +2255,7 @@
 				84F660C01A5C123C000179C9 /* startpooint.JPG in Resources */,
 				B7B4F708196A676F0094BD77 /* MenuViewController.xib in Resources */,
 				84B6CDF21A5D3EB8001A33E9 /* data.plist in Resources */,
+				010AABC41E5D572C00F1EF1C /* 1024X500.png in Resources */,
 				84CBE1731A71430E00BB42A4 /* _0019_decrease.png in Resources */,
 				B738075C196BF7CD000078BC /* phone.png in Resources */,
 				847CFB621BE7BA7A00FDCC63 /* Default-568h.png in Resources */,
@@ -2478,6 +2528,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84DEB99D1C2314FC00C01299 /* GoogleMaps.framework in Sources */,
+				016457491EB344380062291C /* AdminContactsViewController.m in Sources */,
 				849404041C5614CE0042302D /* FeedbackViewController.m in Sources */,
 				01C63B6E1E302EE400A5EE3A /* SomeViewController.m in Sources */,
 				0105D8101D8C0AA800F6F234 /* AFSecurityPolicy.m in Sources */,
@@ -2894,8 +2945,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				DEVELOPMENT_TEAM = 2D47VGCJHU;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -2916,8 +2967,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "0fdded7b-cb6f-4a58-82eb-48ce7edddc80";
+				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

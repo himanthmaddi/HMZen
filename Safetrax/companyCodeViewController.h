@@ -17,4 +17,5 @@
 @property (weak, nonatomic) IBOutlet UIButton *HelpTextButton;
 -(void)downloadConfig:(NSString *)code;
 -(void)refreshCompanyConfig:(NSString *)companyCodeString;
+-(void)getUserModelWithUsername:(NSString *)username andWithUserToken:(NSString *)userToken;
 @end

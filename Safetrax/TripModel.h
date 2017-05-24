@@ -11,7 +11,7 @@
 @interface TripModel : NSObject
 
 {
-
+    
 }
 @property (nonatomic, retain)  NSString * driverId;
 @property (nonatomic, retain)  NSString * driverName;
@@ -44,5 +44,9 @@
 @property (nonatomic , retain) NSDate *actualStartDate;
 @property (nonnull , retain) NSString *tripBufferStartTime;
 @property (nonatomic , assign) BOOL entryTime;
+@property (nonatomic , assign) BOOL exitTime;
+@property (nonatomic , retain) NSString *employeePin;
+@property (nonnull , strong) NSDictionary *deploymentBand;
+
 +(TripModel*) buildFromNSDictionary:(NSDictionary *)tripDictionary;
 @end

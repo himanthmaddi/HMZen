@@ -13,9 +13,11 @@
 #import <QuartzCore/QuartzCore.h>
 #import <Smooch/Smooch.h>
 #import "ScheduleViewController.h"
+#import <MBProgressHUD.h>
 
 @interface MenuViewController (){
     UINavigationController *navigationVC2;
+    UINavigationController *adminNavigation;
 }
 
 @end
@@ -35,7 +37,8 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main2" bundle:nil];
         schedule = [story instantiateViewControllerWithIdentifier:@"ScheduleViewController"];
         navigationVC2 = [[UINavigationController alloc]initWithRootViewController:schedule];
-        
+        adminContacts = [story instantiateViewControllerWithIdentifier:@"AdminContactsViewController"];
+        adminNavigation = [[UINavigationController alloc]initWithRootViewController:adminContacts];
     }
     return self;
 }
@@ -58,6 +61,14 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         _roasterImageView.hidden = YES;
         _roasterButton.hidden = YES;
     }
+    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
+                                       stringForKey:@"name"];
+    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
+                                   stringForKey:@"email"];
+    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
+    smoochSettings.conversationAccentColor = [UIColor redColor];
+    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
+
     
     //    picLabel.text = [Name.text substringToIndex:1];
 }
@@ -73,11 +84,20 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(IBAction)home:(id)sender
 {
-    home = nil;
-    home = [[HomeViewController alloc]
-            initWithNibName:@"HomeViewController" bundle:nil];
-    [self.menuContainerViewController setCenterViewController:home];
-    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            home = nil;
+            home = [[HomeViewController alloc]
+                    initWithNibName:@"HomeViewController" bundle:nil];
+            [self.menuContainerViewController setCenterViewController:home];
+            [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+    
 }
 -(IBAction)history:(id)sender
 {
@@ -98,38 +118,64 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 1) {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-        [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-        
-        home.view.backgroundColor = [UIColor clearColor];
-        [home.view removeFromSuperview];
-        home = nil;
-        settings.view.backgroundColor = [UIColor clearColor];
-        [settings.view removeFromSuperview];
-        settings = nil;
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-        [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-        [appDelegate dismiss_delegate:nil];
-        [self.view removeFromSuperview];
-        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
+                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+            }
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+            home.view.backgroundColor = [UIColor clearColor];
+            [home.view removeFromSuperview];
+            home = nil;
+            settings.view.backgroundColor = [UIColor clearColor];
+            [settings.view removeFromSuperview];
+            settings = nil;
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
+            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate dismiss_delegate:nil];
+            [self.view removeFromSuperview];
+        }else{
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
+            home.view.backgroundColor = [UIColor clearColor];
+            [home.view removeFromSuperview];
+            home = nil;
+            settings.view.backgroundColor = [UIColor clearColor];
+            [settings.view removeFromSuperview];
+            settings = nil;
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
+            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate dismiss_delegate:nil];
+            [self.view removeFromSuperview];
+        }
     }
 }
 -(IBAction)help:(id)sender{
-    [Smooch initWithSettings:[SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]]];
-    
-    //        SKTSettings* settings = [SKTSettings settingsWithAppToken:@"772558t0t0rm25k0a1zov7kq6"];
-    SKTSettings* settings1 = [SKTSettings settingsWithAppToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"supportToken"]];
-    
-    settings1.conversationAccentColor = [UIColor redColor];
-    settings1.conversationStatusBarStyle = UIStatusBarStyleLightContent;
-
+    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
+                                       stringForKey:@"name"];
+    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
+                                   stringForKey:@"email"];
+    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
+    smoochSettings.conversationAccentColor = [UIColor blueColor];
+    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
+    [Smooch initWithSettings:smoochSettings];
     [Smooch show];
 }
 -(IBAction)mySchedulePressed:(id)sender
 {
-    [self.menuContainerViewController setCenterViewController:navigationVC2];
-    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.menuContainerViewController setCenterViewController:navigationVC2];
+            [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
 }
 -(BOOL)connectedToInternet
 {
@@ -140,5 +186,16 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     [NSURLConnection sendSynchronousRequest:request returningResponse:&response error: NULL];
     return ([response statusCode]==200)?YES:NO;
 }
-
+-(IBAction)adminContactsPressed:(id)sender{
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self.menuContainerViewController setCenterViewController:adminNavigation];
+            [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+}
 @end
