@@ -2961,7 +2961,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zensar;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3000,7 +3000,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zensar;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
