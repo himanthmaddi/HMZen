@@ -69,22 +69,23 @@
             NSArray *array = status;
             if (array.count == 1){
                 for (NSDictionary *dict in array){
-                    //                    NSString *dbFcmToken = [dict valueForKey:@"fcmtoken"];
                     if ([[dict valueForKey:@"app"] isEqualToString:@"iOS"]){
+                        
                     }else{
                         AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
                         [appDelegate dismiss_delegate:nil];
-                        //                    [homeObject didFinishvalidation];
-                        
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
                     }
                 }
             }else{
                 AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
                 [appDelegate dismiss_delegate:nil];
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
             }
         }else{
             AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
             [appDelegate dismiss_delegate:nil];
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
         }
     }else{
         

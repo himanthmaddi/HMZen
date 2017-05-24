@@ -435,6 +435,7 @@
                     <connections>
                         <outlet property="DriverName" destination="Tcc-Q3-g7X" id="U5K-mB-y0H"/>
                         <outlet property="VehicleName" destination="mDk-PX-ak1" id="cXZ-cO-id7"/>
+                        <outlet property="callButton" destination="Elu-VV-Hki" id="sYf-lQ-dw9"/>
                         <outlet property="endPoint" destination="UHB-ed-Cwe" id="ArJ-Ed-OlI"/>
                         <outlet property="endTime" destination="YUb-vv-9hh" id="dXz-Qy-bip"/>
                         <outlet property="etaLabel" destination="caY-Z3-1Vi" id="bQL-m6-5eg"/>

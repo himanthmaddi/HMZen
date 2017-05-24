@@ -39,6 +39,7 @@
 		015525C41DE6C10A00DEC862 /* boarded.png in Resources */ = {isa = PBXBuildFile; fileRef = 015525C21DE6C10A00DEC862 /* boarded.png */; };
 		015525C51DE6C10A00DEC862 /* notboarded.png in Resources */ = {isa = PBXBuildFile; fileRef = 015525C31DE6C10A00DEC862 /* notboarded.png */; };
 		016457491EB344380062291C /* AdminContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 016457481EB344380062291C /* AdminContactsViewController.m */; };
+		017AFC251ED5A04C00821552 /* helpdesk.png in Resources */ = {isa = PBXBuildFile; fileRef = 017AFC241ED5A04C00821552 /* helpdesk.png */; };
 		01C63B691E302C8300A5EE3A /* _0009_schedule copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */; };
 		01C63B6A1E302C8300A5EE3A /* siren copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B681E302C8300A5EE3A /* siren copy.png */; };
 		01C63B6E1E302EE400A5EE3A /* SomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C63B6C1E302EE400A5EE3A /* SomeViewController.m */; };
@@ -497,6 +498,7 @@
 		015525C31DE6C10A00DEC862 /* notboarded.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notboarded.png; sourceTree = "<group>"; };
 		016457471EB344380062291C /* AdminContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdminContactsViewController.h; sourceTree = "<group>"; };
 		016457481EB344380062291C /* AdminContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdminContactsViewController.m; sourceTree = "<group>"; };
+		017AFC241ED5A04C00821552 /* helpdesk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = helpdesk.png; sourceTree = "<group>"; };
 		01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_0009_schedule copy.png"; sourceTree = "<group>"; };
 		01C63B681E302C8300A5EE3A /* siren copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "siren copy.png"; sourceTree = "<group>"; };
 		01C63B6B1E302EE400A5EE3A /* SomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SomeViewController.h; sourceTree = "<group>"; };
@@ -1496,6 +1498,7 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				017AFC241ED5A04C00821552 /* helpdesk.png */,
 				010AABC31E5D572C00F1EF1C /* 1024X500.png */,
 				010AABC11E5D547E00F1EF1C /* 512X512.png */,
 				01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */,
@@ -2131,6 +2134,7 @@
 				84F660C21A5C123C000179C9 /* endpoint.JPG in Resources */,
 				01019AD71E091038003E1F26 /* Main2.storyboard in Resources */,
 				84CBE1751A71430E00BB42A4 /* _0021_call.png in Resources */,
+				017AFC251ED5A04C00821552 /* helpdesk.png in Resources */,
 				84B694931AA70DCE000EE11C /* _0000_location-marker_red.png in Resources */,
 				011CE3371E320B3100EB457D /* radiobutton_selected.png in Resources */,
 				84CBE1141A71229A00BB42A4 /* help.png in Resources */,
