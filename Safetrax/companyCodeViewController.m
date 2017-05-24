@@ -259,36 +259,19 @@ UIActivityIndicatorView *spinnerIndicator;
             }else{
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
             }
+            
+            if (config[@"externalAuth"]){
+                if ([[config valueForKey:@"externalAuth"] boolValue]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"externalAuth"];
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"externalAuth"];
+                }
+            }else{
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"externalAuth"];
+            }
 
-            
-            
             if ([config[@"authType"] isEqualToString:@"azure"]){
-                
-//                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"azureAuthType"];
-//                [[NSUserDefaults standardUserDefaults] setValue:[[config objectForKey:@"azure"] valueForKey:@"ios_client_id"] forKey:@"azureClientId"];
-//                
-//                ADAuthenticationError *error = nil;
-//                ADAuthenticationContext *authContext;
-//                
-//                NSString *authority = [[config objectForKey:@"azure"] valueForKey:@"authority"];
-//                NSString *resource = [[config objectForKey:@"azure"] valueForKey:@"ios_resource_id"];
-//                NSString *clientId = [[config objectForKey:@"azure"] valueForKey:@"ios_client_id"];
-//                NSString *redirectURI = [[config objectForKey:@"azure"] valueForKey:@"ios_redirect_uri"];
-//                
-//                authContext = [ADAuthenticationContext authenticationContextWithAuthority:authority error:&error];
-//                [authContext acquireTokenWithResource:resource clientId:clientId redirectUri:[NSURL URLWithString:redirectURI] completionBlock:^(ADAuthenticationResult *result){
-//                    if (result.status){
-//                        NSLog(@"%@",result.error.errorDetails);
-//                        NSLog(@"%@",result.accessToken);
-//                    }else{
-//                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-//                            dispatch_async(dispatch_get_main_queue(), ^{
-//                                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//                                [self getUserModelWithUsername:[result tokenCacheItem].userInformation.uniqueName andWithUserToken:result.accessToken];
-//                            });
-//                        });
-//                    }
-//                }];
+
             }else{
                 [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"azureAuthType"];
                 [[NSUserDefaults standardUserDefaults] synchronize];
@@ -449,7 +432,15 @@ UIActivityIndicatorView *spinnerIndicator;
                 }else{
                     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"employeePin"];
                 }
-
+                if (config[@"externalAuth"]){
+                    if ([[config valueForKey:@"externalAuth"] boolValue]){
+                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"externalAuth"];
+                    }else{
+                        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"externalAuth"];
+                    }
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"externalAuth"];
+                }
                 
             }
             [[NSUserDefaults standardUserDefaults] synchronize];

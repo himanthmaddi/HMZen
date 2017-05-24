@@ -212,47 +212,6 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(void)pushDeviceToken
 {
-    //    NSLog(@"push device token");
-    //    NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-    //    NSString *token = [[FIRInstanceID instanceID] token];
-    //       NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    //
-    //    NSDictionary *findParameters = @{@"empid":userid};
-    //
-    //    NSDictionary *setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
-    //
-    //    NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-    //    NSError *error;
-    //    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
-    //
-    //
-    //    NSError *error_config;
-    //
-    //
-    //    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    //    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    //    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    //
-    //    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-    //    NSString *url;
-    //    if([Port isEqualToString:@"-1"])
-    //    {
-    //        url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-    //    }
-    //    else
-    //    {
-    //        url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-    //    }
-    //   NSURL *URL =[NSURL URLWithString:url];
-    //    NSLog(@"%@",URL);
-    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-    //    [request setHTTPMethod:@"POST"];
-    //    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-    //    [request setHTTPBody:dataJson];
-    //    NSURLResponse *responce;
-    //    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-    //    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-    //    NSLog(@"%@",json);
 }
 -(void)onFailure
 {
@@ -342,7 +301,13 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     [mainRequest setHTTPMethod:@"POST"];
     [mainRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [mainRequest setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-    NSString *allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
+    NSString *allHeadString;
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"externalAuth"]){
+        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request,@"oauth_password",password.text];
+    }else{
+        allHeadString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@,%@=%@,%@=%@,%@=%@",@"oauth_username",[userName.text lowercaseString],@"oauth_nonce",[[NSUserDefaults standardUserDefaults] stringForKey:@"headValue"],@"oauth_cnonce",cnonce,@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_version",@"1.0",@"oauth_request",request];
+    }
     NSString *dataSetInfore = [NSString stringWithFormat:@"%@ %@",@"OAuth",allHeadString];
     [mainRequest setValue:dataSetInfore forHTTPHeaderField:@"Authorization"];
     mainConnection = [[NSURLConnection alloc] initWithRequest:mainRequest delegate:self];

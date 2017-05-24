@@ -1924,8 +1924,8 @@
 						TestTargetID = 84E9BB701C18435C00D0839F;
 					};
 					B7D0FB5219696F6000971470 = {
-						DevelopmentTeam = 2D47VGCJHU;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = VS69383GKM;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2941,8 +2941,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -2961,10 +2961,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zensar;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "0fdded7b-cb6f-4a58-82eb-48ce7edddc80";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2979,8 +2979,8 @@
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -3000,10 +3000,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zensar;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "0fdded7b-cb6f-4a58-82eb-48ce7edddc80";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
