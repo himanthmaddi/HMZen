@@ -26,22 +26,44 @@ static NSMutableArray *tripList;
     NSLog(@"%@",decodedArray);
     tripList = [NSMutableArray arrayWithArray:decodedArray];
 }
-+(TripCollection *)buildFromdata:(NSData*) data{
-//    tripList =[[NSMutableArray alloc] init];
++(TripCollection *)buildFromdata:(NSMutableArray*) data{
+    NSLog(@"%@",data);
+    //    tripList =[[NSMutableArray alloc] init];
     TripCollection *tripCollection = [[TripCollection alloc] init];
-    NSArray *tripsArray= [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    NSMutableArray *myTripsArray = [tripsArray mutableCopy];
-    for (NSDictionary *dict in [myTripsArray copy]){
-        if ([[dict valueForKey:@"stateOfTrip"] isEqualToString:@"undeployed"]){
-            int index = [myTripsArray indexOfObject:dict];
-            [myTripsArray removeObjectAtIndex:index];
-        }
-    }
-        for (NSDictionary *tripFields in myTripsArray) {
+    //    NSArray *tripsArray= [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    //    NSMutableArray *myTripsArray = [tripsArray mutableCopy];
+    
+    NSMutableArray *myTripsArray = data;
+    
+    for (NSDictionary *tripFields in myTripsArray) {
         TripModel * tripmodel = [TripModel buildFromNSDictionary:tripFields];
         [tripCollection addTrip:tripmodel];
     }
+    
+    //    for (NSDictionary *dict in [myTripsArray copy]){
+    //        if ([[dict valueForKey:@"stateOfTrip"] isEqualToString:@"deployed"] && ![[dict valueForKey:@"runningStatus"] isEqualToString:@"completed"]){
+    //            NSArray *employees = [dict valueForKey:@"employees"];
+    //            for (NSDictionary *eachEmployee in employees){
+    //                if ([[eachEmployee valueForKey:@"_employeeId"] isEqualToString:[[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"]]){
+    //                    if (![[eachEmployee valueForKey:@"cancelled"] boolValue]){
+    //                        for (NSDictionary *tripFields in myTripsArray) {
+    //                            TripModel * tripmodel = [TripModel buildFromNSDictionary:tripFields];
+    //                            [tripCollection addTrip:tripmodel];
+    //                        }
+    //                    }else{
+    //                        int index = [myTripsArray indexOfObject:dict];
+    //                        [myTripsArray removeObjectAtIndex:index];
+    //                    }
+    //                }
+    //            }
+    //            }else{
+    //                int index = [myTripsArray indexOfObject:dict];
+    //                [myTripsArray removeObjectAtIndex:index];
+    //        }
+    //    }
+    
     return tripCollection;
+
 }
 
 - (void)addTrip:(TripModel*) tripModel

@@ -68,6 +68,8 @@
 @property (nonatomic , strong) IBOutlet UIImageView *pinImageView;
 @property (nonatomic , strong) IBOutlet UIButton *tripConfirmationsButton;
 
+@property (nonatomic , strong) IBOutlet UIImageView *driverImageView;
+
 @property (nonatomic, strong) IBOutlet UIButton *callButton;
 @property (nonatomic, strong) IBOutlet UILabel *callLabel;
 

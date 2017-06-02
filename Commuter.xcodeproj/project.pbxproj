@@ -47,6 +47,7 @@
 		01C63B721E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */; };
 		01C63B741E30300B00A5EE3A /* Driver-48 copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B731E30300B00A5EE3A /* Driver-48 copy.png */; };
 		01C63B761E30301700A5EE3A /* vehicle.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B751E30301700A5EE3A /* vehicle.png */; };
+		01EA0F951EE173F4006B18AB /* ic_user_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EA0F941EE173F4006B18AB /* ic_user_black.png */; };
 		19FD74750C031C952414F6D2 /* libPods-Parent App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7046B849DACAED6E905D84 /* libPods-Parent App.a */; };
 		840CDB981CFC5DCA00777C2B /* HeadBundlerClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 840CDB971CFC5DCA00777C2B /* HeadBundlerClass.m */; };
 		840D30581AB09570003E8A41 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 840D30571AB09570003E8A41 /* bg.jpg */; };
@@ -507,6 +508,7 @@
 		01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_alarm_black_18dp copy.png"; sourceTree = "<group>"; };
 		01C63B731E30300B00A5EE3A /* Driver-48 copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Driver-48 copy.png"; sourceTree = "<group>"; };
 		01C63B751E30301700A5EE3A /* vehicle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vehicle.png; sourceTree = "<group>"; };
+		01EA0F941EE173F4006B18AB /* ic_user_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_user_black.png; sourceTree = "<group>"; };
 		4291D157DACE579141826525 /* Pods-Commuter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Commuter.release.xcconfig"; path = "Pods/Target Support Files/Pods-Commuter/Pods-Commuter.release.xcconfig"; sourceTree = "<group>"; };
 		44508BA36CA332CF33BC166D /* Pods-Parent App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Parent App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Parent App/Pods-Parent App.debug.xcconfig"; sourceTree = "<group>"; };
 		4598AB89C9800D441CE9C091 /* libPods-Parent AppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Parent AppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1498,6 +1500,7 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				01EA0F941EE173F4006B18AB /* ic_user_black.png */,
 				017AFC241ED5A04C00821552 /* helpdesk.png */,
 				010AABC31E5D572C00F1EF1C /* 1024X500.png */,
 				010AABC11E5D547E00F1EF1C /* 512X512.png */,
@@ -1927,8 +1930,8 @@
 						TestTargetID = 84E9BB701C18435C00D0839F;
 					};
 					B7D0FB5219696F6000971470 = {
-						DevelopmentTeam = 2D47VGCJHU;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = VS69383GKM;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2219,6 +2222,7 @@
 				84F660C51A5C123C000179C9 /* map.JPG in Resources */,
 				84DDEE5E1A80F58C009B7D89 /* SOSMainViewController.xib in Resources */,
 				B7D0FB6919696F6000971470 /* 180.png in Resources */,
+				01EA0F951EE173F4006B18AB /* ic_user_black.png in Resources */,
 				84CBE15C1A71430E00BB42A4 /* _0007_current-location-inactive.png in Resources */,
 				84D50E671A5FED0400C21EBF /* HelpContactsViewController.xib in Resources */,
 				84BF4A5C1A9F345C003A6D51 /* HistoryViewController.xib in Resources */,
@@ -2945,8 +2949,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -2965,10 +2969,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "0fdded7b-cb6f-4a58-82eb-48ce7edddc80";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2983,8 +2987,8 @@
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -3004,10 +3008,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "0fdded7b-cb6f-4a58-82eb-48ce7edddc80";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

@@ -181,6 +181,7 @@ NSMutableArray *ChildrenList;
 }
 - (void)viewDidLoad {
     
+    [self getDriverImage];
     _pinLabel.text = model.employeePin;
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
@@ -1396,7 +1397,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 }
 -(IBAction)refreshForETA:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
@@ -1569,7 +1569,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
 }
@@ -1743,7 +1742,86 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
         
     }
 }
-
+-(void)getDriverImage{
+    dispatch_async(dispatch_get_global_queue(0, DISPATCH_QUEUE_PRIORITY_HIGH), ^{
+        activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        activityIndicator.frame = CGRectMake(((_driverImageView.frame.size.width - 25) / 2), round((_driverImageView.frame.size.height - 25) / 2), 25, 25);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_driverImageView addSubview:activityIndicator];
+            [activityIndicator startAnimating];
+        });
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *url;
+        if([Port isEqualToString:@"-1"])
+        {
+            url =[NSString stringWithFormat:@"%@://%@/driverimage?driverMobile=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"9743428686"];
+            
+        }
+        else
+        {
+            url =[NSString stringWithFormat:@"%@://%@:%@/driverimage?driverMobile=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"9743428686"];
+        }
+        
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSString *headerString;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+        }else{
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        }
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        NSURL *URL1 = [NSURL URLWithString:url];
+        NSMutableURLRequest *request1 = [NSMutableURLRequest requestWithURL:URL1];
+        [request1 setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        [request1 setHTTPMethod:@"GET"];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        
+        NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request1 progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+            NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+            return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
+        } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+            if (error){
+                NSLog(@"%@",response);
+                NSLog(@"%@",error.localizedDescription);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    _driverImageView.image = [UIImage imageNamed:@"ic_user_black.png"];
+                    [activityIndicator stopAnimating];
+                });
+            }else{
+                NSHTTPURLResponse *responseCheck = (NSHTTPURLResponse *)response;
+                if (responseCheck.statusCode == 200){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSLog(@"%@",filePath);
+                        NSString *theFileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
+                        [[NSUserDefaults standardUserDefaults] setValue:theFileName forKey:@"fileName"];
+                        NSData *data = [NSData dataWithContentsOfURL:filePath];
+                        _driverImageView.image = [UIImage imageWithData:data];
+                        [activityIndicator stopAnimating];
+                    });
+                }else{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        _driverImageView.image = [UIImage imageNamed:@"ic_user_black.png"];
+                        [activityIndicator stopAnimating];
+                    });
+                }            }
+        }];
+        [downloadTask resume];
+    });
+}
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:[[NSUserDefaults standardUserDefaults] valueForKey:@"fileName"]];
+    NSError *error;
+    BOOL success = [fileManager removeItemAtPath:filePath error:&error];
+    if (success) {
+    }
+    else
+    {
+    }
+}
 @end
 
 
