@@ -40,6 +40,7 @@
 		015525C51DE6C10A00DEC862 /* notboarded.png in Resources */ = {isa = PBXBuildFile; fileRef = 015525C31DE6C10A00DEC862 /* notboarded.png */; };
 		016457491EB344380062291C /* AdminContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 016457481EB344380062291C /* AdminContactsViewController.m */; };
 		017AFC251ED5A04C00821552 /* helpdesk.png in Resources */ = {isa = PBXBuildFile; fileRef = 017AFC241ED5A04C00821552 /* helpdesk.png */; };
+		0180DC1A1F4C516A00A654C1 /* mapnewCar.png in Resources */ = {isa = PBXBuildFile; fileRef = 0180DC191F4C516A00A654C1 /* mapnewCar.png */; };
 		01C63B691E302C8300A5EE3A /* _0009_schedule copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */; };
 		01C63B6A1E302C8300A5EE3A /* siren copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B681E302C8300A5EE3A /* siren copy.png */; };
 		01C63B6E1E302EE400A5EE3A /* SomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C63B6C1E302EE400A5EE3A /* SomeViewController.m */; };
@@ -501,6 +502,7 @@
 		016457471EB344380062291C /* AdminContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdminContactsViewController.h; sourceTree = "<group>"; };
 		016457481EB344380062291C /* AdminContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdminContactsViewController.m; sourceTree = "<group>"; };
 		017AFC241ED5A04C00821552 /* helpdesk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = helpdesk.png; sourceTree = "<group>"; };
+		0180DC191F4C516A00A654C1 /* mapnewCar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mapnewCar.png; sourceTree = "<group>"; };
 		01C63B671E302C8300A5EE3A /* _0009_schedule copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_0009_schedule copy.png"; sourceTree = "<group>"; };
 		01C63B681E302C8300A5EE3A /* siren copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "siren copy.png"; sourceTree = "<group>"; };
 		01C63B6B1E302EE400A5EE3A /* SomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SomeViewController.h; sourceTree = "<group>"; };
@@ -1502,6 +1504,7 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				0180DC191F4C516A00A654C1 /* mapnewCar.png */,
 				01EBFDEF1F44338D0002E805 /* logout.png */,
 				01EA0F941EE173F4006B18AB /* ic_user_black.png */,
 				017AFC241ED5A04C00821552 /* helpdesk.png */,
@@ -2267,6 +2270,7 @@
 				84CBE1731A71430E00BB42A4 /* _0019_decrease.png in Resources */,
 				B738075C196BF7CD000078BC /* phone.png in Resources */,
 				847CFB621BE7BA7A00FDCC63 /* Default-568h.png in Resources */,
+				0180DC1A1F4C516A00A654C1 /* mapnewCar.png in Resources */,
 				84CBE15F1A71430E00BB42A4 /* _0008_current-location.png in Resources */,
 				84CBE1501A71430E00BB42A4 /* _0003_camera-inactive.png in Resources */,
 				013192151E1A6F6A00363E86 /* Recurring Appointment-64-2.png in Resources */,
@@ -2973,7 +2977,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.commute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3012,7 +3016,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.commute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

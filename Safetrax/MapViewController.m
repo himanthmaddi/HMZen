@@ -61,9 +61,11 @@ int isRefresh =0;
     isRefresh = 0;
     _responseData = [[NSMutableData alloc] init];
     markers = [[NSMutableArray alloc] init];
+    marker_driver= [[GMSMarker alloc] init];
+    marker_driver.icon = [self image:[UIImage imageNamed:@"mapnewCar.png"] scaledToSize:CGSizeMake(20.0f, 40.0f)];
     [self getDriverLocation];
     [self showMapPins:tripModel];
-    timer = [NSTimer scheduledTimerWithTimeInterval:20
+    timer = [NSTimer scheduledTimerWithTimeInterval:10
                                              target:self
                                            selector:@selector(refresh)
                                            userInfo:nil
@@ -195,7 +197,7 @@ int isRefresh =0;
     if([markers count] >2)
         [markers removeObjectAtIndex:2];
     //    marker_current.map = nil;
-    marker_driver.map =nil;
+//    marker_driver.map =nil;
     _responseData = nil;
     _responseData = [[NSMutableData alloc] init];
     double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
@@ -1073,14 +1075,17 @@ int isRefresh =0;
     if ([[loc objectAtIndex:1] doubleValue] == 0 || [[loc objectAtIndex:0] doubleValue] == 0){
     }
     else{
-        marker_driver = nil;
-        marker_driver= [[GMSMarker alloc] init];
+        dispatch_async(dispatch_get_main_queue(), ^{
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:5.0];
         marker_driver.position = CLLocationCoordinate2DMake([[loc objectAtIndex:1] doubleValue],[[loc objectAtIndex:0] doubleValue]);
         marker_driver.title = @"Driver Current Location";
-        marker_driver.icon = [UIImage imageNamed:@"DriverLoc.png"];
-        marker_driver.icon = [self image:marker_driver.icon scaledToSize:CGSizeMake(50.0f, 50.0f)];
+        marker_driver.rotation = [[NSUserDefaults standardUserDefaults] floatForKey:@"course"];
         marker_driver.snippet = [[NSUserDefaults standardUserDefaults] stringForKey:@"vehicleAddress"];
         marker_driver.map = mapView_;
+        marker_driver.flat = YES;
+        [CATransaction commit];
+        });
         [markers addObject:marker_driver];
         if(!isRefresh)
             [self ShowAllMarkers]; //for the first time alone
@@ -1117,6 +1122,7 @@ int isRefresh =0;
                 NSLog(@"Driver Loc-->%@",config[@"coordinates"]);
                 [[NSUserDefaults standardUserDefaults] setObject:config[@"coordinates"] forKey:@"driverCurrentLocation"];
                 [[NSUserDefaults standardUserDefaults] setValue:config[@"address"] forKey:@"vehicleAddress"];
+                [[NSUserDefaults standardUserDefaults] setFloat:[[config objectForKey:@"course"] floatValue] forKey:@"course"];
             }
         }
         [self setDriverLocation];

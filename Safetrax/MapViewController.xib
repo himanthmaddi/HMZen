@@ -51,7 +51,7 @@
                                 <constraint firstAttribute="height" constant="25" id="jWc-2S-g40"/>
                                 <constraint firstAttribute="height" constant="30" id="shX-mq-yae"/>
                             </constraints>
-                            <state key="normal" title="Button" image="_0016_sos.png">
+                            <state key="normal" title="Button" image="shield_03apr.png">
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <variation key="default">
@@ -66,7 +66,7 @@
                                 <action selector="sos:" destination="-1" eventType="touchUpInside" id="9sD-e8-fLq"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nsj-4f-72y">
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nsj-4f-72y">
                             <rect key="frame" x="334" y="29" width="25" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="25" id="3uT-nR-6dW"/>
@@ -317,9 +317,9 @@
         <image name="_0011_Home_active.png" width="88" height="88"/>
         <image name="_0012_office_active.png" width="88" height="88"/>
         <image name="_0015_more.png" width="44" height="44"/>
-        <image name="_0016_sos.png" width="66" height="66"/>
         <image name="_0021_call.png" width="88" height="88"/>
         <image name="back_.png" width="30" height="30"/>
         <image name="boarded_active.png" width="88" height="88"/>
+        <image name="shield_03apr.png" width="83" height="84"/>
     </resources>
 </document>
