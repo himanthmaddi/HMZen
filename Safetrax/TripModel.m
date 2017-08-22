@@ -47,14 +47,17 @@
     tripModel.stoppagesArray = stops;
     for (NSDictionary *tempDict in stops)
     {
-        [tripModel.stopsNames addObject:[tempDict valueForKey:@"name"]];
+        if ([[tempDict valueForKey:@"type"] isEqualToString:@"office"]){
+            tripModel.office = [tempDict valueForKey:@"name"];
+        }
+        [tripModel.stopsNames addObject:[tempDict valueForKey:@"address"]];
         [timeArray addObject:[tempDict valueForKey:@"time"]];
         NSArray *idsArrayForPickup = [tempDict valueForKey:@"_pickup"];
         NSArray *idsArrayForDrop = [tempDict valueForKey:@"_drop"];
         if (idsArrayForPickup.count != 0){
             if ([idsArrayForPickup containsObject:employeeId])
             {
-                tripModel.pickup=tempDict[@"address"];
+                tripModel.pickup=tempDict[@"name"];
                 NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:([[tempDict valueForKey:@"time"] doubleValue]/1000.0)];
                 tripModel.scheduledTime=[dateFormatter123 stringFromDate:startDate];
                 tripModel.pickupLngLat=tempDict[@"coordinates"];
@@ -70,7 +73,7 @@
         if (idsArrayForDrop.count != 0){
             if ([idsArrayForDrop containsObject:employeeId])
             {
-                tripModel.drop=tempDict[@"address"];
+                tripModel.drop=tempDict[@"name"];
                 tripModel.dropLngLat=tempDict[@"coordinates"];
                 
                 if ([tempDict valueForKey:@"entryTime"]){
@@ -81,9 +84,6 @@
             }
         }
     }
-    
-    NSLog(@"%@",tripModel.scheduledTime);
-    NSLog(@"%@",tripModel.tripEndTime);
     NSMutableArray *copassengersArray = [[NSMutableArray alloc]init];
     NSMutableArray *copassengetPhoneArray = [[NSMutableArray alloc]init];
     NSArray *employeesArray = [tripDictionary valueForKey:@"employees"];
@@ -144,13 +144,6 @@
         NSString *dateString = [dateFormatter123 stringFromDate:date];
         [tripModel.stopTimes addObject:dateString];
     }
-    
-    //    tripModel.cabstops=tripDictionary[@"stoppages"];
-    //    tripModel.driverBluetooth=tripDictionary[@"driverBluetooth"];
-    //    tripModel.tripCabPictures=tripDictionary[@"tripCabPictures"];
-    //    NSMutableArray *cabRoute = [[NSMutableArray alloc]init];
-    //    tripModel.cabWaypoints=tripDictionary[@"cabWaypoints"];
-    
     return tripModel;
 }
 - (void)encodeWithCoder:(NSCoder *)encoder {

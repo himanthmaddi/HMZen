@@ -47,6 +47,7 @@
 @property (nonatomic , assign) BOOL exitTime;
 @property (nonatomic , retain) NSString *employeePin;
 @property (nonnull , strong) NSDictionary *deploymentBand;
+@property (nonatomic, retain)  NSString * office;
 
 +(TripModel*) buildFromNSDictionary:(NSDictionary *)tripDictionary;
 @end

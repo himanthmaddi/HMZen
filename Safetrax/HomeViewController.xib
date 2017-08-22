@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="ipad12_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,7 +17,6 @@
                 <outlet property="logoutLabel" destination="xQ4-7L-Ps3" id="I9N-U7-o1g"/>
                 <outlet property="logoutTime" destination="oGJ-CV-XPF" id="2ji-ax-H0h"/>
                 <outlet property="mainSegment" destination="FSb-9e-Ubr" id="96j-U6-u2v"/>
-                <outlet property="noScheduleView" destination="leg-pg-eP8" id="A0i-bT-caw"/>
                 <outlet property="scheduleImage" destination="y8M-9Y-XRm" id="qau-Ds-Snj"/>
                 <outlet property="tripTable" destination="HVy-Wh-Gic" id="t6z-gu-I0j"/>
                 <outlet property="view" destination="1" id="3"/>
@@ -144,7 +143,7 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Logout Time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xQ4-7L-Ps3">
-                            <rect key="frame" x="310" y="151" width="90" height="23"/>
+                            <rect key="frame" x="310" y="151" width="90" height="17"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="115" id="bhZ-js-pqM"/>
                             </constraints>
@@ -178,46 +177,18 @@
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BhS-I7-cLD">
                             <rect key="frame" x="140" y="17" width="320" height="21"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" red="0.0" green="0.62352941176470589" blue="0.52549019607843139" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.31914448740000001" green="0.59344351289999997" blue="0.14652583" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Login Time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eQL-pp-KrF">
-                            <rect key="frame" x="198" y="150" width="73" height="23"/>
+                            <rect key="frame" x="198" y="150" width="73" height="17"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                             <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="leg-pg-eP8">
-                            <rect key="frame" x="199" y="187" width="210" height="85"/>
-                            <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Oops !" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4aG-f4-yzW">
-                                    <rect key="frame" x="59" y="3" width="100" height="43"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No Schedules Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AfZ-Q3-yXQ">
-                                    <rect key="frame" x="10" y="50" width="190" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                            </subviews>
-                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                            <constraints>
-                                <constraint firstAttribute="height" relation="lessThanOrEqual" constant="85" id="iFO-f2-q9Q"/>
-                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="210" id="lce-b4-3sB"/>
-                            </constraints>
-                            <variation key="default">
-                                <mask key="constraints">
-                                    <exclude reference="iFO-f2-q9Q"/>
-                                </mask>
-                            </variation>
-                        </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HVy-Wh-Gic">
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="HVy-Wh-Gic">
                             <rect key="frame" x="0.0" y="2" width="600" height="482"/>
-                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="5fY-Hz-VHj"/>
                             </constraints>
@@ -250,21 +221,15 @@
                         <constraint firstAttribute="height" relation="lessThanOrEqual" constant="453" id="Pth-s6-0MF"/>
                         <constraint firstItem="y8M-9Y-XRm" firstAttribute="centerX" secondItem="oGJ-CV-XPF" secondAttribute="centerX" constant="-59.5" id="Sf9-WA-guo"/>
                         <constraint firstItem="BhS-I7-cLD" firstAttribute="top" secondItem="fkp-gv-8Ds" secondAttribute="top" constant="17" id="Su8-zE-f3m"/>
-                        <constraint firstAttribute="centerY" secondItem="leg-pg-eP8" secondAttribute="centerY" id="UOz-ce-7tq"/>
                         <constraint firstItem="xQ4-7L-Ps3" firstAttribute="trailing" secondItem="y8M-9Y-XRm" secondAttribute="trailing" id="UPk-l4-KeD"/>
                         <constraint firstAttribute="bottom" secondItem="HVy-Wh-Gic" secondAttribute="bottom" constant="1" id="V55-fy-7W9"/>
                         <constraint firstAttribute="width" relation="lessThanOrEqual" constant="600" id="Vke-g1-ahl"/>
-                        <constraint firstItem="leg-pg-eP8" firstAttribute="top" secondItem="xQ4-7L-Ps3" secondAttribute="bottom" constant="13" id="Xmd-BY-zyT"/>
                         <constraint firstItem="xQ4-7L-Ps3" firstAttribute="leading" secondItem="eQL-pp-KrF" secondAttribute="trailing" constant="44" id="Xrn-oZ-Q8M"/>
-                        <constraint firstAttribute="bottom" secondItem="leg-pg-eP8" secondAttribute="bottom" constant="213" id="b4v-97-sZl"/>
                         <constraint firstItem="HVy-Wh-Gic" firstAttribute="top" secondItem="fkp-gv-8Ds" secondAttribute="top" constant="2" id="bdG-T4-h5L"/>
-                        <constraint firstItem="leg-pg-eP8" firstAttribute="trailing" secondItem="y8M-9Y-XRm" secondAttribute="trailing" constant="7" id="cxs-dI-W7V"/>
                         <constraint firstAttribute="centerY" secondItem="xQ4-7L-Ps3" secondAttribute="centerY" id="eoH-VS-yt0"/>
                         <constraint firstItem="oGJ-CV-XPF" firstAttribute="top" secondItem="xQ4-7L-Ps3" secondAttribute="bottom" constant="-2" id="gbM-sh-eUb"/>
                         <constraint firstAttribute="centerY" secondItem="eQL-pp-KrF" secondAttribute="centerY" id="i9w-v1-xdY"/>
-                        <constraint firstItem="leg-pg-eP8" firstAttribute="leading" secondItem="y8M-9Y-XRm" secondAttribute="leading" id="li8-e2-CXn"/>
                         <constraint firstItem="jbN-Bb-HHV" firstAttribute="top" secondItem="eQL-pp-KrF" secondAttribute="bottom" constant="-1" id="oQh-UU-X0l"/>
-                        <constraint firstItem="leg-pg-eP8" firstAttribute="top" secondItem="y8M-9Y-XRm" secondAttribute="bottom" constant="36" id="q2Q-oQ-v79"/>
                         <constraint firstItem="oGJ-CV-XPF" firstAttribute="leading" relation="lessThanOrEqual" secondItem="jbN-Bb-HHV" secondAttribute="trailing" constant="63" id="v78-yi-YxI"/>
                         <constraint firstItem="HVy-Wh-Gic" firstAttribute="leading" secondItem="fkp-gv-8Ds" secondAttribute="leading" id="ycu-VP-0qg"/>
                     </constraints>
@@ -278,7 +243,6 @@
                             <exclude reference="i9w-v1-xdY"/>
                             <exclude reference="7a7-yP-TVX"/>
                             <exclude reference="NaX-he-3sr"/>
-                            <exclude reference="UOz-ce-7tq"/>
                             <exclude reference="5dj-w1-jq0"/>
                             <exclude reference="6PK-Tc-Zjw"/>
                             <exclude reference="BdQ-mb-XEy"/>
@@ -301,7 +265,7 @@
                         <segment title="Schedule"/>
                         <segment title="Trips"/>
                     </segments>
-                    <color key="tintColor" red="0.0" green="0.62352941176470589" blue="0.52549019607843139" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="tintColor" red="0.31914448740000001" green="0.59344351289999997" blue="0.14652583" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="mainSegmentedTypeChanged:" destination="-1" eventType="valueChanged" id="nHI-s8-sK1"/>
                     </connections>

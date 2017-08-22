@@ -16,7 +16,7 @@ static NSMutableArray *tripList;
     
     static dispatch_once_t onceToken;
     tripList = [[NSMutableArray alloc] init];
-   
+    
 }
 + (void)initArrayWithOldTrips
 {
@@ -63,7 +63,6 @@ static NSMutableArray *tripList;
     //    }
     
     return tripCollection;
-
 }
 
 - (void)addTrip:(TripModel*) tripModel
@@ -78,7 +77,7 @@ static NSMutableArray *tripList;
     NSUserDefaults *userDefault=[NSUserDefaults standardUserDefaults];
     NSData *myEncodedObject = [NSKeyedArchiver archivedDataWithRootObject:tripList];
     [userDefault setObject:myEncodedObject forKey:[NSString stringWithFormat:@"tripList"]];
-   // [[NSUserDefaults standardUserDefaults] setObject:tripList forKey:@"tripList"];
+    // [[NSUserDefaults standardUserDefaults] setObject:tripList forKey:@"tripList"];
 }
 -(void)sortTrip
 {
@@ -112,26 +111,23 @@ static NSMutableArray *tripList;
         tripStr =@"";
         NSString *drop=@"";
         if([model.drop length] >20)
-          drop = [[model.drop substringToIndex:20] stringByAppendingString:@"..."];
+            drop = [[model.drop substringToIndex:20] stringByAppendingString:@"..."];
         else
-          drop = model.drop;
-
+            drop = model.drop;
+        
 #if Parent
-       if([model.tripType isEqualToString:@"Drop"])
+        if([model.tripType isEqualToString:@"Drop"])
         {
             
-            tripStr = [NSString stringWithFormat:@"%@ at %@\n%@\nVehicle: %@\nDriver: %@ &&%@&&%@", model.tripType,[model.tripEndTime substringWithRange:NSMakeRange(12, 5)],drop,model.driverLicence,model.driverName,model.tripEndTime,model.scheduledTime];
-           // [tripids addObject:model.tripid];
+            tripStr = [NSString stringWithFormat:@"%@ trip @ %@\n%@\nVehicle No: %@\nDriver: %@ &&%@&&%@", model.tripType,[model.tripEndTime substringWithRange:NSMakeRange(12, 5)],drop,model.driverLicence,model.driverName,model.tripEndTime,model.scheduledTime];
             [tripdetails setValue:tripStr forKey:model.scheduledTime];
         }
 #else
         if([model.tripType isEqualToString:@"Drop"])
         {
-            tripStr = [NSString stringWithFormat:@"%@ at %@\n%@\nVehicle: %@\nDriver: %@&&%@&&%@&&%@", model.tripType,model.scheduledTime,model.pickup,model.cabNumber,model.driverName,model.tripEndTime,model.scheduledTime,model.tripid];
-            // [tripids addObject:model.tripid];
+            tripStr = [NSString stringWithFormat:@"%@ trip @ %@\n%@\n%@\nVehicle No: %@\nDriver: %@&&%@&&%@&&%@", model.tripType,model.scheduledTime,[NSString stringWithFormat:@"From: %@",model.office],[NSString stringWithFormat:@"To: %@",model.drop],model.cabNumber,model.driverName,model.tripEndTime,model.scheduledTime,model.tripid];
             [tripdetails setValue:tripStr forKey:model.scheduledTime];
             NSLog(@"%@",tripStr);
-            
         }
 #endif
     }
@@ -161,22 +157,20 @@ static NSMutableArray *tripList;
         tripStr =@"";
         NSString *pickup=@"";
         if([model.pickup length] >20)
-          pickup = [[model.pickup substringToIndex:20] stringByAppendingString:@"..."];
+            pickup = [[model.pickup substringToIndex:20] stringByAppendingString:@"..."];
         else
             pickup = model.pickup;
 #if Parent
         if([model.tripType isEqualToString:@"Pickup"]){
             NSLog(@"pickup id %@",model.tripid);
-            tripStr = [NSString stringWithFormat:@"%@ at %@\n%@\nVehicle: %@\nDriver: %@ &&%@&&%@", model.tripType,[model.scheduledTime substringWithRange:NSMakeRange(12, 5)],pickup,model.driverLicence,model.driverName,model.tripEndTime,model.scheduledTime];
-           //[tripids addObject:model.tripid];
+            tripStr = [NSString stringWithFormat:@"%@ trip @ %@\n%@\nVehicle No: %@\nDriver: %@ &&%@&&%@", model.tripType,[model.scheduledTime substringWithRange:NSMakeRange(12, 5)],pickup,model.driverLicence,model.driverName,model.tripEndTime,model.scheduledTime];
             [tripdetails setValue:tripStr forKey:model.scheduledTime];
         }
 #else
-            if([model.tripType isEqualToString:@"Pickup"]){
-                NSLog(@"pickup id %@",model.tripid);
-                tripStr = [NSString stringWithFormat:@"%@ at %@\n%@\nVehicle: %@\nDriver: %@&&%@&&%@&&%@", model.tripType,model.scheduledTime,model.pickup,model.cabNumber,model.driverName,model.tripEndTime,model.scheduledTime,model.tripid];
-                //[tripids addObject:model.tripid];
-              [tripdetails setValue:tripStr forKey:model.scheduledTime];
+        if([model.tripType isEqualToString:@"Pickup"]){
+            NSLog(@"pickup id %@",model.tripid);
+            tripStr = [NSString stringWithFormat:@"%@ trip @ %@\n%@\n%@\nVehicle No: %@\nDriver: %@&&%@&&%@&&%@", model.tripType,model.scheduledTime,[NSString stringWithFormat:@"From: %@",model.pickup],[NSString stringWithFormat:@"To: %@",model.drop],model.cabNumber,model.driverName,model.tripEndTime,model.scheduledTime,model.tripid];
+            [tripdetails setValue:tripStr forKey:model.scheduledTime];
         }
 #endif
     }
@@ -189,13 +183,13 @@ static NSMutableArray *tripList;
 -(void)saveTripArray
 {
     /*NSUserDefaults *userDefault=[NSUserDefaults standardUserDefaults];
-    NSData *myEncodedObject = [NSKeyedArchiver archivedDataWithRootObject:tripList];
-    [userDefault setObject:myEncodedObject forKey:[NSString stringWithFormat:@"sample"]];
-    NSData *myDecodedObject = [userDefault objectForKey: [NSString stringWithFormat:@"sample"]];
-    NSArray *decodedArray =[NSKeyedUnarchiver unarchiveObjectWithData: myDecodedObject];
-    for (TripModel *item in decodedArray) {
-      //  NSLog(@"name=%@",item.driverName);
-    }*/
+     NSData *myEncodedObject = [NSKeyedArchiver archivedDataWithRootObject:tripList];
+     [userDefault setObject:myEncodedObject forKey:[NSString stringWithFormat:@"sample"]];
+     NSData *myDecodedObject = [userDefault objectForKey: [NSString stringWithFormat:@"sample"]];
+     NSArray *decodedArray =[NSKeyedUnarchiver unarchiveObjectWithData: myDecodedObject];
+     for (TripModel *item in decodedArray) {
+     //  NSLog(@"name=%@",item.driverName);
+     }*/
 }
 //-(void)getTripStartDate;
 //{

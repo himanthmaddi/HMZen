@@ -13,7 +13,7 @@
         <scene sceneID="z8k-7v-Tgc">
             <objects>
                 <navigationController id="XuV-Bf-cn2" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="ZLz-RA-29R">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZLz-RA-29R">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -416,6 +416,7 @@
                         <outlet property="endPoint" destination="UHB-ed-Cwe" id="ArJ-Ed-OlI"/>
                         <outlet property="endTime" destination="YUb-vv-9hh" id="dXz-Qy-bip"/>
                         <outlet property="etaLabel" destination="caY-Z3-1Vi" id="bQL-m6-5eg"/>
+                        <outlet property="etaRefreshButton" destination="63w-uG-VF1" id="FcX-9r-rGe"/>
                         <outlet property="pinImageView" destination="vUv-N6-3lN" id="f4h-ca-yKq"/>
                         <outlet property="pinLabel" destination="IKr-or-S8m" id="Bnt-xi-PBr"/>
                         <outlet property="round1" destination="sfG-pH-hIj" id="gBI-bB-xbp"/>
@@ -480,7 +481,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Adt-72-Uka" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="gdW-iU-Tv7">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="gdW-iU-Tv7">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

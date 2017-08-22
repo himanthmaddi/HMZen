@@ -347,6 +347,11 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"] forKey:@"email"];
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"_officeId"] forKey:@"officeId"];
             loginButton.enabled =  YES;
+            
+            NSNumber *scheduleBool = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"transportUser"];
+            NSLog(@"%@",scheduleBool);
+            [[NSUserDefaults standardUserDefaults]setObject:scheduleBool forKey:@"transportUser"];
+            
             [spinner stopAnimating];
             [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
             if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){

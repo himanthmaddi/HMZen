@@ -14,7 +14,6 @@
 #import "AdminContactsViewController.h"
 
 @interface MenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>{
-    UITableView *menuView;
     UIImageView *profilePic;
     UILabel *employeeName;
     SettingsViewController *settings;
@@ -25,7 +24,8 @@
 }
 
 -(IBAction)settings:(id)sender;
--(IBAction)help:(id)sender;
+@property (weak , nonatomic) IBOutlet UITableView *menuView;
+
 @property (weak, nonatomic) IBOutlet UILabel *picLabel;
 @property (weak, nonatomic) IBOutlet UITextField *Name;
 @property (weak, nonatomic) IBOutlet UITextField *empId;

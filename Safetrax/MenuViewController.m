@@ -15,9 +15,12 @@
 #import "ScheduleViewController.h"
 #import <MBProgressHUD.h>
 
+
 @interface MenuViewController (){
     UINavigationController *navigationVC2;
     UINavigationController *adminNavigation;
+    NSMutableArray *textsArray;
+    NSMutableArray *imagesArray;
 }
 
 @end
@@ -40,11 +43,15 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         adminContacts = [story instantiateViewControllerWithIdentifier:@"AdminContactsViewController"];
         adminNavigation = [[UINavigationController alloc]initWithRootViewController:adminContacts];
     }
+    //    7315158
     return self;
 }
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    textsArray = [[NSMutableArray alloc]init];
+    imagesArray = [[NSMutableArray alloc]init];
+    
     self.view.frame = [[UIScreen mainScreen] bounds];
     picLabel.layer.masksToBounds = YES;
     picLabel.layer.cornerRadius = 20;
@@ -52,25 +59,23 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
                  stringForKey:@"name"];
     empId.text=[[NSUserDefaults standardUserDefaults]
                 stringForKey:@"empid"];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"rosterVisible"]){
-        _underlineView.hidden = NO;
-        _roasterButton.hidden = NO;
-        _roasterImageView.hidden = NO;
-    }else{
-        _underlineView.hidden = YES;
-        _roasterImageView.hidden = YES;
-        _roasterButton.hidden = YES;
-    }
-    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
-                                       stringForKey:@"name"];
-    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
-                                   stringForKey:@"email"];
-    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
-    smoochSettings.conversationAccentColor = [UIColor redColor];
-    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
-
+    [_menuView setTableFooterView:[UIView new]];
     
-    //    picLabel.text = [Name.text substringToIndex:1];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"rosterVisible"]){
+        NSNumber *transportUser = [[NSUserDefaults standardUserDefaults] objectForKey:@"transportUser"];
+        if (transportUser.boolValue == YES){
+            [textsArray addObjectsFromArray:[NSArray arrayWithObjects:@"Home",@"My Schedule",@"Admin Help Desk",@"Settings",@"Support",@"Logout", nil]];
+            [imagesArray addObjectsFromArray:[NSArray arrayWithObjects:[self image:[UIImage imageNamed:@"ic_home.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"_0009_schedule copy.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"helpdesk.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"settings.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"ic_support.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"logout.png"] scaledToSize:CGSizeMake(30, 30)], nil]];
+        }else{
+            [textsArray addObjectsFromArray:[NSArray arrayWithObjects:@"Home",@"Admin Help Desk",@"Settings",@"Support",@"Logout", nil]];
+            [imagesArray addObjectsFromArray:[NSArray arrayWithObjects:[self image:[UIImage imageNamed:@"ic_home.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"helpdesk.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"settings.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"ic_support.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"logout.png"] scaledToSize:CGSizeMake(30, 30)], nil]];
+        }
+    }else{
+        [textsArray addObjectsFromArray:[NSArray arrayWithObjects:@"Home",@"Admin Help Desk",@"Settings",@"Support",@"Logout", nil]];
+        [imagesArray addObjectsFromArray:[NSArray arrayWithObjects:[self image:[UIImage imageNamed:@"ic_home.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"helpdesk.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"settings.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"ic_support.png"] scaledToSize:CGSizeMake(30, 30)],[self image:[UIImage imageNamed:@"LogOut.png"] scaledToSize:CGSizeMake(30, 30)], nil]];
+    }
+    
+    picLabel.text = [Name.text substringToIndex:1];
 }
 - (void)didReceiveMemoryWarning
 {
@@ -101,8 +106,8 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 }
 -(IBAction)history:(id)sender
 {
-    [self.menuContainerViewController setCenterViewController:history];
-    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
+    //    [self.menuContainerViewController setCenterViewController:history];
+    //    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
 }
 -(IBAction)logout:(id)sender
 {
@@ -119,9 +124,18 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 1) {
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
+            NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+            for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+                if ([cookie.name isEqualToString:@"MSISAuth"] ||
+                    [cookie.name isEqualToString:@"MSISAuthenticated"] ||
+                    [cookie.name isEqualToString:@"MSISLoopDetectionCookie"]) {
+                    [cookieJar deleteCookie:cookie];
+                }
             }
+            
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+            [[UIApplication sharedApplication] cancelAllLocalNotifications];
             [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
             [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
             home.view.backgroundColor = [UIColor clearColor];
@@ -136,6 +150,10 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
             [appDelegate dismiss_delegate:nil];
             [self.view removeFromSuperview];
         }else{
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+            [[UIApplication sharedApplication] cancelAllLocalNotifications];
+            
             [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
             [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
             home.view.backgroundColor = [UIColor clearColor];
@@ -153,15 +171,6 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     }
 }
 -(IBAction)help:(id)sender{
-    [SKTUser currentUser].firstName = [[NSUserDefaults standardUserDefaults]
-                                       stringForKey:@"name"];
-    [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults]
-                                   stringForKey:@"email"];
-    SKTSettings* smoochSettings = [SKTSettings settingsWithAppToken:@"1pbsslnn950rbdla9zdp82ged"];
-    smoochSettings.conversationAccentColor = [UIColor blueColor];
-    smoochSettings.conversationStatusBarStyle = UIStatusBarStyleLightContent;
-    [Smooch initWithSettings:smoochSettings];
-    [Smooch show];
 }
 -(IBAction)mySchedulePressed:(id)sender
 {
@@ -197,5 +206,57 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
+}
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return 1;
+}
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return textsArray.count;
+}
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+    
+    cell.imageView.image = [imagesArray objectAtIndex:indexPath.section];
+    cell.backgroundColor = [UIColor colorWithRed:(81.0/255.0) green:(151.0/255.0) blue:(37.0/255.0) alpha:1.0];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.textLabel.text = [textsArray objectAtIndex:indexPath.section];
+    cell.textLabel.textColor = [UIColor whiteColor];
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.clipsToBounds = YES;
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    return cell;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 50;
+}
+- (UIImage *)image:(UIImage*)originalImage scaledToSize:(CGSize)size
+{
+    if (CGSizeEqualToSize(originalImage.size, size))
+    {
+        return originalImage;
+    }
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
+    [originalImage drawInRect:CGRectMake(0.0f, 0.0f, size.width, size.height)];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSString *cellText = [textsArray objectAtIndex:indexPath.section];
+    if ([cellText isEqualToString:@"Home"]){
+        [self home:nil];
+    }else if ([cellText isEqualToString:@"My Schedule"]){
+        [self mySchedulePressed:nil];
+    }else if ([cellText isEqualToString:@"Admin Help Desk"]){
+        [self adminContactsPressed:nil];
+    }else if ([cellText isEqualToString:@"Settings"]){
+        [self settings:nil];
+    }else if ([cellText isEqualToString:@"Support"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [Smooch show];
+        });
+    }else if ([cellText isEqualToString:@"Logout"]){
+        [self logout:nil];
+    }
 }
 @end

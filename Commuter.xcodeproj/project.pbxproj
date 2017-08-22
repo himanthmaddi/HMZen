@@ -48,6 +48,7 @@
 		01C63B741E30300B00A5EE3A /* Driver-48 copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B731E30300B00A5EE3A /* Driver-48 copy.png */; };
 		01C63B761E30301700A5EE3A /* vehicle.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B751E30301700A5EE3A /* vehicle.png */; };
 		01EA0F951EE173F4006B18AB /* ic_user_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EA0F941EE173F4006B18AB /* ic_user_black.png */; };
+		01EBFDF01F44338D0002E805 /* logout.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EBFDEF1F44338D0002E805 /* logout.png */; };
 		19FD74750C031C952414F6D2 /* libPods-Parent App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7046B849DACAED6E905D84 /* libPods-Parent App.a */; };
 		840CDB981CFC5DCA00777C2B /* HeadBundlerClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 840CDB971CFC5DCA00777C2B /* HeadBundlerClass.m */; };
 		840D30581AB09570003E8A41 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 840D30571AB09570003E8A41 /* bg.jpg */; };
@@ -509,6 +510,7 @@
 		01C63B731E30300B00A5EE3A /* Driver-48 copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Driver-48 copy.png"; sourceTree = "<group>"; };
 		01C63B751E30301700A5EE3A /* vehicle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vehicle.png; sourceTree = "<group>"; };
 		01EA0F941EE173F4006B18AB /* ic_user_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_user_black.png; sourceTree = "<group>"; };
+		01EBFDEF1F44338D0002E805 /* logout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logout.png; sourceTree = "<group>"; };
 		4291D157DACE579141826525 /* Pods-Commuter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Commuter.release.xcconfig"; path = "Pods/Target Support Files/Pods-Commuter/Pods-Commuter.release.xcconfig"; sourceTree = "<group>"; };
 		44508BA36CA332CF33BC166D /* Pods-Parent App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Parent App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Parent App/Pods-Parent App.debug.xcconfig"; sourceTree = "<group>"; };
 		4598AB89C9800D441CE9C091 /* libPods-Parent AppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Parent AppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1500,6 +1502,7 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				01EBFDEF1F44338D0002E805 /* logout.png */,
 				01EA0F941EE173F4006B18AB /* ic_user_black.png */,
 				017AFC241ED5A04C00821552 /* helpdesk.png */,
 				010AABC31E5D572C00F1EF1C /* 1024X500.png */,
@@ -2217,6 +2220,7 @@
 				84EF22C11C46B4FF00701D47 /* Default.png in Resources */,
 				84E320811A84F1E200322052 /* ChangePasswordViewController.xib in Resources */,
 				84CBE1701A71430E00BB42A4 /* _0017_Background.png in Resources */,
+				01EBFDF01F44338D0002E805 /* logout.png in Resources */,
 				B7D0FB6119696F6000971470 /* InfoPlist.strings in Resources */,
 				84CBE16D1A71430E00BB42A4 /* _0015_more.png in Resources */,
 				84F660C51A5C123C000179C9 /* map.JPG in Resources */,
@@ -2969,7 +2973,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.commute;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3008,7 +3012,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mtap.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.commute;
 				PRODUCT_NAME = Commuter;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
