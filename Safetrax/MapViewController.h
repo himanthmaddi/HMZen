@@ -17,7 +17,6 @@
     TripModel *tripModel;
     NSTimer *timer;
     __weak IBOutlet UIView *mapView;
-    GMSMarker *marker_current;
     NSMutableData *_responseData;
     NSMutableArray *markers;
     GMSMarker *marker_driver;

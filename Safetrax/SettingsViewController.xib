@@ -74,7 +74,7 @@
                                 <constraint firstAttribute="height" constant="30" id="hd5-TL-mpc"/>
                                 <constraint firstAttribute="width" constant="25" id="uYr-4f-j4O"/>
                             </constraints>
-                            <state key="normal" title="Button" image="_0016_sos.png">
+                            <state key="normal" title="Button" image="shield_03apr.png">
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <variation key="default">
@@ -88,7 +88,7 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" red="0.0" green="0.62352941179999999" blue="0.52549019610000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.31914448740000001" green="0.59344351289999997" blue="0.14652583" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="FdF-77-JGA" firstAttribute="top" secondItem="7Gx-WE-eG7" secondAttribute="top" constant="29" id="0LO-aB-POK"/>
                         <constraint firstAttribute="trailing" secondItem="FdF-77-JGA" secondAttribute="trailing" constant="18" id="1CV-LC-pP3"/>
@@ -389,7 +389,7 @@
         <image name="_0004_track-on-sos.png" width="50" height="46"/>
         <image name="_0007_change-password.png" width="33" height="50"/>
         <image name="_0008_about.png" width="50" height="50"/>
-        <image name="_0016_sos.png" width="66" height="66"/>
+        <image name="shield_03apr.png" width="83" height="84"/>
         <image name="side drawer.png" width="72" height="45"/>
     </resources>
 </document>

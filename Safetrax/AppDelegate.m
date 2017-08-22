@@ -49,6 +49,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
 @synthesize responseData;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+
     
     [IQKeyboardManager sharedManager].enable = YES;
     
