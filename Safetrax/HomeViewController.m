@@ -20,6 +20,7 @@
 #import "validateLogin.h"
 #import "SessionValidator.h"
 #import "companyCodeViewController.h"
+
 #if Parent
 //import feedback class
 #else
@@ -63,20 +64,22 @@ BOOL no_trips = FALSE;
 
 - (void)viewDidLoad
 {
-    
-    
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"loginAlready"];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"terminated"]){
         companyCodeViewController *company = [[companyCodeViewController alloc]init];
         [company refreshCompanyConfig:[[NSUserDefaults standardUserDefaults] stringForKey:@"companycode"]];
     }else{
-        NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
-        NSLog(@"%@",version);
-        if (![version isEqualToString:@"1.6"]){
-            companyCodeViewController *company = [[companyCodeViewController alloc]init];
-            [company refreshCompanyConfig:[[NSUserDefaults standardUserDefaults] stringForKey:@"companycode"]];
-        }
+        
+    }
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"scheduleVisibility"]){
+        mainSegment.hidden = NO;
+        [mainSegment setSelectedSegmentIndex:0];
+        schedule =[[EmpSchedule alloc] init:self];
+    }else{
+        mainSegment.hidden = YES;
+        [mainSegment setSelectedSegmentIndex:1];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
@@ -103,26 +106,13 @@ BOOL no_trips = FALSE;
     
     if(result == NSOrderedDescending || result == NSOrderedSame)
     {
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-            }
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-            [appDelegate dismiss_delegate:nil];
-            [self.view removeFromSuperview];
-        }else{
-            SessionValidator *validator = [[SessionValidator alloc]init];
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                NSLog(@"%@",result);
-                dispatch_semaphore_signal(semaphore);
-            }];
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        }
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
     else if(result == NSOrderedAscending)
     {
@@ -139,9 +129,6 @@ BOOL no_trips = FALSE;
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addFeedback:) name:@"addFeedback" object:nil];
-    // CheckFeedbackViewController *CheckFeedback = [[CheckFeedbackViewController alloc] init];
-    //[CheckFeedback setDelegate:self];
-    //[CheckFeedback downloadConfig];
     [TripCollection initArray];
     refreshControl = [[UIRefreshControl alloc] init];
     refreshControl.backgroundColor = [UIColor clearColor];
@@ -161,8 +148,6 @@ BOOL no_trips = FALSE;
     validateLogin *validate = [[validateLogin alloc] init];
     [validate setDelegate:self];
     self.tripTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.tripTable.delegate = self;
-    self.tripTable.dataSource =self;
     //    self.tripTable.hidden = YES;
     [super viewDidLoad];
     self.menuContainerViewController.panMode = MFSideMenuPanModeNone;
@@ -177,17 +162,19 @@ BOOL no_trips = FALSE;
     NSDate *currDate = [NSDate date];
     NSLog(@"date-- %@",currDate);
     currentDate.text  = [dateFormatter stringFromDate:currDate];
-    //    [currentDate setHidden:NO];
-    //    [logoutTime setHidden:NO];
-    //    [loginTime setHidden:NO];
-    //    [scheduleImage setHidden:NO];
-    //    [noScheduleView setHidden:YES];
     NSString *showFeedback = [[NSUserDefaults standardUserDefaults] objectForKey:@"ShowFeedbackForm"];
     if([showFeedback isEqualToString:@"YES"])
     {
         NSLog(@"yes for feedback");
         [self performSelector:@selector(ShowFeedback) withObject:nil afterDelay:1.0];
         
+    }
+    if([mainSegment selectedSegmentIndex] == 0){
+        [self segmentIndex0];
+    }
+    if([mainSegment selectedSegmentIndex] == 1)
+    {
+        [self segmentIndex1];
     }
 }
 - (void)appplicationIsActive:(NSNotification *)notification {
@@ -212,16 +199,13 @@ BOOL no_trips = FALSE;
 }
 -(void)refresh
 {
-    NSLog(@"refresh");
-    if(!refreshInProgress){
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"OneTripIsInActive"];
-        [TripCollection initArray];
-        refreshInProgress = TRUE;
-        [self didFinishvalidation];
-        [self tripsForRating];
-        [tripTable reloadData];
-    }
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"OneTripIsInActive"];
+    [TripCollection initArray];
+    refreshInProgress = TRUE;
+    [self didFinishvalidation];
+    [self tripsForRating];
     [refreshControl endRefreshing];
+    [tripTable reloadData];
 }
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
@@ -245,59 +229,8 @@ BOOL no_trips = FALSE;
 }
 -(void)didFinishvalidation
 {
-    if ([self connectedToInternet]){
-        //    NSString *idToken = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-        //    _responseData = nil;
-        //    _responseData = [[NSMutableData alloc] init];
-        //    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-        //    NSLog(@"%@",tokenString);
-        //    long double today = [[[NSDate date] dateByAddingTimeInterval:-5*60*60] timeIntervalSince1970];
-        //    long double yesterday = [[[NSDate date] dateByAddingTimeInterval: 48*60*60] timeIntervalSince1970];
-        //    NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
-        //    NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
-        //    long double mine = [str1 doubleValue]*1000;
-        //    long double mine2 = [str2 doubleValue]*1000;
-        //        NSString *headerString;
-        //        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-        //                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
-        //        }else{
-        //                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-        //        }
-        //
-        //    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-        //    NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
-        //    NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
-        //    BOOL falsef = false;
-        //    NSDictionary *running1 = @{@"runningStatus":@{@"$exists":[NSNumber numberWithBool:false]}};
-        //    NSDictionary *running2 = @{@"runningStatus":@{@"$ne":@"completed"}};
-        //    NSMutableArray *addingArray = [[NSMutableArray alloc]initWithObjects:running1,running2, nil];
-        //    NSDictionary *postDictionary = @{@"$or":addingArray,@"employees._employeeId":idToken,@"startTime":@{@"$gte":todayTime,@"$lte":beforeDayTime}};
-        //    NSLog(@"%@",postDictionary);
-        //
-        //        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-        //        NSString *url;
-        //        if([Port isEqualToString:@"-1"])
-        //        {
-        //            url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
-        //        }
-        //        else
-        //        {
-        //            url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
-        //        }
-        //       NSURL *URL =[NSURL URLWithString:url];
-        //
-        //        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-        //        [request setHTTPMethod:@"POST"];
-        //        NSError *error;
-        //        [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:postDictionary options:kNilOptions error:&error]];
-        //        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-        //
-        //        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-        //        [self onFinishLoadingwithData:data];
-        
-    }else{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-    }
+    
+    
 }
 #pragma mark Menu Event
 - (void)menuStateEventOccurred:(NSNotification *)notification {
@@ -326,15 +259,6 @@ BOOL no_trips = FALSE;
     actualTimeArray = [[NSMutableArray alloc]init];
     
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tripTable reloadData];
-            [self refresh];
-        });
-    });
-    
     NSString *showFeedback = [[NSUserDefaults standardUserDefaults] objectForKey:@"ShowFeedbackForm"];
     if([showFeedback isEqualToString:@"YES"])
     {
@@ -342,72 +266,11 @@ BOOL no_trips = FALSE;
         [self performSelector:@selector(ShowFeedback) withObject:nil afterDelay:1.0];
         
     }
-    //    if([mainSegment selectedSegmentIndex] == 0){
-    //        schedule =[[EmpSchedule alloc] init:self];
-    //    }
-    //    if([mainSegment selectedSegmentIndex] == 1)
-    //    {
-    NSLog(@"viewwillload");
-    
-    //    }
     [super viewWillAppear:NO];
     
 }
 #pragma mark Sub States
--(void)attendance
-{
-    //  [infoView setFrame:CGRectMake(0, [constant adjust:(425)], 320, 145)];
-    attending = [[UIButton alloc]initWithFrame:CGRectMake(80, 400, 44, 44)];
-    [attending.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:13.0]];
-    attending.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-    [attending setTitle:@"ATTENDING" forState:UIControlStateNormal];
-    [attending addTarget:self action:@selector(attending:) forControlEvents:UIControlEventTouchDown];
-    [attending setImage:[UIImage imageNamed:@"_0004_attending-inactive.png"] forState:UIControlStateNormal];
-    attendingLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 450, 90, 20)];
-    attendingLabel.backgroundColor = [UIColor clearColor];
-    attendingLabel.textAlignment = NSTextAlignmentLeft;
-    attendingLabel.textColor = [UIColor blackColor];
-    attendingLabel.text = @"Attending";
-    attendingLabel.font=[attendingLabel.font fontWithSize:16];
-    //    [self.view addSubview:attendingLabel];
-    attending.tag = 234;
-    notAttending = [[UIButton alloc]initWithFrame:CGRectMake(200, 400, 44, 44)];
-    [notAttending.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:13.0]];
-    notAttending.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-    [notAttending setTitle:@"NOT ATTENDING" forState:UIControlStateNormal];
-    [notAttending setImage:[UIImage imageNamed:@"_0003_not-attending-inactive.png"] forState:UIControlStateNormal];
-    [notAttending addTarget:self action:@selector(notAttending:) forControlEvents:UIControlEventTouchDown];
-    notAttending.tag = 235;
-    notAttendingLabel = [[UILabel alloc] initWithFrame:CGRectMake(170, 450, 120, 20)];
-    notAttendingLabel.backgroundColor = [UIColor clearColor];
-    notAttendingLabel.textAlignment = NSTextAlignmentLeft;
-    notAttendingLabel.textColor = [UIColor blackColor];
-    notAttendingLabel.font=[notAttendingLabel.font fontWithSize:16];
-    notAttendingLabel.text = @" Not Attending";
-    //    [self.view addSubview:notAttendingLabel];
-    notAttendingLabel.tag = 435;
-    attendingLabel.tag = 434;
-    topLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 350, self.view.frame.size.width, 30)];
-    [topLabel setFont:[UIFont fontWithName:@"Helvetica" size:15.0]];
-    [topLabel setTextAlignment:NSTextAlignmentCenter];
-    [topLabel setText:@"Please Confirm Your Attendance"];
-    topLabel.tag = 237;
-    NSNumber *boolSchedule = [[NSUserDefaults standardUserDefaults] valueForKey:@"scheduleVisibility"];
-    NSLog(@"%@",boolSchedule);
-    if (boolSchedule.boolValue == YES){
-        [self.view addSubview:attendingLabel];
-        [self.view addSubview:notAttendingLabel];
-        [self.view addSubview:topLabel];
-        [self.view addSubview:notAttending];
-        [self.view addSubview:attending];
-        
-    }else{
-        
-    }
-    //    [self.view addSubview:topLabel];
-    //    [self.view addSubview:notAttending];
-    //    [self.view addSubview:attending];
-}
+
 #pragma mark Clear Screen
 -(void)cleanInfoView {
     for (UIView *view in self.view.subviews) {
@@ -423,60 +286,13 @@ BOOL no_trips = FALSE;
     [validate setDelegate:self];
     switch ([sender selectedSegmentIndex]) {
         case 0:
-            schedule = nil;
-            [tripTable setHidden:YES];
-            [[self.view viewWithTag:234] setHidden:NO];
-            [[self.view viewWithTag:235] setHidden:NO];
-            [[self.view viewWithTag:236] setHidden:NO];
-            [[self.view viewWithTag:237] setHidden:NO];
-            [[self.view viewWithTag:435] setHidden:NO];
-            [[self.view viewWithTag:434] setHidden:NO];
-            [[self.view viewWithTag:878] setHidden:NO];
-            [[self.view viewWithTag:238] removeFromSuperview];
-            [[self.view viewWithTag:223388] removeFromSuperview];
-            
-            schedule =[[EmpSchedule alloc] init:self];
-            [currentDate setHidden:NO];
-            [logoutTime setHidden:NO];
-            [loginTime setHidden:NO];
-            [scheduleImage setHidden:NO];
-            loginLable.hidden = NO;
-            logoutLabel.hidden = NO;
-            /*  if(![[schedule getLogin] isEqualToString:@"OFF"]){
-             
-             }
-             else
-             {
-             noScheduleView.hidden = NO;
-             loginLable.hidden = YES;
-             logoutLabel.hidden = YES;
-             }*/
-            [activityIndicator removeFromSuperview];
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            [self segmentIndex0];
             break;
         case 1:
         {
-            [self.view addSubview:activityIndicator];
-            hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            [[self.view viewWithTag:234] setHidden:YES];
-            [[self.view viewWithTag:235] setHidden:YES];
-            [[self.view viewWithTag:435] setHidden:YES];
-            [[self.view viewWithTag:878] setHidden:YES];
-            [[self.view viewWithTag:434] setHidden:YES];
-            [[self.view viewWithTag:236] setHidden:YES];
-            [[self.view viewWithTag:237] setHidden:YES];
-            [currentDate setHidden:YES];
-            [logoutTime setHidden:YES];
-            [loginTime setHidden:YES];
-            [scheduleImage setHidden:YES];
-            [logoutLabel setHidden:YES];
-            [loginLable setHidden:YES];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self refresh];
-                });
-            });
-            [tripTable setHidden:NO];
-            [tripTable reloadData];
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            [self segmentIndex1];
         }
             break;
         default:
@@ -512,18 +328,6 @@ BOOL no_trips = FALSE;
 {
     [self.menuContainerViewController toggleLeftSideMenuCompletion:^{}];
     infoView.dynamic = NO;
-}
--(IBAction)attending:(id)sender
-{
-    attendingAlert = [[UIAlertView alloc]initWithTitle:@"Attending" message:@"Confirm Attendance?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Confirm", nil];
-    [attendingAlert setTag:1];
-    [attendingAlert show];
-}
--(IBAction)notAttending:(id)sender
-{
-    attendingAlert = [[UIAlertView alloc]initWithTitle:@"Not Attending" message:@"Confirm Absence?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Confirm", nil];
-    [attendingAlert setTag:2];
-    [attendingAlert show];
 }
 -(IBAction)call:(id)sender{
     [self reachedDestination];
@@ -620,7 +424,6 @@ BOOL no_trips = FALSE;
 }
 -(void)onFailure
 {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
     refreshInProgress = FALSE;
     NSLog(@"Failure callback");
 }
@@ -772,10 +575,11 @@ BOOL no_trips = FALSE;
         
     }
     refreshInProgress = FALSE;
-    //    [activityIndicator stopAnimating];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [activityIndicator removeFromSuperview];
+    });
     
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [activityIndicator removeFromSuperview];
 }
 -(void)addTripWitharray:(NSMutableArray *)array
 {
@@ -912,7 +716,7 @@ BOOL no_trips = FALSE;
     {
         NSLog(@"lesser");
         return YES;
-        [tripTable reloadData];
+        //  [tripTable reloadData];
     }
 }
 -(void)ScheduleTripEndNotification:(NSString *)scheduleDate withTripID:(NSString *)tripID
@@ -1008,63 +812,9 @@ BOOL no_trips = FALSE;
 }
 -(void)empAttendance
 {
-    NSMutableString *mutableString = @"";
-    if(![[schedule getLogin] isEqualToString:@"OFF"] && [schedule getLogin] != NULL){
-        mutableString = [NSMutableString stringWithString:[schedule getLogin]];
-        [mutableString insertString:@":" atIndex:2];
-        loginTime.text =mutableString;
-    }
-    else{
-        loginTime.text = @"OFF";
-    }
-    
-    NSMutableString *logoutString;
-    if(![[schedule getLogout] isEqualToString:@"OFF"] && [schedule getLogin] != NULL){
-        logoutString = [NSMutableString stringWithString:[schedule getLogout]];
-        [logoutString insertString:@":" atIndex:2];
-        logoutTime.text =logoutString;
-    }else{
-        logoutTime.text = @"OFF";
-    }
-    //    mutableString = [NSMutableString stringWithString:[schedule getLogout]];
-    //    if(![[schedule getLogout] isEqualToString:@"OFF"]){
-    //        [mutableString insertString:@":" atIndex:2];
-    //        logoutTime.text = mutableString;
-    //    }
-    //    else
-    //        logoutTime.text = @"OFF";
-    
-    NSLog(@"schedule--> %ld",(long)[schedule isAttending]);
-    //noScheduleView.hidden = YES;
-    if(!([logoutTime.text isEqualToString:@"OFF"] && [loginTime.text isEqualToString:@"OFF"])){
-        if([schedule isAttending] == 0 ) {
-            [[self.view viewWithTag:234] removeFromSuperview];
-            [[self.view viewWithTag:235] removeFromSuperview];
-            [[self.view viewWithTag:434] removeFromSuperview];
-            [[self.view viewWithTag:435] removeFromSuperview];
-            [[self.view viewWithTag:237] removeFromSuperview];
-            [self attendance];
-        }
-        else
-        {
-            [[self.view viewWithTag:878] removeFromSuperview];
-            [self confirmAttendance:[schedule isAttending]];
-        }
-    }
-    else
-    {
-        //        noScheduleView.hidden = NO;
-        [[self.view viewWithTag:234] removeFromSuperview];
-        [[self.view viewWithTag:235] removeFromSuperview];
-        [[self.view viewWithTag:434] removeFromSuperview];
-        [[self.view viewWithTag:435] removeFromSuperview];
-        [[self.view viewWithTag:237] removeFromSuperview];
-        [[self.view viewWithTag:878] removeFromSuperview];
-    }
-    //    [activityIndicator stopAnimating];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [activityIndicator removeFromSuperview];
-    
+    schedule = [[EmpSchedule alloc]init];
+    loginTime.text = [schedule getLogin];
+    logoutTime.text = [schedule getLogout];
 }
 -(void)confirmAttendance:(NSInteger)isAttending
 {
@@ -1094,7 +844,7 @@ BOOL no_trips = FALSE;
         {
             [[self.view viewWithTag:238] removeFromSuperview];
         }
-        UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(((self.view.frame.size.width/2)-25), 200, 100, 107)];
+        UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(((self.view.frame.size.width/2)-50), 200, 100, 107)];
         no_trips.image = [UIImage imageNamed:@"_0008_no-trip-illustration.png"];
         no_trips.tag = 238;
         [self.view addSubview:no_trips];
@@ -1103,9 +853,10 @@ BOOL no_trips = FALSE;
         {
             [[self.view viewWithTag:223388] removeFromSuperview];
         }
-        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(((self.view.frame.size.width/2)-84), 320, 168, 100)];
-        label1.text = @"No Trips Configured";
+        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(10, no_trips.frame.origin.y + no_trips.frame.size.height + 30, self.view.frame.size.width - 20, 100)];
+        label1.text = @"No Trips Scheduled!";
         label1.tag = 223388;
+        label1.textAlignment = NSTextAlignmentCenter;
         [self.view addSubview:label1];
         
     }
@@ -1126,7 +877,7 @@ BOOL no_trips = FALSE;
         {
             [[self.view viewWithTag:238] removeFromSuperview];
         }
-        UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(100, 200, 100, 107)];
+        UIImageView *no_trips = [[UIImageView alloc] initWithFrame:CGRectMake(((self.view.frame.size.width/2)-50), 200, 100, 107)];
         no_trips.image = [UIImage imageNamed:@"_0008_no-trip-illustration.png"];
         no_trips.tag = 238;
         [self.view addSubview:no_trips];
@@ -1136,9 +887,10 @@ BOOL no_trips = FALSE;
             [[self.view viewWithTag:223388] removeFromSuperview];
         }
         
-        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(((self.view.frame.size.width/2)-84), 320, 168, 100)];
-        label1.text = @"No Trips Configured";
+        UILabel *label1 = [[UILabel alloc]initWithFrame:CGRectMake(10, no_trips.frame.origin.y + no_trips.frame.size.height + 30, self.view.frame.size.width - 20, 100)];
+        label1.text = @"No Trips Scheduled!";
         label1.tag = 223388;
+        label1.textAlignment = NSTextAlignmentCenter;
         [self.view addSubview:label1];
         
         return 0;
@@ -1288,25 +1040,22 @@ BOOL no_trips = FALSE;
      */
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *tripString;
-    /* if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0"))
-     return 100.0;
-     else
-     return UITableViewAutomaticDimension;*/
-    if (indexPath.section==0) {
-        tripString = [[tripsSection1 objectAtIndex:indexPath.row] substringToIndex:[[tripsSection1 objectAtIndex:indexPath.row] length]-2];
-    }
-    else
-    {
-        tripString = [[tripsSection2 objectAtIndex:indexPath.row] substringToIndex:[[tripsSection2 objectAtIndex:indexPath.row] length]-2];
-        
-    }
-    CGRect textRect = [tripString boundingRectWithSize:CGSizeMake(300.f, CGFLOAT_MAX)
-                                               options:NSStringDrawingUsesLineFragmentOrigin
-                                            attributes:@{NSFontAttributeName:[ UIFont fontWithName: @"Arial" size: 18.0 ]}
-                                               context:nil];
-    CGSize size = textRect.size;
-    return size.height+10;
+    //    NSString *tripString;
+    //    if (indexPath.section==0) {
+    //        tripString = [[tripsSection1 objectAtIndex:indexPath.row] substringToIndex:[[tripsSection1 objectAtIndex:indexPath.row] length]-2];
+    //    }
+    //    else
+    //    {
+    //        tripString = [[tripsSection2 objectAtIndex:indexPath.row] substringToIndex:[[tripsSection2 objectAtIndex:indexPath.row] length]-2];
+    //
+    //    }
+    //    CGRect textRect = [tripString boundingRectWithSize:CGSizeMake(300.f, CGFLOAT_MAX)
+    //                                               options:NSStringDrawingUsesLineFragmentOrigin
+    //                                            attributes:@{NSFontAttributeName:[ UIFont fontWithName: @"Arial" size: 18.0 ]}
+    //                                               context:nil];
+    //    CGSize size = textRect.size;
+    //    return size.height+10;
+    return 120;
 }
 -(IBAction)cancelTrip:(id)sender{
     NSLog(@"abort trip");
@@ -1358,83 +1107,89 @@ BOOL no_trips = FALSE;
 }
 -(void)pushDeviceTokenWithFCM
 {
-    if ([self connectedToInternet]){
-        NSLog(@"push device token");
-        NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
-        NSLog(@"%@",userid);
-        NSString *token = [[FIRInstanceID instanceID] token];
-        NSLog(@"%@",token);
-        NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"GCMToken"]);
-        NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-        
-        NSDictionary *findParameters;
-        
-        NSDictionary *setParameters;
-        
-        if(token == nil || userid == nil){
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        if ([self connectedToInternet]){
+            NSLog(@"push device token");
+            NSString *userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"empid"];
+            NSLog(@"%@",userid);
+            NSString *token = [[FIRInstanceID instanceID] token];
+            NSLog(@"%@",token);
+            NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"GCMToken"]);
+            NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
             
-        }else{
+            NSDictionary *findParameters;
             
-            findParameters = @{@"empid":userid};
-            setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
-            NSLog(@"%@",setParameters);
-            NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
-            NSError *error;
-            NSLog(@"%@",array);
-            NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+            NSDictionary *setParameters;
             
-            
-            NSError *error_config;
-            
-            
-            NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-            NSString *headerString;
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+            if(token == nil || userid == nil){
+                
             }else{
-                headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-            }
-            NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-            
-            NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-            NSString *url;
-            if([Port isEqualToString:@"-1"])
-            {
-                url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-            }
-            else
-            {
-                url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
-            }
-            NSURL *URL =[NSURL URLWithString:url];
-            NSLog(@"%@",URL);
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
-            [request setHTTPMethod:@"POST"];
-            [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-            [request setHTTPBody:dataJson];
-            NSURLResponse *responce;
-            NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
-            if (data != nil){
-                id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
-                NSLog(@"%@",json);
-                if ([json isKindOfClass:[NSDictionary class]]){
-                    if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
-                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+                
+                findParameters = @{@"empid":userid};
+                setParameters = @{@"$set":@{@"fcmtoken":token,@"empid":userid,@"app":@"iOS",@"version":version}};
+                NSLog(@"%@",setParameters);
+                NSMutableArray *array = [[NSMutableArray alloc]initWithObjects:findParameters,setParameters, nil];
+                NSError *error;
+                NSLog(@"%@",array);
+                NSData *dataJson = [NSJSONSerialization dataWithJSONObject:array options:kNilOptions error:&error];
+                
+                
+                NSError *error_config;
+                
+                
+                NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                NSString *headerString;
+                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                    headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                }else{
+                    headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                }
+                NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                
+                NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                NSString *url;
+                if([Port isEqualToString:@"-1"])
+                {
+                    url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+                }
+                else
+                {
+                    url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&upsert=true",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"write",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"fcmtokens"];
+                }
+                NSURL *URL =[NSURL URLWithString:url];
+                NSLog(@"%@",URL);
+                NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+                [request setHTTPMethod:@"POST"];
+                [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                [request setHTTPBody:dataJson];
+                NSURLResponse *responce;
+                NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responce error:&error_config];
+                if (data != nil){
+                    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error_config];
+                    NSLog(@"%@",json);
+                    if ([json isKindOfClass:[NSDictionary class]]){
+                        if ([[json valueForKey:@"status"] isEqualToString:@"ok"]){
+                            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"fcmtokenpushed"];
+                        }else{
+                            
+                        }
                     }else{
                         
                     }
-                }else{
                     
+                }else{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    });
                 }
-                
-            }else{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                });
             }
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }else{
+            
         }
-    }else{
-        
-    }
+    });
 }
 
 -(void)tripCompletedNotification:(NSNotification *)sender{
@@ -1498,7 +1253,6 @@ BOOL no_trips = FALSE;
     [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
     
     NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-    [self finishLoading:resultData];
     if (resultData != nil){
         id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error];
         NSLog(@"%@",result);
@@ -1532,6 +1286,7 @@ BOOL no_trips = FALSE;
                 }
             }
             if (myTripsArray.count > 0){
+                [self finishLoading:resultData];
                 for (NSDictionary *eachTrip in myTripsArray){
                     long double bufferEndTimeinMS = [[eachTrip valueForKey:@"bufferEndTime"] doubleValue];
                     long double bufferStartTimeinMS = [[eachTrip valueForKey:@"bufferStartTime"] doubleValue];
@@ -1610,19 +1365,26 @@ BOOL no_trips = FALSE;
                 }
             }
             else{
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
-                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
-                        _sosMainButton.hidden = YES;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
+                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
+                            _sosMainButton.hidden = YES;
+                        }else{
+                            _sosMainButton.hidden = NO;
+                        }
                     }else{
-                        _sosMainButton.hidden = NO;
+                        _sosMainButton.hidden = YES;
                     }
-                }else{
-                    _sosMainButton.hidden = YES;
-                }
+                });
             }
+        }else{
+            
         }
     }else{
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
     }
 }
 -(void)pushNotification:(NSTimer *)sender{
@@ -1736,4 +1498,107 @@ BOOL no_trips = FALSE;
     }
     return 0;
 }
+-(void)segmentIndex0{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        schedule =[[EmpSchedule alloc] init:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            schedule = nil;
+            [tripTable setHidden:YES];
+            [[self.view viewWithTag:234] setHidden:NO];
+            [[self.view viewWithTag:235] setHidden:NO];
+            [[self.view viewWithTag:236] setHidden:NO];
+            [[self.view viewWithTag:237] setHidden:NO];
+            [[self.view viewWithTag:435] setHidden:NO];
+            [[self.view viewWithTag:434] setHidden:NO];
+            [[self.view viewWithTag:878] setHidden:NO];
+            [[self.view viewWithTag:238] removeFromSuperview];
+            [[self.view viewWithTag:223388] removeFromSuperview];
+            [currentDate setHidden:NO];
+            [logoutTime setHidden:NO];
+            [loginTime setHidden:NO];
+            [scheduleImage setHidden:NO];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"scheduleVisibility"]){
+                loginLable.hidden = NO;
+                logoutLabel.hidden = NO;
+            }else{
+                loginLable.hidden = YES;
+                logoutLabel.hidden = YES;
+            }
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+}
+-(void)segmentIndex1{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [self refresh];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[self.view viewWithTag:234] setHidden:YES];
+            [[self.view viewWithTag:235] setHidden:YES];
+            [[self.view viewWithTag:435] setHidden:YES];
+            [[self.view viewWithTag:878] setHidden:YES];
+            [[self.view viewWithTag:434] setHidden:YES];
+            [[self.view viewWithTag:236] setHidden:YES];
+            [[self.view viewWithTag:237] setHidden:YES];
+            [currentDate setHidden:YES];
+            [logoutTime setHidden:YES];
+            [loginTime setHidden:YES];
+            [scheduleImage setHidden:YES];
+            [logoutLabel setHidden:YES];
+            [loginLable setHidden:YES];
+            [tripTable setHidden:NO];
+            tripTable.delegate = self;
+            tripTable.dataSource = self;
+            [tripTable reloadData];
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+    });
+}
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell respondsToSelector:@selector(tintColor)]) {
+        if (tableView == tripTable) {
+            CGFloat cornerRadius = 8.f;
+            cell.backgroundColor = UIColor.clearColor;
+            CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+            CGMutablePathRef pathRef = CGPathCreateMutable();
+            CGRect bounds = CGRectInset(cell.bounds, 10, 0);
+            BOOL addLine = NO;
+            if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+                CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
+            } else if (indexPath.row == 0) {
+                CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
+                CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
+                CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+                CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
+                addLine = YES;
+            } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+                CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
+                CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
+                CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+                CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
+            } else {
+                CGPathAddRect(pathRef, nil, bounds);
+                addLine = YES;
+            }
+            layer.path = pathRef;
+            CFRelease(pathRef);
+            layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+            layer.lineWidth = 1.0;
+            layer.borderColor = [UIColor darkGrayColor].CGColor;
+            if (addLine == YES) {
+                CALayer *lineLayer = [[CALayer alloc] init];
+                CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
+                lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
+                lineLayer.backgroundColor = tableView.separatorColor.CGColor;
+                [layer addSublayer:lineLayer];
+            }
+            UIView *testView = [[UIView alloc] initWithFrame:bounds];
+            [testView.layer insertSublayer:layer atIndex:0];
+            testView.backgroundColor = UIColor.clearColor;
+            cell.backgroundView = testView;
+        }
+    }
+}
+
 @end

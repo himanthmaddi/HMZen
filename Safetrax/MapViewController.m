@@ -130,26 +130,14 @@ int isRefresh =0;
     
     if(result == NSOrderedDescending || result == NSOrderedSame)
     {
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-            }
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-            [appDelegate dismiss_delegate:nil];
-            [self.view removeFromSuperview];
-        }else{
-            SessionValidator *validator = [[SessionValidator alloc]init];
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                NSLog(@"%@",result);
-                dispatch_semaphore_signal(semaphore);
-            }];
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        }
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
     }
     else if(result == NSOrderedAscending)
     {
@@ -206,7 +194,7 @@ int isRefresh =0;
         [markers removeObjectAtIndex:3];
     if([markers count] >2)
         [markers removeObjectAtIndex:2];
-    marker_current.map = nil;
+    //    marker_current.map = nil;
     marker_driver.map =nil;
     _responseData = nil;
     _responseData = [[NSMutableData alloc] init];
@@ -215,13 +203,13 @@ int isRefresh =0;
 #if Parent
     //No need of current Location
 #else
-    marker_current= [[GMSMarker alloc] init];
-    marker_current.position = CLLocationCoordinate2DMake(latitude,longitude);
-    marker_current.title = @"Current Location";
-    marker_current.icon = [UIImage imageNamed:@"_0002_location-marker_blue.png"];
-    marker_current.icon = [self image:marker_current.icon scaledToSize:CGSizeMake(50.0f, 50.0f)];
-    marker_current.map = mapView_;
-    [markers addObject:marker_current];
+    //    marker_current= [[GMSMarker alloc] init];
+    //    marker_current.position = CLLocationCoordinate2DMake(latitude,longitude);
+    //    marker_current.title = @"Current Location";
+    //    marker_current.icon = [UIImage imageNamed:@"_0002_location-marker_blue.png"];
+    //    marker_current.icon = [self image:marker_current.icon scaledToSize:CGSizeMake(50.0f, 50.0f)];
+    //    marker_current.map = mapView_;
+    //    [markers addObject:marker_current];
 #endif
     [self getDriverLocation];
 }
@@ -283,14 +271,14 @@ int isRefresh =0;
     if (longitude == 0 || latitude == 0){
         
     }else{
-        marker_current= [[GMSMarker alloc] init];
-        NSLog(@"%f",longitude);
-        NSLog(@"%f",latitude);
-        marker_current.position = CLLocationCoordinate2DMake(latitude,longitude);
-        marker_current.title = @"Current Location";
-        marker_current.icon = [UIImage imageNamed:@"_0002_location-marker_blue.png"];
-        marker_current.icon = [self image:marker_current.icon scaledToSize:CGSizeMake(50.0f, 50.0f)];
-        [markers addObject:marker_current];
+        //        marker_current= [[GMSMarker alloc] init];
+        //        NSLog(@"%f",longitude);
+        //        NSLog(@"%f",latitude);
+        //        marker_current.position = CLLocationCoordinate2DMake(latitude,longitude);
+        //        marker_current.title = @"Current Location";
+        //        marker_current.icon = [UIImage imageNamed:@"_0002_location-marker_blue.png"];
+        //        marker_current.icon = [self image:marker_current.icon scaledToSize:CGSizeMake(50.0f, 50.0f)];
+        //        [markers addObject:marker_current];
     }
 #endif
     [markers addObject:marker_start];
@@ -301,7 +289,7 @@ int isRefresh =0;
     CGRect fr= CGRectMake(0, 0, mapView.frame.size.width,mapView.frame.size.height);
     mapView_ = [GMSMapView mapWithFrame:fr camera:camera];
     [mapView addSubview:mapView_];
-    marker_current.map = mapView_;
+    //    marker_current.map = mapView_;
     marker_end.map = mapView_;
     marker_start.map =mapView_;
     //[self ShowAllMarkers];
@@ -629,26 +617,14 @@ int isRefresh =0;
                     
                     if(result == NSOrderedDescending || result == NSOrderedSame)
                     {
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                            }
-                            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            [appDelegate dismiss_delegate:nil];
-                            [self.view removeFromSuperview];
-                        }else{
-                            SessionValidator *validator = [[SessionValidator alloc]init];
-                            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                                NSLog(@"%@",result);
-                                dispatch_semaphore_signal(semaphore);
-                            }];
-                            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                        }
+                        SessionValidator *validator = [[SessionValidator alloc]init];
+                        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                            NSLog(@"%@",result);
+                            dispatch_semaphore_signal(semaphore);
+                        }];
+                        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                        
                     }
                     else if(result == NSOrderedAscending)
                     {
@@ -762,26 +738,14 @@ int isRefresh =0;
                             
                             if(result == NSOrderedDescending || result == NSOrderedSame)
                             {
-                                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                                    }
-                                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                    [appDelegate dismiss_delegate:nil];
-                                    [self.view removeFromSuperview];
-                                }else{
-                                    SessionValidator *validator = [[SessionValidator alloc]init];
-                                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                                        NSLog(@"%@",result);
-                                        dispatch_semaphore_signal(semaphore);
-                                    }];
-                                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                                }
+                                SessionValidator *validator = [[SessionValidator alloc]init];
+                                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                    NSLog(@"%@",result);
+                                    dispatch_semaphore_signal(semaphore);
+                                }];
+                                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                                
                             }
                             else if(result == NSOrderedAscending)
                             {
@@ -944,26 +908,14 @@ int isRefresh =0;
                             
                             if(result == NSOrderedDescending || result == NSOrderedSame)
                             {
-                                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                                    }
-                                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                    [appDelegate dismiss_delegate:nil];
-                                    [self.view removeFromSuperview];
-                                }else{
-                                    SessionValidator *validator = [[SessionValidator alloc]init];
-                                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                                        NSLog(@"%@",result);
-                                        dispatch_semaphore_signal(semaphore);
-                                    }];
-                                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                                }
+                                SessionValidator *validator = [[SessionValidator alloc]init];
+                                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                                    NSLog(@"%@",result);
+                                    dispatch_semaphore_signal(semaphore);
+                                }];
+                                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                                
                             }
                             else if(result == NSOrderedAscending)
                             {

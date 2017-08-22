@@ -67,11 +67,13 @@
 @property (nonatomic , strong) IBOutlet UILabel *pinLabel;
 @property (nonatomic , strong) IBOutlet UIImageView *pinImageView;
 @property (nonatomic , strong) IBOutlet UIButton *tripConfirmationsButton;
+@property (nonatomic , strong) IBOutlet UIImageView *driverImageView;
 
 @property (nonatomic, strong) IBOutlet UIButton *callButton;
-@property (nonatomic, strong) IBOutlet UILabel *callLabel;
 
 @property (nonatomic , strong) IBOutlet UILabel *etaLabel;
+@property (weak , nonatomic) IBOutlet UIButton *etaRefreshButton;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil tripArray:(NSArray*)trips selectedIndex:(int)Index withHome:(HomeViewController*)homeobject;
 -(IBAction)Back:(id)sender;

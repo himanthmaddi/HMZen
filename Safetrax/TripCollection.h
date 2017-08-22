@@ -12,7 +12,7 @@
 {
      //NSMutableArray *tripObjIds;
 }
-+(TripCollection *)buildFromdata:(NSData*) data;
++(TripCollection *)buildFromdata:(NSMutableArray*) data;
 +(void)initArray;
 +(void)initArrayWithOldTrips;
 -(void)print;

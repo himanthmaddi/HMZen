@@ -132,28 +132,19 @@ NSString *const SubscriptionTopic = @"/topics/global";
     isOffline = FALSE;
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     [GMSServices provideAPIKey:@"AIzaSyD4P4L-clz8e87Bore8lNDoVY02PgnjUfg"];
+//    AIzaSyCyeJ8zOLI680hdJYOq6Fw-hUXNJoIJ-eU
+//    [GMSServices provideAPIKey:@"AIzaSyBVjiFtamOckXkk_3EVT_KkbiBZyWbJxwg"];
     NSUserDefaults *userDefault=[NSUserDefaults standardUserDefaults];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     BOOL login = [userDefault boolForKey:@"loginAlready"];
     if (login){
-        isFromLogin = FALSE;
-        #if Parent
-        NSLog(@"parent safetrax delegate");
-        HomeViewController *home = [[HomeViewController alloc]init];
-        MenuVIewControllerParent *menu = [[MenuVIewControllerParent alloc]init];
-        rootViewController_delegate = [MFSideMenuContainerViewController
-                                       containerWithCenterViewController:home
-                                       leftMenuViewController:menu
-                                       rightMenuViewController:nil];
-        #else
         HomeViewController *home = [[HomeViewController alloc]init];
         MenuViewController *menu = [[MenuViewController alloc]init];
         rootViewController_delegate = [MFSideMenuContainerViewController
                                        containerWithCenterViewController:home
                                        leftMenuViewController:menu
                                        rightMenuViewController:nil];
-        #endif
         self.window.rootViewController = rootViewController_delegate ;
     }
     else{

@@ -187,8 +187,13 @@ UIActivityIndicatorView *spinnerIndicator;
             }
             
             NSNumber *callEnableBool = config[@"callEnabled"];
-            NSLog(@"%@",callEnableBool);
             [[NSUserDefaults standardUserDefaults] setObject:callEnableBool forKey:@"callEnabled"];
+            
+            if ([config objectForKey:@"secureConfig"]){
+                [[NSUserDefaults standardUserDefaults] setObject:[config objectForKey:@"secureConfig"] forKey:@"secureConfig"];
+            }else{
+                
+            }
             
             NSNumber *callMaskEnableBool = config[@"callMask"];
             [[NSUserDefaults standardUserDefaults] setObject:callMaskEnableBool forKey:@"callMaskEnabled"];
@@ -277,7 +282,6 @@ UIActivityIndicatorView *spinnerIndicator;
                 [[NSUserDefaults standardUserDefaults] synchronize];
                 LoginViewController *login = [[LoginViewController alloc] init];
                 [self presentViewController:login animated:YES completion:nil];
-                
             }
             
         }
@@ -368,6 +372,13 @@ UIActivityIndicatorView *spinnerIndicator;
                 
                 NSNumber *callMaskEnableBool = config[@"callMask"];
                 [[NSUserDefaults standardUserDefaults] setObject:callMaskEnableBool forKey:@"callMaskEnabled"];
+                
+                if ([config objectForKey:@"secureConfig"]){
+                    [[NSUserDefaults standardUserDefaults] setObject:[config objectForKey:@"secureConfig"] forKey:@"secureConfig"];
+                }else{
+                    
+                }
+
                 
                 if (config[@"callerId"]){
                     [[NSUserDefaults standardUserDefaults] setValue:config[@"callerId"] forKey:@"callMaskNumber"];
@@ -513,6 +524,10 @@ UIActivityIndicatorView *spinnerIndicator;
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"] valueForKey:@"mobile"] forKey:@"phonenum"];
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"] forKey:@"email"];
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"_officeId"] forKey:@"officeId"];
+                        
+                        NSNumber *scheduleBool = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"transportUser"];
+                        [[NSUserDefaults standardUserDefaults]setObject:scheduleBool forKey:@"transportUser"];
+                        
                         if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){
                             HomeViewController *home = [[HomeViewController alloc]init];
                             MenuViewController *menu = [[MenuViewController alloc]init];

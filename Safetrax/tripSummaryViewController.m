@@ -174,14 +174,15 @@ NSMutableArray *ChildrenList;
         _pinImageView.hidden = YES;
         _pinLabel.hidden = YES;
     }
-
     
     [super viewWillAppear:animated];
     
 }
 - (void)viewDidLoad {
     
+    [self getDriverImage];
     _pinLabel.text = model.employeePin;
+    startPoint.adjustsFontSizeToFitWidth = YES;
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
@@ -226,26 +227,14 @@ NSMutableArray *ChildrenList;
     
     if(result == NSOrderedDescending || result == NSOrderedSame)
     {
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-            }
-            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-            [appDelegate dismiss_delegate:nil];
-            [self.view removeFromSuperview];
-        }else{
-            SessionValidator *validator = [[SessionValidator alloc]init];
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                NSLog(@"%@",result);
-                dispatch_semaphore_signal(semaphore);
-            }];
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        }
+        SessionValidator *validator = [[SessionValidator alloc]init];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+            NSLog(@"%@",result);
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
     }
     else if(result == NSOrderedAscending)
     {
@@ -257,7 +246,6 @@ NSMutableArray *ChildrenList;
     if (callEnabledBool.boolValue == YES){
         
         _callButton.hidden = NO;
-        _callLabel.hidden = NO;
         
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"]){
             _callButton.enabled = YES;
@@ -267,7 +255,6 @@ NSMutableArray *ChildrenList;
         
     }else{
         _callButton.hidden = YES;
-        _callLabel.hidden = YES;
     }
     
     summaryTable.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, summaryTable.bounds.size.width, 18.0f)];
@@ -279,22 +266,31 @@ NSMutableArray *ChildrenList;
     indexPathArrayForImages = [[NSMutableArray alloc]init];
     finalStopsArray = [[NSMutableArray alloc]init];
     
-    if (model.entryTime || ![[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"] || [model.empstatus isEqualToString:@"incab"] || [model.empstatus isEqualToString:@"reached"]){
+    
+    if ([model.tripType isEqualToString:@"Drop"]){
+        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
+        button.hidden = YES;
+        _etaRefreshButton.hidden = YES;
+    }
+    else if (model.entryTime || [model.empstatus isEqualToString:@"incab"] || [model.empstatus isEqualToString:@"reached"]){
         _etaLabel.text = @"ETA";
         button.hidden = YES;
         startTime.text = @"--";
-    }else{
-        if ([model.tripType isEqualToString:@"Drop"]){
-            startTime.text = @"--";
-            button.hidden = YES;
-        }else{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self refreshForETA:nil];
-                });
-            });
-        }
+        _etaRefreshButton.hidden = YES;
+    }else if (![[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"]){
+        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
+        button.hidden = YES;
+        _etaRefreshButton.hidden = YES;
     }
+    else{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                _etaRefreshButton.hidden = NO;
+                [self refreshForETA:nil];
+            });
+        });
+    }
+    
     
     
     
@@ -481,7 +477,7 @@ NSMutableArray *ChildrenList;
     NSDictionary *tempDict;
     NSArray *finalIdsArray;
     for (NSDictionary *subDict in model.stoppagesArray){
-        if ([[subDict valueForKey:@"name"] isEqualToString:[model.stopsNames objectAtIndex:section]]){
+        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:section]]){
             NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
             tempDict = [model.stoppagesArray objectAtIndex:indexpath];
         }
@@ -512,7 +508,7 @@ NSMutableArray *ChildrenList;
     NSDictionary *tempDict;
     NSArray *finalIdsArray;
     for (NSDictionary *subDict in model.stoppagesArray){
-        if ([[subDict valueForKey:@"name"] isEqualToString:[model.stopsNames objectAtIndex:indexPath.section]]){
+        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:indexPath.section]]){
             NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
             tempDict = [model.stoppagesArray objectAtIndex:indexpath];
         }
@@ -553,16 +549,9 @@ NSMutableArray *ChildrenList;
     }else{
         cell.accessoryView = nil;
     }
-      return cell;
+    return cell;
 }
 #pragma mark - Table view delegate
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-//    if(cell.selectionStyle == UITableViewCellSelectionStyleNone){
-//        return nil;
-//    }
-//    return indexPath;
-//}
 - (BOOL)gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)otherGestureRecognizer
 {
@@ -669,13 +658,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            NSString *phNo = model.driverPhone;
-            NSLog(@"%@",phNo);
+            NSString *phoneNumber = model.driverPhone;
             NSNumber *callmaskEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"callMaskEnabled"];
             if (callmaskEnabled.boolValue == NO){
-                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phNo]];
+                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
                 if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-                    if ([phNo isEqualToString:@""] || phNo.length == 0 || phNo == (id)[NSNull null] || [phNo isEqual:nil]){
+                    if ([phoneNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
                         UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [calert show];
                     }else{
@@ -688,30 +676,30 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                 }
                 
             }else{
-                NSLog(@"number");
-                NSString *callMaskNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"callMaskNumber"];
-                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",callMaskNumber]];
-                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-                    if ([callMaskNumber isEqualToString:@""] || phNo.length == 0 || phNo == (id)[NSNull null] || [phNo isEqual:nil]){
-                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [calert show];
-                    }else{
-                        [[UIApplication sharedApplication] openURL:phoneUrl];
-                    }
-                } else
-                {
-                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                    [calert show];
-                }
+                [self connectBridgeCall];
+//                NSLog(@"number");
+//                NSString *callMaskNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"callMaskNumber"];
+//                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",callMaskNumber]];
+//                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+//                    if ([callMaskNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
+//                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+//                        [calert show];
+//                    }else{
+//                        [[UIApplication sharedApplication] openURL:phoneUrl];
+//                    }
+//                } else
+//                {
+//                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+//                    [calert show];
+//                }
             }
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
     
 }
 -(IBAction)waiting:(id)sender
 {
-
+    
     NSDateFormatter *dateFormatter123 = [[NSDateFormatter alloc]init];
     [dateFormatter123 setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
     if ([[NSDate date] compare:[dateFormatter123 dateFromString:model.scheduledTime]] == NSOrderedAscending){
@@ -762,16 +750,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                               otherButtonTitles:@"Yes", nil];
         alert.tag =1002;
         [alert show];
-        //        }else{
-        //            UIAlertView *alert = [[UIAlertView alloc]
-        //                                  initWithTitle: @""
-        //                                  message: @"Vehicle not arrived at your pick up point"
-        //                                  delegate: nil
-        //                                  cancelButtonTitle:@"Ok"
-        //                                  otherButtonTitles:nil, nil];
-        //            alert.tag =1002;
-        //            [alert show];
-        //        }
+        
     }
 }
 -(void)mockModel:(NSString *)mockModelData
@@ -818,7 +797,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             [alert show];
             
         }
-
+        
+        //        }else{
+        //            UIAlertView *alert = [[UIAlertView alloc]
+        //                                  initWithTitle: @""
+        //                                  message:@"Vehicle not arrived at your drop point"
+        //                                  delegate: nil
+        //                                  cancelButtonTitle:@"Ok"
+        //                                  otherButtonTitles:nil,nil];
+        //            [alert show];
+        //
+        //        }
     }
 }
 
@@ -845,26 +834,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             
             if(result == NSOrderedDescending || result == NSOrderedSame)
             {
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                    }
-                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    [appDelegate dismiss_delegate:nil];
-                    [self.view removeFromSuperview];
-                }else{
-                    SessionValidator *validator = [[SessionValidator alloc]init];
-                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                        NSLog(@"%@",result);
-                        dispatch_semaphore_signal(semaphore);
-                    }];
-                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                }
+                SessionValidator *validator = [[SessionValidator alloc]init];
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                    NSLog(@"%@",result);
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                
             }
             else if(result == NSOrderedAscending)
             {
@@ -887,18 +864,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                 headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
             }
             NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-            //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
-            //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
-            //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
             
             NSDictionary *bodyDict = @{@"type":@"waiting",@"tripId":tripId,@"employeeId":employeeId};
-            //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
-            //            [requestWraper setAuthString:finalAuthString];
-            //            [requestWraper setBodyFromArray:finalArry];
-            //            [requestWraper print];
-            //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
-            //            [RestClient setDelegate:self];
-            //            BOOL isDone = [RestClient execute];
             
             NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
             NSString *url;
@@ -931,7 +898,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                 } else {
                     NSLog(@"%@ %@", response, responseObject);
                     model.empstatus = @"waiting_cab";
-                    [home refresh];
+                    //                    [home refresh];
                     boardedButton.enabled = TRUE;
                     reachedButton.enabled = FALSE;
                     UIButton *button3=(UIButton *)[self.view viewWithTag:601];
@@ -947,20 +914,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             }];
             [dataTask resume];
             
-            //            if(isDone){
-            //                model.empstatus = @"waiting_cab";
-            //                [home refresh];
-            //                boardedButton.enabled = TRUE;
-            //                reachedButton.enabled = FALSE;
-            //                UIButton *button=(UIButton *)[self.view viewWithTag:601];
-            //                button.selected =YES;
-            //                if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
-            //                    {
-            //                    NSLog(@"start tracking home");
-            //                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-            //                    [appDelegate updateLocation];
-            //                    }
-            //            }
         }
         else if(alertView.tag == 1002)
         {
@@ -978,26 +931,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     
                     if(result == NSOrderedDescending || result == NSOrderedSame)
                     {
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                            }
-                            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            [appDelegate dismiss_delegate:nil];
-                            [self.view removeFromSuperview];
-                        }else{
-                            SessionValidator *validator = [[SessionValidator alloc]init];
-                            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                                NSLog(@"%@",result);
-                                dispatch_semaphore_signal(semaphore);
-                            }];
-                            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                        }
+                        SessionValidator *validator = [[SessionValidator alloc]init];
+                        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                            NSLog(@"%@",result);
+                            dispatch_semaphore_signal(semaphore);
+                        }];
+                        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                        
                     }
                     else if(result == NSOrderedAscending)
                     {
@@ -1019,19 +960,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                         headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
                     }
                     NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                    //            NSDictionary *firstDict = @{@"_id":@{@"$oid":tripId},@"employees._employeeId":employeeId};
-                    //            NSDictionary *secondDict = @{@"$set":@{@"employees.$.waiting":@{@"time":todayTime,@"mode":@"ios-app"}}};
-                    //            NSArray *finalArry = [NSArray arrayWithObjects:firstDict,secondDict, nil];
-                    
                     NSDictionary *bodyDict = @{@"type":@"boarded",@"tripId":tripId,@"employeeId":employeeId};
-                    //            MongoRequest *requestWraper =[[MongoRequest alloc] initWithQuery:@"write" withMethod:@"POST" andColumnName:columnName];
-                    //            [requestWraper setAuthString:finalAuthString];
-                    //            [requestWraper setBodyFromArray:finalArry];
-                    //            [requestWraper print];
-                    //            RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
-                    //            [RestClient setDelegate:self];
-                    //            BOOL isDone = [RestClient execute];
-                    
                     NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
                     NSString *url;
                     if([Port isEqualToString:@"-1"])
@@ -1067,7 +996,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                                 UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already boarded cab with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
                                 [aler show];
                                 model.empstatus = @"incab";
-                                [home refresh];
+                                //                                [home refresh];
                                 [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
                                 [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
                                 waitingButton.enabled = FALSE;
@@ -1085,7 +1014,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                         } else {
                             NSLog(@"%@ %@", response, responseObject);
                             model.empstatus = @"incab";
-                            [home refresh];
+                            //                            [home refresh];
                             [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"incab"];
                             [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"reached"];
                             waitingButton.enabled = FALSE;
@@ -1125,27 +1054,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     
                     if(result == NSOrderedDescending || result == NSOrderedSame)
                     {
-                        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                            for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                                [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                            }
-                            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                            [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                            [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            [appDelegate dismiss_delegate:nil];
-                            [self.view removeFromSuperview];
-                        }else{
-                            SessionValidator *validator = [[SessionValidator alloc]init];
-                            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                                NSLog(@"%@",result);
-                                dispatch_semaphore_signal(semaphore);
-                            }];
-                            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                        }
+                        SessionValidator *validator = [[SessionValidator alloc]init];
+                        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                        [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                            NSLog(@"%@",result);
+                            dispatch_semaphore_signal(semaphore);
+                        }];
+                        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
                     }
+                    
                     else if(result == NSOrderedAscending)
                     {
                         NSLog(@"no refresh");
@@ -1199,7 +1116,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                                 _tripConfirmationsButton.hidden = YES;
                                 UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already reached destination with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
                                 [aler show];
-                                [home refresh];
+                                //                                [home refresh];
                                 boardedButton.selected = TRUE;
                                 boardedButton.enabled = FALSE;
                                 waitingButton.enabled = FALSE;
@@ -1221,7 +1138,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                         else {
                             _tripConfirmationsButton.hidden = YES;
                             NSLog(@"%@",response);
-                            [home refresh];
+                            //                            [home refresh];
                             boardedButton.selected = TRUE;
                             boardedButton.enabled = FALSE;
                             waitingButton.enabled = FALSE;
@@ -1262,26 +1179,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             
             if(result == NSOrderedDescending || result == NSOrderedSame)
             {
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                    for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                        [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                    }
-                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                    [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                    [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    [appDelegate dismiss_delegate:nil];
-                    [self.view removeFromSuperview];
-                }else{
-                    SessionValidator *validator = [[SessionValidator alloc]init];
-                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                    [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                        NSLog(@"%@",result);
-                        dispatch_semaphore_signal(semaphore);
-                    }];
-                    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-                }
+                SessionValidator *validator = [[SessionValidator alloc]init];
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                    NSLog(@"%@",result);
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                
             }
             else if(result == NSOrderedAscending)
             {
@@ -1396,9 +1301,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 }
 -(IBAction)refreshForETA:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
         [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
         double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
@@ -1410,26 +1313,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
         
         if(result == NSOrderedDescending || result == NSOrderedSame)
         {
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                for (NSHTTPCookie *value in [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies) {
-                    [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:value];
-                }
-                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
-                [[FIRMessaging messaging] unsubscribeFromTopic:@"/topics/global"];
-                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-                [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
-                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                [appDelegate dismiss_delegate:nil];
-                [self.view removeFromSuperview];
-            }else{
-                SessionValidator *validator = [[SessionValidator alloc]init];
-                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
-                    NSLog(@"%@",result);
-                    dispatch_semaphore_signal(semaphore);
-                }];
-                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            }
+            SessionValidator *validator = [[SessionValidator alloc]init];
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                NSLog(@"%@",result);
+                dispatch_semaphore_signal(semaphore);
+            }];
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            
         }
         else if(result == NSOrderedAscending)
         {
@@ -1569,7 +1460,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
 }
@@ -1707,11 +1597,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex NS_DEPRECATED_IOS(2_0, 8_3) __TVOS_PROHIBITED;
 {
     if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"I am waiting"]){
-        
-        UIAlertView *waitingAlert = [[UIAlertView alloc] initWithTitle:@"Are You Waiting For The Cab At The Boarding Point?" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil];
-        [waitingAlert show];
-        waitingAlert.tag = 1001;
-        
+        NSDateFormatter *dateFormatter123 = [[NSDateFormatter alloc]init];
+        [dateFormatter123 setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
+        if ([[NSDate date] compare:[dateFormatter123 dateFromString:model.scheduledTime]] == NSOrderedAscending){
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"You can send waiting only after boarding time" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            [alert show];
+        }
+        else{
+            UIAlertView *waitingAlert = [[UIAlertView alloc] initWithTitle:@"Are You Waiting For The Cab At The Boarding Point?" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil];
+            [waitingAlert show];
+            waitingAlert.tag = 1001;
+        }
     }else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:@"I have boarded"]){
         
         UIAlertView *boardingAlert = [[UIAlertView alloc] initWithTitle:@"Did You Board The Cab?" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil];
@@ -1742,6 +1638,127 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
         availAlert.tag = 1004;
         
     }
+}
+-(void)getDriverImage{
+    dispatch_async(dispatch_get_global_queue(0, DISPATCH_QUEUE_PRIORITY_HIGH), ^{
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            activityIndicator.frame = CGRectMake(((_driverImageView.frame.size.width - 25) / 2), round((_driverImageView.frame.size.height - 25) / 2), 25, 25);
+            [_driverImageView addSubview:activityIndicator];
+            [activityIndicator startAnimating];
+        });
+        
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *url;
+        if([Port isEqualToString:@"-1"])
+        {
+            url =[NSString stringWithFormat:@"%@://%@/driverimage?driverMobile=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],model.driverPhone];
+            
+        }
+        else
+        {
+            url =[NSString stringWithFormat:@"%@://%@:%@/driverimage?driverMobile=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],model.driverPhone];
+        }
+        
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSString *headerString;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+        }else{
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        }
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        NSURL *URL1 = [NSURL URLWithString:url];
+        NSMutableURLRequest *request1 = [NSMutableURLRequest requestWithURL:URL1];
+        [request1 setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        [request1 setHTTPMethod:@"GET"];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        
+        NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request1 progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+            NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+            return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
+        } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+            if (error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    _driverImageView.image = [UIImage imageNamed:@"ic_user_black.png"];
+                    [activityIndicator stopAnimating];
+                });
+            }else{
+                NSHTTPURLResponse *responseCheck = (NSHTTPURLResponse *)response;
+                if (responseCheck.statusCode == 200){
+                    NSString *theFileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
+                    [[NSUserDefaults standardUserDefaults] setValue:theFileName forKey:@"fileName"];
+                    NSData *data = [NSData dataWithContentsOfURL:filePath];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        _driverImageView.image = [UIImage imageWithData:data];
+                        [activityIndicator stopAnimating];
+                    });
+                }else{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        _driverImageView.image = [UIImage imageNamed:@"ic_user_black.png"];
+                        [activityIndicator stopAnimating];
+                    });
+                }
+            }
+        }];
+        [downloadTask resume];
+    });
+}
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:[[NSUserDefaults standardUserDefaults] valueForKey:@"fileName"]];
+    NSError *error;
+    BOOL success = [fileManager removeItemAtPath:filePath error:&error];
+    if (success) {
+    }
+    else
+    {
+    }
+}
+-(void)connectBridgeCall{
+    NSDictionary *callConfig = [[NSUserDefaults standardUserDefaults] objectForKey:@"secureConfig"];
+    NSString *authStr = [NSString stringWithFormat:@"%@:%@", [callConfig valueForKey:@"sid"], [callConfig valueForKey:@"token"]];
+    NSData *authData = [authStr dataUsingEncoding:NSASCIIStringEncoding];
+    NSString *authValue = [NSString stringWithFormat:@"Basic %@", [authData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]];
+    NSDictionary *headers = @{ @"authorization": authValue,
+                               @"cache-control": @"no-cache"};
+    NSString *urlInString = [NSString stringWithFormat:@"https://twilix.exotel.in/v1/Accounts/%@/Calls/connect?From=%@&To=%@&CallType=trans&CallerId=%@",[callConfig valueForKey:@"sid"],[NSString stringWithFormat:@"%@%@",@"0",[[NSUserDefaults standardUserDefaults] valueForKey:@"phonenum"]],model.driverPhone, [callConfig valueForKey:@"cid"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlInString]
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                       timeoutInterval:10.0];
+    [request setHTTPMethod:@"POST"];
+    [request setAllHTTPHeaderFields:headers];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+                                                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                    });
+                                                    if (error) {
+                                                        NSLog(@"%@", error);
+                                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Call facility not available" message:@"" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                                            [alert show];
+                                                        });
+                                                    } else {
+                                                        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                                                        NSLog(@"%@", httpResponse);
+                                                        if (httpResponse.statusCode == 200){
+                                                            
+                                                        }else{
+                                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Call facility not available" message:@"" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                                                                [alert show];
+                                                            });
+                                                        }
+                                                    }
+                                                }];
+    [dataTask resume];
 }
 
 @end
