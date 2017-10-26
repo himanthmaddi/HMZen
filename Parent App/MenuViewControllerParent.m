@@ -86,7 +86,9 @@ int backStack;
         MyTrip = [[MyTripParentViewController alloc]
                   initWithNibName:@"MyTripParentViewController" bundle:nil];
         [self.menuContainerViewController setCenterViewController:MyTrip];
-        [self.menuContainerViewController toggleLeftSideMenuCompletion:^{ [Smooch show];}];
+        [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
+            
+        }];
         
     }
     else if(backStack == 1)
@@ -110,7 +112,9 @@ int backStack;
         MyChildren = [[MyChildrenViewController alloc]
                       initWithNibName:@"MyChildrenViewController" bundle:nil];
         [self.menuContainerViewController setCenterViewController:MyChildren];
-        [self.menuContainerViewController toggleLeftSideMenuCompletion:^{[Smooch show];}];
+        [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
+            
+        }];
     }
 }
 -(IBAction)MyTrip:(id)sender

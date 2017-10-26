@@ -48,6 +48,11 @@
 		01C63B721E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */; };
 		01C63B741E30300B00A5EE3A /* Driver-48 copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B731E30300B00A5EE3A /* Driver-48 copy.png */; };
 		01C63B761E30301700A5EE3A /* vehicle.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B751E30301700A5EE3A /* vehicle.png */; };
+		01CF5AE21FA1E77E00B28EF2 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; };
+		01CF5AE31FA1E7EF00B28EF2 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; };
+		01CF5AE41FA1E7EF00B28EF2 /* Smooch.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01CF5AEB1FA2142400B28EF2 /* NewMapViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01CF5AE91FA2142400B28EF2 /* NewMapViewViewController.m */; };
+		01CF5AEC1FA2142400B28EF2 /* NewMapViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01CF5AEA1FA2142400B28EF2 /* NewMapViewViewController.xib */; };
 		01EA0F951EE173F4006B18AB /* ic_user_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EA0F941EE173F4006B18AB /* ic_user_black.png */; };
 		01EBFDF01F44338D0002E805 /* logout.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EBFDEF1F44338D0002E805 /* logout.png */; };
 		19FD74750C031C952414F6D2 /* libPods-Parent App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7046B849DACAED6E905D84 /* libPods-Parent App.a */; };
@@ -206,7 +211,6 @@
 		841F46561C19C275006D126F /* MyChildrenViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 841F46541C19C275006D126F /* MyChildrenViewController.xib */; };
 		845FDF821ACC32D800BCE018 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 845FDF811ACC32D800BCE018 /* Images-2.xcassets */; };
 		846672121AC039F300F77DB8 /* validateLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 846672111AC039F300F77DB8 /* validateLogin.m */; };
-		846832B61D2E69DD0092FBCA /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFB6DF1C1EC4F900EB83A9 /* Smooch.framework */; };
 		846D6D2B1D24EFF000C4EB1C /* StoppagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 846D6D291D24EFF000C4EB1C /* StoppagesViewController.m */; };
 		846D6D2C1D24EFF000C4EB1C /* StoppagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 846D6D2A1D24EFF000C4EB1C /* StoppagesViewController.xib */; };
 		847CFB621BE7BA7A00FDCC63 /* Default-568h.png in Resources */ = {isa = PBXBuildFile; fileRef = 847CFB601BE7BA7A00FDCC63 /* Default-568h.png */; };
@@ -215,7 +219,6 @@
 		849404041C5614CE0042302D /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849404021C5614CE0042302D /* FeedbackViewController.m */; };
 		849404051C5614CE0042302D /* FeedbackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 849404031C5614CE0042302D /* FeedbackViewController.xib */; };
 		849404081C566D540042302D /* CheckFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849404071C566D540042302D /* CheckFeedbackViewController.m */; };
-		849CA9651D36312400DAD29E /* Smooch.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 84DFB6E01C1EC4F900EB83A9 /* Smooch.bundle */; };
 		84A81A831A370BB000FCC646 /* s.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 84A81A821A370BB000FCC646 /* s.JPG */; };
 		84B694931AA70DCE000EE11C /* _0000_location-marker_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 84B694901AA70DCE000EE11C /* _0000_location-marker_red.png */; };
 		84B694941AA70DCE000EE11C /* _0001_location-marker_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 84B694911AA70DCE000EE11C /* _0001_location-marker_green.png */; };
@@ -333,8 +336,6 @@
 		84DEB99B1C23051C00C01299 /* Map Filled-25.png in Resources */ = {isa = PBXBuildFile; fileRef = 84DEB9991C23051C00C01299 /* Map Filled-25.png */; };
 		84DEB99D1C2314FC00C01299 /* GoogleMaps.framework in Sources */ = {isa = PBXBuildFile; fileRef = 84DEB99C1C2314FC00C01299 /* GoogleMaps.framework */; };
 		84DEB99E1C23158800C01299 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEB99C1C2314FC00C01299 /* GoogleMaps.framework */; };
-		84DFB6E11C1EC4F900EB83A9 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFB6DF1C1EC4F900EB83A9 /* Smooch.framework */; };
-		84DFB6E21C1EC4F900EB83A9 /* Smooch.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 84DFB6E01C1EC4F900EB83A9 /* Smooch.bundle */; };
 		84DFB6E41C1EC51E00EB83A9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFB6E31C1EC51E00EB83A9 /* AssetsLibrary.framework */; };
 		84DFB6E61C1EC52900EB83A9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFB6E51C1EC52900EB83A9 /* CFNetwork.framework */; };
 		84DFB6E81C1EC53E00EB83A9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFB6E71C1EC53E00EB83A9 /* CoreTelephony.framework */; };
@@ -456,6 +457,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		01CF5AE51FA1E7EF00B28EF2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				01CF5AE41FA1E7EF00B28EF2 /* Smooch.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		01019AD11E08FEDE003E1F26 /* ScheduleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScheduleTableViewCell.h; sourceTree = "<group>"; };
 		01019AD21E08FEDE003E1F26 /* ScheduleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduleTableViewCell.m; sourceTree = "<group>"; };
@@ -511,6 +526,11 @@
 		01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_alarm_black_18dp copy.png"; sourceTree = "<group>"; };
 		01C63B731E30300B00A5EE3A /* Driver-48 copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Driver-48 copy.png"; sourceTree = "<group>"; };
 		01C63B751E30301700A5EE3A /* vehicle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vehicle.png; sourceTree = "<group>"; };
+		01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
+		01CF5AE61FA1F27600B28EF2 /* icons8-Do Not Disturb-48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-Do Not Disturb-48.png"; sourceTree = "<group>"; };
+		01CF5AE81FA2142400B28EF2 /* NewMapViewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewMapViewViewController.h; sourceTree = "<group>"; };
+		01CF5AE91FA2142400B28EF2 /* NewMapViewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NewMapViewViewController.m; sourceTree = "<group>"; };
+		01CF5AEA1FA2142400B28EF2 /* NewMapViewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewMapViewViewController.xib; sourceTree = "<group>"; };
 		01EA0F941EE173F4006B18AB /* ic_user_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_user_black.png; sourceTree = "<group>"; };
 		01EBFDEF1F44338D0002E805 /* logout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logout.png; sourceTree = "<group>"; };
 		4291D157DACE579141826525 /* Pods-Commuter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Commuter.release.xcconfig"; path = "Pods/Target Support Files/Pods-Commuter/Pods-Commuter.release.xcconfig"; sourceTree = "<group>"; };
@@ -871,8 +891,6 @@
 		84DEB9941C22FEC100C01299 /* Map-25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Map-25.png"; sourceTree = "<group>"; };
 		84DEB9991C23051C00C01299 /* Map Filled-25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Map Filled-25.png"; path = "Parent App/Map Filled-25.png"; sourceTree = "<group>"; };
 		84DEB99C1C2314FC00C01299 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
-		84DFB6DF1C1EC4F900EB83A9 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
-		84DFB6E01C1EC4F900EB83A9 /* Smooch.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Smooch.bundle; sourceTree = "<group>"; };
 		84DFB6E31C1EC51E00EB83A9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		84DFB6E51C1EC52900EB83A9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		84DFB6E71C1EC53E00EB83A9 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -1036,7 +1054,6 @@
 				84E9BD091C1845C500D0839F /* OpenGLES.framework in Frameworks */,
 				84E9BD071C18458A00D0839F /* ImageIO.framework in Frameworks */,
 				84E9BD061C18458300D0839F /* SystemConfiguration.framework in Frameworks */,
-				84DFB6E11C1EC4F900EB83A9 /* Smooch.framework in Frameworks */,
 				84E9BD041C18454B00D0839F /* MapKit.framework in Frameworks */,
 				19FD74750C031C952414F6D2 /* libPods-Parent App.a in Frameworks */,
 			);
@@ -1062,10 +1079,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01CF5AE21FA1E77E00B28EF2 /* Smooch.framework in Frameworks */,
 				84DEB99E1C23158800C01299 /* GoogleMaps.framework in Frameworks */,
 				84B6CE0A1A5D72D8001A33E9 /* SystemConfiguration.framework in Frameworks */,
 				84B6CE0C1A5D72EE001A33E9 /* ImageIO.framework in Frameworks */,
 				84B6CE081A5D72CD001A33E9 /* QuartzCore.framework in Frameworks */,
+				01CF5AE31FA1E7EF00B28EF2 /* Smooch.framework in Frameworks */,
 				84B6CE061A5D72C6001A33E9 /* OpenGLES.framework in Frameworks */,
 				84B6CE041A5D72BD001A33E9 /* libz.dylib in Frameworks */,
 				84B6CE021A5D72B3001A33E9 /* libicucore.dylib in Frameworks */,
@@ -1079,7 +1098,6 @@
 				B7D0FB5919696F6000971470 /* CoreGraphics.framework in Frameworks */,
 				B7D0FB5B19696F6000971470 /* UIKit.framework in Frameworks */,
 				B7D0FB5719696F6000971470 /* Foundation.framework in Frameworks */,
-				846832B61D2E69DD0092FBCA /* Smooch.framework in Frameworks */,
 				D9FE3B1A976DE4B887446FF3 /* libPods-Commuter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1146,6 +1164,16 @@
 				01C63B6D1E302EE400A5EE3A /* SomeViewController.xib */,
 			);
 			name = Rating;
+			sourceTree = "<group>";
+		};
+		01CF5AE71FA213C300B28EF2 /* New Map */ = {
+			isa = PBXGroup;
+			children = (
+				01CF5AE81FA2142400B28EF2 /* NewMapViewViewController.h */,
+				01CF5AE91FA2142400B28EF2 /* NewMapViewViewController.m */,
+				01CF5AEA1FA2142400B28EF2 /* NewMapViewViewController.xib */,
+			);
+			name = "New Map";
 			sourceTree = "<group>";
 		};
 		841F44EB1C198324006D126F /* MFSideMenu */ = {
@@ -1504,6 +1532,7 @@
 		B7D0FB4A19696F6000971470 = {
 			isa = PBXGroup;
 			children = (
+				01CF5AE61FA1F27600B28EF2 /* icons8-Do Not Disturb-48.png */,
 				0180DC191F4C516A00A654C1 /* mapnewCar.png */,
 				01EBFDEF1F44338D0002E805 /* logout.png */,
 				01EA0F941EE173F4006B18AB /* ic_user_black.png */,
@@ -1576,13 +1605,12 @@
 		B7D0FB5519696F6000971470 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */,
 				84D81F0A1C21827A00E81B88 /* GoogleMaps.framework */,
 				84DFB6E91C1EC56D00EB83A9 /* Photos.framework */,
 				84DFB6E71C1EC53E00EB83A9 /* CoreTelephony.framework */,
 				84DFB6E51C1EC52900EB83A9 /* CFNetwork.framework */,
 				84DFB6E31C1EC51E00EB83A9 /* AssetsLibrary.framework */,
-				84DFB6DF1C1EC4F900EB83A9 /* Smooch.framework */,
-				84DFB6E01C1EC4F900EB83A9 /* Smooch.bundle */,
 				84E9BD1A1C184C4000D0839F /* libicucore.A.dylib */,
 				84E9BD181C184BE800D0839F /* libz.1.dylib */,
 				84E9BD161C184BBC00D0839F /* libc++.1.dylib */,
@@ -1616,6 +1644,7 @@
 		B7D0FB5C19696F6000971470 /* Safetrax */ = {
 			isa = PBXGroup;
 			children = (
+				01CF5AE71FA213C300B28EF2 /* New Map */,
 				0164574A1EB3443F0062291C /* AdminContacts */,
 				01C63B701E302EEC00A5EE3A /* Rating */,
 				0105D8001D8C0AA800F6F234 /* AFNetworking */,
@@ -1904,6 +1933,7 @@
 				B7D0FB5119696F6000971470 /* Resources */,
 				7E2208A6ED1AA7BD8FB56FEE /* [CP] Embed Pods Frameworks */,
 				A21D19974DBBE3E5DC37C4BA /* [CP] Copy Pods Resources */,
+				01CF5AE51FA1E7EF00B28EF2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1936,8 +1966,8 @@
 						TestTargetID = 84E9BB701C18435C00D0839F;
 					};
 					B7D0FB5219696F6000971470 = {
-						DevelopmentTeam = 2D47VGCJHU;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = VS69383GKM;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2083,7 +2113,6 @@
 				84E9BB7E1C18435D00D0839F /* Main.storyboard in Resources */,
 				841F460C1C198325006D126F /* _0009_map.png in Resources */,
 				841F46561C19C275006D126F /* MyChildrenViewController.xib in Resources */,
-				84DFB6E21C1EC4F900EB83A9 /* Smooch.bundle in Resources */,
 				841F45EB1C198325006D126F /* _0002_location-marker_blue.png in Resources */,
 				841F463B1C198325006D126F /* propic.png in Resources */,
 				841F462B1C198325006D126F /* dial.JPG in Resources */,
@@ -2128,7 +2157,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				849CA9651D36312400DAD29E /* Smooch.bundle in Resources */,
 				84EF22BB1C46A27900701D47 /* Default-568h.png in Resources */,
 				01C63B721E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png in Resources */,
 				84B721931A63DA5700DB81FC /* addContactsView.xib in Resources */,
@@ -2244,6 +2272,7 @@
 				B7380763196BF89E000078BC /* Strips@2x.png in Resources */,
 				84E9BD261C1866B600D0839F /* InfoPlist.strings in Resources */,
 				84C1FC3C1A7FA0D000DBA874 /* SosViewController.xib in Resources */,
+				01CF5AEC1FA2142400B28EF2 /* NewMapViewViewController.xib in Resources */,
 				012E02BB1EB20F0900993C1B /* shield_03apr.png in Resources */,
 				84CBE1691A71430E00BB42A4 /* _0013_back.png in Resources */,
 				84F0957F1A726A0A001DEA2B /* back_.png in Resources */,
@@ -2289,13 +2318,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Parent AppUITests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		085286B000E3B0FE761F04A7 /* [CP] Embed Pods Frameworks */ = {
@@ -2319,13 +2351,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Commuter-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		703AC4FDBBBCA90FDC81EF8D /* [CP] Embed Pods Frameworks */ = {
@@ -2379,13 +2414,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Parent AppTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A21D19974DBBE3E5DC37C4BA /* [CP] Copy Pods Resources */ = {
@@ -2394,9 +2432,13 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Commuter/Pods-Commuter-resources.sh",
+				"${PODS_ROOT}/Harpy/Harpy/Harpy.bundle",
+				"${PODS_ROOT}/IQKeyboardManager/IQKeyBoardManager/Resources/IQKeyboardManager.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2409,9 +2451,13 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Parent App/Pods-Parent App-resources.sh",
+				"${PODS_ROOT}/Harpy/Harpy/Harpy.bundle",
+				"${PODS_ROOT}/IQKeyboardManager/IQKeyBoardManager/Resources/IQKeyboardManager.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2439,13 +2485,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Parent App-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E70A6E1F642C589D4CD72B52 /* [CP] Copy Pods Resources */ = {
@@ -2555,6 +2604,7 @@
 				84D50E661A5FED0400C21EBF /* HelpContactsViewController.m in Sources */,
 				84E73CEE1AD56B7100F0BC49 /* Reachability.m in Sources */,
 				84D808AE1A51822100E4435A /* RequestParams.m in Sources */,
+				01CF5AEB1FA2142400B28EF2 /* NewMapViewViewController.m in Sources */,
 				B7B4F6F7196A5F140094BD77 /* MFSideMenuShadow.m in Sources */,
 				84B721941A63DA5700DB81FC /* newContactView.m in Sources */,
 				B71AA5A81971557D00D1947D /* EmployeeViewController.m in Sources */,
@@ -2899,7 +2949,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "cf58131d-b07f-45b2-bb55-8f6f703a828c";
 				SDKROOT = iphoneos;
@@ -2940,7 +2990,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "cf58131d-b07f-45b2-bb55-8f6f703a828c";
 				SDKROOT = iphoneos;
@@ -2957,8 +3007,8 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -2971,16 +3021,17 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Safetrax/Commuter-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/Safetrax-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "c73fcd24-52c6-490c-904c-933c27c54aa6";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2995,8 +3046,8 @@
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 2D47VGCJHU;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -3009,17 +3060,18 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Safetrax/Commuter-Prefix.pch";
 				INFOPLIST_FILE = "$(SRCROOT)/Safetrax-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				"LD_MAP_FILE_PATH[arch=*]" = "$(TARGET_TEMP_DIR)/$(PRODUCT_NAME)-LinkMap-$(CURRENT_VARIANT)-$(CURRENT_ARCH).txt";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "c73fcd24-52c6-490c-904c-933c27c54aa6";
-				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

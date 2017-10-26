@@ -35,7 +35,9 @@ NSMutableArray *ChildrenList;
     NSMutableArray *employeesArray;
     NSMutableArray *stopsArray;
     NSMutableArray *indexPathArrayForImages;
+    NSMutableArray *indexPathArrayForNoShowImages;
     NSMutableArray *finalStopsArray;
+    NSTimer *etaTimer;
 }
 
 @end
@@ -71,6 +73,10 @@ NSMutableArray *ChildrenList;
     tripArray =trips;
     model = [tripArray objectAtIndex:selectedIndex];
 }
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [etaTimer invalidate];
+}
 -(void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
@@ -84,10 +90,6 @@ NSMutableArray *ChildrenList;
         _round2.layer.cornerRadius = 4;
         _round2.layer.masksToBounds = YES;
     });
-    
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
-    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
     [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
@@ -104,24 +106,9 @@ NSMutableArray *ChildrenList;
     NSLog(@"time %@----%@",tripDate,dateFromString);
     NSTimeInterval secondsBetween = [tripDate timeIntervalSinceDate:dateFromString];
     NSLog(@"difference %f",secondsBetween);
-    //        if((secondsBetween < 1800))
-    //        {
-    //
-    //        }
-    //        else{
-    //            waitingButton.enabled = FALSE;
-    //            boardedButton.enabled = FALSE;
-    //            reachedButton.enabled = FALSE;
-    //            boardedButton.selected = TRUE;
-    //
-    //}
     
     NSDateFormatter *dateFormatter123 = [[NSDateFormatter alloc]init];
     [dateFormatter123 setDateFormat:@"yyyy/MM/dd--HH:mm:ss"];
-    //    for (NSArray *tempArray in [[NSUserDefaults standardUserDefaults] objectForKey:@"allTrips"])
-    //    {
-    //        myArray = [[NSMutableArray alloc]initWithArray:tempArray copyItems:YES];
-    //    }
     
     if([model.empstatus isEqualToString:@"reached"]){
         boardedButton.selected = TRUE;
@@ -163,9 +150,44 @@ NSMutableArray *ChildrenList;
                 boardedButton.selected = TRUE;
             }
         }
-        NSLog(@"%@",model.empstatus);
-        
     }
+    
+    if ([model.tripType isEqualToString:@"Drop"]){
+        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
+        _etaRefreshButton.hidden = YES;
+    }
+    else if (model.entryTime || [model.empstatus isEqualToString:@"incab"] || [model.empstatus isEqualToString:@"reached"]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            startTime.text = @"ETA : --";
+            _etaRefreshButton.hidden = YES;
+        });
+    }else if (![[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"]){
+        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
+        NSLog(@"%@",model.scheduledTime);
+        _etaRefreshButton.hidden = YES;
+    }
+    else{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                _etaRefreshButton.hidden = NO;
+                [self refreshForETA:nil];
+            });
+        });
+        etaTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(refreshForETAWithTimer:) userInfo:nil repeats:YES];
+    }
+    
+    for (NSDictionary *dict in model.employeeInfoAray){
+        [employeesArray addObject:[dict valueForKey:@"_employeeId"]];
+        if ([dict valueForKey:@"boarded"]){
+            [indexPathArrayForImages addObject:[dict valueForKey:@"userId"]];
+        }
+        if ([dict valueForKey:@"noShow"] || [[dict valueForKey:@"cancelled"] boolValue] == YES){
+            [indexPathArrayForNoShowImages addObject:[dict valueForKey:@"userId"]];
+        }
+    }
+    
+    _totalTripIDSarray = [[NSMutableArray alloc]init];
+    
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"employeePin"]){
         _pinImageView.hidden = NO;
@@ -179,7 +201,8 @@ NSMutableArray *ChildrenList;
     
 }
 - (void)viewDidLoad {
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tripCompleted" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
     [self getDriverImage];
     _pinLabel.text = model.employeePin;
     startPoint.adjustsFontSizeToFitWidth = YES;
@@ -264,48 +287,9 @@ NSMutableArray *ChildrenList;
     employeesArray = [[NSMutableArray alloc]init];
     stopsArray = [[NSMutableArray alloc]init];
     indexPathArrayForImages = [[NSMutableArray alloc]init];
+    indexPathArrayForNoShowImages = [[NSMutableArray alloc]init];
     finalStopsArray = [[NSMutableArray alloc]init];
     
-    
-    if ([model.tripType isEqualToString:@"Drop"]){
-        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
-        button.hidden = YES;
-        _etaRefreshButton.hidden = YES;
-    }
-    else if (model.entryTime || [model.empstatus isEqualToString:@"incab"] || [model.empstatus isEqualToString:@"reached"]){
-        _etaLabel.text = @"ETA";
-        button.hidden = YES;
-        startTime.text = @"--";
-        _etaRefreshButton.hidden = YES;
-    }else if (![[NSUserDefaults standardUserDefaults] boolForKey:@"activeInState"]){
-        startTime.text = [[[model.scheduledTime componentsSeparatedByString:@"--"] objectAtIndex:1] substringToIndex:5];
-        button.hidden = YES;
-        _etaRefreshButton.hidden = YES;
-    }
-    else{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _etaRefreshButton.hidden = NO;
-                [self refreshForETA:nil];
-            });
-        });
-    }
-    
-    
-    
-    
-    //    if ([model.tripType isEqualToString:@"Pickup"]){
-    //
-    //    }
-    
-    for (NSDictionary *dict in model.employeeInfoAray){
-        [employeesArray addObject:[dict valueForKey:@"_employeeId"]];
-        if ([dict valueForKey:@"boarded"]){
-            [indexPathArrayForImages addObject:[dict valueForKey:@"userId"]];
-        }
-    }
-    
-    _totalTripIDSarray = [[NSMutableArray alloc]init];
     self.summaryTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.summaryTable setSeparatorInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     [super viewDidLoad];
@@ -460,10 +444,13 @@ NSMutableArray *ChildrenList;
     return items;
 }
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    NSLog(@"%lu",(unsigned long)model.stopsNames.count);
+    NSLog(@"%@",model.stopsNames);
     return model.stopsNames.count;
 }
+
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    return [NSString stringWithFormat:@"%@   -   %@",[model.stopsNames objectAtIndex:section],[model.stopTimes objectAtIndex:section]];
+    return [NSString stringWithFormat:@"  %@  -  %@",[model.stopsNames objectAtIndex:section],[[model.stopTimes objectAtIndex:section] substringToIndex:17]];
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -474,45 +461,69 @@ NSMutableArray *ChildrenList;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     //    return model.stopsNames.count;
-    NSDictionary *tempDict;
-    NSArray *finalIdsArray;
-    for (NSDictionary *subDict in model.stoppagesArray){
-        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:section]]){
-            NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
-            tempDict = [model.stoppagesArray objectAtIndex:indexpath];
+    //    NSDictionary *tempDict;
+    //    NSArray *finalIdsArray;
+    //    for (NSDictionary *subDict in model.stoppagesArray){
+    //        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:section]]){
+    //            NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
+    //            tempDict = [model.stoppagesArray objectAtIndex:indexpath];
+    //        }
+    //    }
+    //    NSArray *idArrayForPickUp = [tempDict valueForKey:@"_pickup"];
+    //    NSArray *idsArrayForDrop = [tempDict valueForKey:@"_drop"];
+    //    if (!idsArrayForDrop || !idsArrayForDrop.count){
+    //        finalIdsArray = idArrayForPickUp;
+    //    }
+    //    else{
+    //        finalIdsArray = idsArrayForDrop;
+    //    }
+    //    NSMutableArray *finalNamesArray = [[NSMutableArray alloc]init];
+    //    NSMutableArray *finalIdsArrayForUsers = [[NSMutableArray alloc]init];
+    //    for (int i=0;i<finalIdsArray.count;i++){
+    //        for(NSDictionary *dict in model.employeeInfoAray){
+    //            if ([[dict valueForKey:@"_employeeId"] isEqualToString:[finalIdsArray objectAtIndex:i]]){
+    //                [finalNamesArray addObject:[dict valueForKey:@"fullName"]];
+    //                [finalIdsArrayForUsers addObject:[dict valueForKey:@"userId"]];
+    //            }
+    //        }
+    //    }
+    //    return finalNamesArray.count;
+    
+    //    if ([model.tripType isEqualToString:@"Pickup"]){
+    //        if ([[[model.stoppagesArray objectAtIndex:section] objectForKey:@"type"] isEqualToString:@"office"]){
+    //            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_drop"] count];
+    //        }else{
+    //            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_pickup"] count];
+    //        }
+    
+    if ([[[model.stoppagesArray objectAtIndex:section] objectForKey:@"type"] isEqualToString:@"office"]){
+        return 0;
+    }else{
+        if ([[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_pickup"] count] != 0){
+            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_pickup"] count];
+        }else{
+            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_drop"] count];
         }
     }
-    NSArray *idArrayForPickUp = [tempDict valueForKey:@"_pickup"];
-    NSArray *idsArrayForDrop = [tempDict valueForKey:@"_drop"];
-    if (!idsArrayForDrop || !idsArrayForDrop.count){
-        finalIdsArray = idArrayForPickUp;
-    }
-    else{
-        finalIdsArray = idsArrayForDrop;
-    }
-    NSMutableArray *finalNamesArray = [[NSMutableArray alloc]init];
-    NSMutableArray *finalIdsArrayForUsers = [[NSMutableArray alloc]init];
-    for (int i=0;i<finalIdsArray.count;i++){
-        for(NSDictionary *dict in model.employeeInfoAray){
-            if ([[dict valueForKey:@"_employeeId"] isEqualToString:[finalIdsArray objectAtIndex:i]]){
-                [finalNamesArray addObject:[dict valueForKey:@"fullName"]];
-                [finalIdsArrayForUsers addObject:[dict valueForKey:@"userId"]];
-            }
-        }
-    }
-    return finalNamesArray.count;
+    //    }else{
+    //        if ([[[model.stoppagesArray objectAtIndex:section] objectForKey:@"type"] isEqualToString:@"office"]){
+    //            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_pickup"] count];
+    //        }else{
+    //            return [[[model.stoppagesArray objectAtIndex:section] objectForKey:@"_drop"] count];
+    //        }
+    //    }
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    NSDictionary *tempDict;
+    NSDictionary *tempDict = [model.stoppagesArray objectAtIndex:indexPath.section];
     NSArray *finalIdsArray;
-    for (NSDictionary *subDict in model.stoppagesArray){
-        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:indexPath.section]]){
-            NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
-            tempDict = [model.stoppagesArray objectAtIndex:indexpath];
-        }
-    }
+    //    for (NSDictionary *subDict in model.stoppagesArray){
+    //        if ([[subDict valueForKey:@"address"] isEqualToString:[model.stopsNames objectAtIndex:indexPath.section]]){
+    //            NSUInteger indexpath = [model.stoppagesArray indexOfObject:subDict];
+    //            tempDict = [model.stoppagesArray objectAtIndex:indexpath];
+    //        }
+    //    }
     NSArray *idArrayForPickUp = [tempDict valueForKey:@"_pickup"];
     NSArray *idsArrayForDrop = [tempDict valueForKey:@"_drop"];
     if (!idsArrayForDrop || !idsArrayForDrop.count){
@@ -521,30 +532,48 @@ NSMutableArray *ChildrenList;
     else{
         finalIdsArray = idsArrayForDrop;
     }
+    NSLog(@"%@",finalIdsArray);
     NSMutableArray *finalNamesArray = [[NSMutableArray alloc]init];
     NSMutableArray *finalIdsArrayForUsers = [[NSMutableArray alloc]init];
+    NSMutableArray *allNamesArray = [[NSMutableArray alloc]init];
+    NSMutableArray *allIdsArray = [[NSMutableArray alloc]init];
+    NSMutableArray *allUserIdsArray = [[NSMutableArray alloc]init];
+    
+    for(NSDictionary *dict in model.employeeInfoAray){
+        [allNamesArray addObject:[dict valueForKey:@"fullName"]];
+        [allIdsArray addObject:[dict valueForKey:@"userId"]];
+        [allUserIdsArray addObject:[dict valueForKey:@"_employeeId"]];
+    }
     for (int i=0;i<finalIdsArray.count;i++){
-        for(NSDictionary *dict in model.employeeInfoAray){
-            if ([[dict valueForKey:@"_employeeId"] isEqualToString:[finalIdsArray objectAtIndex:i]]){
-                [finalNamesArray addObject:[dict valueForKey:@"fullName"]];
-                [finalIdsArrayForUsers addObject:[dict valueForKey:@"userId"]];
-            }
+        if ([allUserIdsArray containsObject:[finalIdsArray objectAtIndex:i]]){
+            NSUInteger index = [allUserIdsArray indexOfObject:[finalIdsArray objectAtIndex:i]];
+            [finalNamesArray addObject:[allNamesArray objectAtIndex:index]];
+            [finalIdsArrayForUsers addObject:[allIdsArray objectAtIndex:index]];
+        }else{
+            [finalNamesArray addObject:@""];
+            [finalIdsArrayForUsers addObject:@""];
         }
     }
-    
     cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
     cell.textLabel.text = [finalNamesArray objectAtIndex:indexPath.row];
     cell.detailTextLabel.text = [finalIdsArrayForUsers objectAtIndex:indexPath.row];
     cell.textLabel.numberOfLines = 0;
     
     if ([model.tripType isEqualToString:@"Pickup"]){
-        if (indexPath.section == model.stopsNames.count-1){
+        if ([[tempDict objectForKey:@"type"] isEqualToString:@"office"]){
             cell.accessoryView = nil;
-        }
-        else if ([indexPathArrayForImages containsObject:cell.detailTextLabel.text]){
-            cell.accessoryView = [[UIImageView alloc]initWithImage:[self image:[UIImage imageNamed:@"boarded.png"] scaledToSize:CGSizeMake(30, 30)]];
         }else{
-            cell.accessoryView = [[UIImageView alloc]initWithImage:[self image:[UIImage imageNamed:@"notboarded.png"] scaledToSize:CGSizeMake(30, 30)]];
+            if (indexPath.section == model.stopsNames.count-1){
+                cell.accessoryView = nil;
+            }
+            else if ([indexPathArrayForNoShowImages containsObject:cell.detailTextLabel.text]){
+                cell.accessoryView = [[UIImageView alloc]initWithImage:[self image:[UIImage imageNamed:@"icons8-Do Not Disturb-48.png"] scaledToSize:CGSizeMake(30, 30)]];
+            }
+            else if ([indexPathArrayForImages containsObject:cell.detailTextLabel.text]){
+                cell.accessoryView = [[UIImageView alloc]initWithImage:[self image:[UIImage imageNamed:@"Boarded.png"] scaledToSize:CGSizeMake(30, 30)]];
+            }else{
+                cell.accessoryView = [[UIImageView alloc]initWithImage:[self image:[UIImage imageNamed:@"Not Boarded.png"] scaledToSize:CGSizeMake(30, 30)]];
+            }
         }
     }else{
         cell.accessoryView = nil;
@@ -589,14 +618,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 
 -(IBAction)showMap:(id)sender
 {
-#if Parent
-    mapView = [[MapViewController alloc] initWithNibName:@"MapViewParent"  bundle:Nil model:model];
-#else
-    
-    mapView = [[MapViewController alloc] initWithNibName:@"MapViewController"  bundle:Nil model:model withHome:home];
-#endif
+    mapView = [[NewMapViewViewController alloc] initWithNibName:@"NewMapViewViewController"  bundle:Nil model:model withHome:home];
     mapView.modalPresentationStyle = UIModalPresentationFormSheet;
     mapView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    mapView.etaString = startTime.text;
     [self presentViewController:mapView animated:YES completion:nil];
 }
 #pragma mark RESTCallBack Delegate Methods
@@ -650,52 +675,51 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 }
 -(IBAction)Back:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"Dismiss"];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self dismissViewControllerAnimated:YES completion:^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }];
+    });
 }
 -(IBAction)call:(id)sender
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            NSString *phoneNumber = model.driverPhone;
-            NSNumber *callmaskEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"callMaskEnabled"];
-            if (callmaskEnabled.boolValue == NO){
-                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
-                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-                    if ([phoneNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
-                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                        [calert show];
-                    }else{
-                        [[UIApplication sharedApplication] openURL:phoneUrl];
-                    }
-                } else
-                {
-                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-                    [calert show];
-                }
-                
+    NSString *phoneNumber = model.driverPhone;
+    NSNumber *callmaskEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"callMaskEnabled"];
+    if (callmaskEnabled.boolValue == NO){
+        NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
+        if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+            if ([phoneNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
+                UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                [calert show];
             }else{
-                [self connectBridgeCall];
-//                NSLog(@"number");
-//                NSString *callMaskNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"callMaskNumber"];
-//                NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",callMaskNumber]];
-//                if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-//                    if ([callMaskNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
-//                        UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-//                        [calert show];
-//                    }else{
-//                        [[UIApplication sharedApplication] openURL:phoneUrl];
-//                    }
-//                } else
-//                {
-//                    UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-//                    [calert show];
-//                }
+                [[UIApplication sharedApplication] openURL:phoneUrl];
             }
-        });
-    });
-    
+        } else
+        {
+            UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            [calert show];
+        }
+        
+    }else{
+        [self connectBridgeCall];
+        //        NSLog(@"number");
+        //        NSString *callMaskNumber = [[NSUserDefaults standardUserDefaults] valueForKey:@"callMaskNumber"];
+        //        NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",callMaskNumber]];
+        //        if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+        //            if ([callMaskNumber isEqualToString:@""] || phoneNumber.length == 0 || phoneNumber == (id)[NSNull null] || [phoneNumber isEqual:nil]){
+        //                UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        //                [calert show];
+        //            }else{
+        //                [[UIApplication sharedApplication] openURL:phoneUrl];
+        //            }
+        //        } else
+        //        {
+        //            UIAlertView *calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"Call Facility Is Not Available!!!" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        //            [calert show];
+        //        }
+    }
 }
 -(IBAction)waiting:(id)sender
 {
@@ -817,6 +841,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     if (alertView.tag == 2222){
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"Dismiss"];
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     if (buttonIndex == 1) {
@@ -906,8 +931,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
                     {
                         NSLog(@"start tracking home");
-                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                        [appDelegate updateLocation];
+                        //                        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                        //                        [appDelegate updateLocation];
                     }
                 }
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -987,7 +1012,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
                     NSLog(@"%@",finalAuthString);
                     NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-                        
                         NSLog(@"%@",responseObject);
                         if (error) {
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
@@ -1005,9 +1029,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                                 button.selected =YES;
                                 if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
                                 {
-                                    NSLog(@"start tracking home");
-                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                    [appDelegate updateLocation];
+                                    //                                    NSLog(@"start tracking home");
+                                    //                                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                    //                                    [appDelegate updateLocation];
                                 }
                             }
                             
@@ -1024,15 +1048,25 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                             if(![[NSUserDefaults standardUserDefaults] boolForKey:@"trackOnlyOnSoS"])
                             {
                                 NSLog(@"start tracking home");
-                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                [appDelegate updateLocation];
+                                //                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                //                                [appDelegate updateLocation];
                             }
                         }
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            button.hidden = YES;
-                            startTime.text = @"--";
+                            startTime.text = @"ETA : --";
+                            _etaRefreshButton.hidden = YES;
                             [MBProgressHUD hideHUDForView:self.view animated:YES];
                         });
+                        if ([indexPathArrayForImages containsObject:[[NSUserDefaults standardUserDefaults] valueForKey:@"empid"]]){
+                            
+                        }else{
+                            if ([model.empstatus isEqualToString:@"incab"] || [[NSUserDefaults standardUserDefaults] boolForKey:@"incab"]){
+                                [indexPathArrayForImages addObject:[[NSUserDefaults standardUserDefaults] valueForKey:@"empid"]];
+                                [self.summaryTable reloadData];
+                            }else{
+                                
+                            }
+                        }
                     }];
                     [dataTask resume];
                 });
@@ -1097,7 +1131,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
                     
                     NSURL *URL = [NSURL URLWithString:url];
-                    NSLog(@"%@",URL);
                     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
                     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
                     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
@@ -1106,16 +1139,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                     NSError *error;
                     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error];
                     [request setHTTPBody:jsonData];
-                    NSLog(@"%@",[[NSString alloc]initWithData:jsonData encoding:NSUTF8StringEncoding]);
-                    NSLog(@"%@",finalAuthString);
                     NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
                         if (error) {
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                             NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
                             if ((long)[httpResponse statusCode] == 409){
                                 _tripConfirmationsButton.hidden = YES;
-                                UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already reached destination with RFID swipe" delegate:nil cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
+                                UIAlertView *aler = [[UIAlertView alloc]initWithTitle:@"Information" message:@"You already reached destination with RFID swipe" delegate:self cancelButtonTitle:@"Ok! Thanks" otherButtonTitles:nil, nil];
                                 [aler show];
+                                aler.tag = 2222;
                                 //                                [home refresh];
                                 boardedButton.selected = TRUE;
                                 boardedButton.enabled = FALSE;
@@ -1131,11 +1163,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                                 [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
                                 UIButton *button=(UIButton *)[self.view viewWithTag:503];
                                 button.selected =YES;
-                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                                [appDelegate stopUpdateLocation];
+                                //                                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                                //                                [appDelegate stopUpdateLocation];
+                                
+                                NSDictionary *info = @{@"tripId":model.tripid};
+                                [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
                             }
                         }
                         else {
+                            //                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"You have successfully reached your destination." message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                            //                            [alert show];
+                            //                            alert.tag = 2222;
                             _tripConfirmationsButton.hidden = YES;
                             NSLog(@"%@",response);
                             //                            [home refresh];
@@ -1153,13 +1191,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                             [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"reached"];
                             UIButton *button=(UIButton *)[self.view viewWithTag:503];
                             button.selected =YES;
-                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            [appDelegate stopUpdateLocation];
+                            //                            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                            //                            [appDelegate stopUpdateLocation];
                             
                             NSDictionary *info = @{@"tripId":model.tripid};
                             [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(pushNotification:) userInfo:info repeats:NO];
                         }
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        model.empstatus = @"reached";
                     }];
                     [dataTask resume];
                     
@@ -1264,19 +1303,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             [dataTask resume];
             
         }
-        if (alertView.tag == 2002){
-            if (buttonIndex == 0){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    SomeViewController *some = [[SomeViewController alloc]init];
-                    [self presentViewController:some animated:YES completion:nil];
-                });
-            }
-        }
         
     }
     
     else {
         NSLog(@"user pressed Cancel");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
     }
 }
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -1299,8 +1333,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
     UIGraphicsEndImageContext();
     return image;
 }
--(IBAction)refreshForETA:(id)sender
-{
+-(void)refreshForETAWithTimer:(NSTimer *)sender{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
         [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
@@ -1370,7 +1403,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
         NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
         if (data != nil){
             id jsonResult = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            NSLog(@"%@",jsonResult);
             if ([jsonResult isKindOfClass:[NSArray class]]){
                 NSArray *array = jsonResult;
                 NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
@@ -1380,70 +1412,293 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                             if ([[dict2 valueForKey:@"_employeeId"] isEqualToString:employeeId]){
                                 if ([dict2 valueForKey:@"boarded"] || [dict2 valueForKey:@"reached"])
                                 {
-                                    button.hidden = YES;
-                                    startTime.text = @"--";
-                                    
-                                }else{
-                                    button.hidden = NO;
-                                    NSString *tripId = model.tripid;
-                                    NSLog(@"%@",tripId);
-                                    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-                                    NSLog(@"%@",employeeId);
-                                    
-                                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
-                                    NSString *url;
-                                    if([Port isEqualToString:@"-1"])
-                                    {
-                                        url =[NSString stringWithFormat:@"%@://%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],employeeId,tripId];
-                                        
-                                    }
-                                    else
-                                    {
-                                        url =[NSString stringWithFormat:@"%@://%@:%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],employeeId,tripId];
-                                    }
-                                    
-                                    NSURL *URL = [NSURL URLWithString:url];
-                                    NSLog(@"%@",URL);
-                                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-                                    NSString *headerString;
-                                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
-                                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
-                                    }else{
-                                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-                                    }
-                                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-                                    NSLog(@"%@",finalAuthString);
-                                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-                                    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-                                    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-                                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-                                    [request setHTTPMethod:@"POST"];
-                                    
-                                    NSDictionary *bodyDict = @{};
-                                    NSError *error;
-                                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error]
-                                    ;
-                                    
-                                    [request setHTTPBody:jsonData];
-                                    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-                                    NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
-                                    
-                                    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                        int time;
-                                        if ([json isKindOfClass:[NSDictionary class]]){
-                                            if ([json valueForKey:@"time"]){
-                                                time = [[json valueForKey:@"time"] intValue];
-                                                int minutes = (time / 60) % 60;
-                                                startTime.text = [NSString stringWithFormat:@"%@ %i%@",@"ETA",minutes,@"mins"];
+                                        startTime.text = @"ETA : --";
+                                        _etaRefreshButton.hidden = YES;
+                                    });
+                                }else{
+                                    NSArray *allStops = [dict objectForKey:@"stoppages"];
+                                    for (NSDictionary *eachDict in allStops){
+                                        if ([[eachDict valueForKey:@"type"] isEqualToString:@"employee"]){
+                                            if ([[eachDict objectForKey:@"_pickup"] containsObject:employeeId]){
+                                                if ([eachDict objectForKey:@"entryTime"] || [eachDict objectForKey:@"exitTime"]){
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        startTime.text = @"ETA : --";
+                                                        _etaRefreshButton.hidden = YES;
+                                                    });
+                                                }else{
+                                                    [self getETAWithCompletionBlock:^(NSString *minutes) {
+                                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                                            if ([minutes isEqualToString:@"NO"]){
+                                                                startTime.text = @"ETA : --";
+                                                            }else{
+                                                                if ([minutes isEqualToString:@"1"] || [minutes isEqualToString:@"0"]){
+                                                                    startTime.text = [NSString stringWithFormat:@"%@ %@%@",@"ETA",minutes,@"min"];
+                                                                }else{
+                                                                    startTime.text = [NSString stringWithFormat:@"%@ %@%@",@"ETA",minutes,@"mins"];
+                                                                }
+                                                            }
+                                                        });
+                                                    }];
+                                                    //                                                    NSString *tripId = model.tripid;
+                                                    //                                                    NSLog(@"%@",tripId);
+                                                    //                                                    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                                                    //                                                    NSLog(@"%@",employeeId);
+                                                    //
+                                                    //                                                    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                                                    //                                                    NSString *url;
+                                                    //                                                    if([Port isEqualToString:@"-1"])
+                                                    //                                                    {
+                                                    //                                                        url =[NSString stringWithFormat:@"%@://%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],employeeId,tripId];
+                                                    //
+                                                    //                                                    }
+                                                    //                                                    else
+                                                    //                                                    {
+                                                    //                                                        url =[NSString stringWithFormat:@"%@://%@:%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],employeeId,tripId];
+                                                    //                                                    }
+                                                    //
+                                                    //                                                    NSURL *URL = [NSURL URLWithString:url];
+                                                    //                                                    NSLog(@"%@",URL);
+                                                    //                                                    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                                                    //                                                    NSString *headerString;
+                                                    //                                                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                                    //                                                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                                                    //                                                    }else{
+                                                    //                                                        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                                                    //                                                    }
+                                                    //                                                    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                                                    //                                                    NSLog(@"%@",finalAuthString);
+                                                    //                                                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+                                                    //                                                    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                                                    //                                                    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+                                                    //                                                    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                                                    //                                                    [request setHTTPMethod:@"POST"];
+                                                    //
+                                                    //                                                    NSDictionary *bodyDict = @{};
+                                                    //                                                    NSError *error;
+                                                    //                                                    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error]
+                                                    //                                                    ;
+                                                    //
+                                                    //                                                    [request setHTTPBody:jsonData];
+                                                    //                                                    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+                                                    //                                                    NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
+                                                    //
+                                                    //                                                    id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                                                    //                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                    //                                                        int time;
+                                                    //                                                        if ([json isKindOfClass:[NSDictionary class]]){
+                                                    //                                                            if ([json valueForKey:@"time"]){
+                                                    //                                                                time = [[json valueForKey:@"time"] intValue];
+                                                    //                                                                int minutes = (time / 60) % 60;
+                                                    //                                                                startTime.text = [NSString stringWithFormat:@"%@ : %i%@",@"ETA",minutes,@"mins"];
+                                                    //                                                            }else{
+                                                    //                                                                startTime.text = @"ETA : --";
+                                                    //                                                            }
+                                                    //                                                        }else{
+                                                    //                                                            startTime.text = @"ETA : --";
+                                                    //                                                        }
+                                                    //                                                    });
+                                                }
                                             }else{
-                                                startTime.text = @"--";
+                                                
                                             }
                                         }else{
-                                            startTime.text = @"--";
+                                            
                                         }
+                                    }
+                                }
+                            }else{
+                                
+                            }
+                        }
+                    }else{
+                        
+                    }
+                }
+            }else{
+                
+            }
+        }else{
+            
+        }
+    });
+    
+}
+-(IBAction)refreshForETA:(id)sender
+{
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+        [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
+        double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
+        NSTimeInterval seconds = expireTime / 1000;
+        NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
+        
+        NSDate *date = [NSDate date];
+        NSComparisonResult result = [date compare:expireDate];
+        
+        if(result == NSOrderedDescending || result == NSOrderedSame)
+        {
+            SessionValidator *validator = [[SessionValidator alloc]init];
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            [validator getNoncewithToken:[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"] :^(NSDictionary *result){
+                NSLog(@"%@",result);
+                dispatch_semaphore_signal(semaphore);
+            }];
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            
+        }
+        else if(result == NSOrderedAscending)
+        {
+            NSLog(@"no refresh");
+        }
+        
+        NSString *idToken = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSLog(@"%@",tokenString);
+        long double today = [[[NSDate date] dateByAddingTimeInterval:-5*60*60] timeIntervalSince1970];
+        long double yesterday = [[[NSDate date] dateByAddingTimeInterval: 48*60*60] timeIntervalSince1970];
+        NSString *str1 = [NSString stringWithFormat:@"%.Lf",today];
+        NSString *str2 = [NSString stringWithFormat:@"%.Lf",yesterday];
+        long double mine = [str1 doubleValue]*1000;
+        long double mine2 = [str2 doubleValue]*1000;
+        NSString *headerString;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+        }else{
+            headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        }
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        NSDecimalNumber *todayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine]];
+        NSDecimalNumber *beforeDayTime = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.7Lf", mine2]];
+        NSDictionary *running1 = @{@"runningStatus":@{@"$exists":[NSNumber numberWithBool:false]}};
+        NSDictionary *running2 = @{@"runningStatus":@{@"$ne":@"completed"}};
+        NSMutableArray *addingArray = [[NSMutableArray alloc]initWithObjects:running1,running2, nil];
+        NSDictionary *postDictionary = @{@"$or":addingArray,@"employees._employeeId":idToken,@"startTime":@{@"$gte":todayTime,@"$lte":beforeDayTime}};
+        
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *url;
+        if([Port isEqualToString:@"-1"])
+        {
+            url =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
+        }
+        else
+        {
+            url =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"query",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"trips"];
+        }
+        NSURL *URL =[NSURL URLWithString:url];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL];
+        [request setHTTPMethod:@"POST"];
+        NSError *error;
+        [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:postDictionary options:kNilOptions error:&error]];
+        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        
+        NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+        if (data != nil){
+            id jsonResult = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            if ([jsonResult isKindOfClass:[NSArray class]]){
+                NSArray *array = jsonResult;
+                NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                for (NSDictionary *dict in array){
+                    if ([model.tripid isEqualToString:[[dict valueForKey:@"_id"] valueForKey:@"$oid"]]){
+                        for (NSDictionary *dict2 in [dict valueForKey:@"employees"]){
+                            if ([[dict2 valueForKey:@"_employeeId"] isEqualToString:employeeId]){
+                                if ([dict2 valueForKey:@"boarded"] || [dict2 valueForKey:@"reached"])
+                                {
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        startTime.text = @"ETA : --";
+                                        _etaRefreshButton.hidden = YES;
                                     });
-                                    
+                                }else{
+                                    NSArray *allStops = [dict objectForKey:@"stoppages"];
+                                    for (NSDictionary *eachDict in allStops){
+                                        if ([[eachDict valueForKey:@"type"] isEqualToString:@"employee"]){
+                                            if ([[eachDict objectForKey:@"_pickup"] containsObject:employeeId]){
+                                                if ([eachDict objectForKey:@"entryTime"] || [eachDict objectForKey:@"exitTime"]){
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        startTime.text = @"ETA : --";
+                                                        _etaRefreshButton.hidden = YES;
+                                                    });
+                                                }else{
+                                                    //                                                NSString *tripId = model.tripid;
+                                                    //                                                NSLog(@"%@",tripId);
+                                                    //                                                NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+                                                    //                                                NSLog(@"%@",employeeId);
+                                                    //
+                                                    //                                                NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+                                                    //                                                NSString *url;
+                                                    //                                                if([Port isEqualToString:@"-1"])
+                                                    //                                                {
+                                                    //                                                    url =[NSString stringWithFormat:@"%@://%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],employeeId,tripId];
+                                                    //
+                                                    //                                                }
+                                                    //                                                else
+                                                    //                                                {
+                                                    //                                                    url =[NSString stringWithFormat:@"%@://%@:%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],employeeId,tripId];
+                                                    //                                                }
+                                                    //
+                                                    //                                                NSURL *URL = [NSURL URLWithString:url];
+                                                    //                                                NSLog(@"%@",URL);
+                                                    //                                                NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+                                                    //                                                NSString *headerString;
+                                                    //                                                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+                                                    //                                                    headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+                                                    //                                                }else{
+                                                    //                                                    headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+                                                    //                                                }
+                                                    //                                                NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+                                                    //                                                NSLog(@"%@",finalAuthString);
+                                                    //                                                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+                                                    //                                                [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+                                                    //                                                [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+                                                    //                                                [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+                                                    //                                                [request setHTTPMethod:@"POST"];
+                                                    //
+                                                    //                                                NSDictionary *bodyDict = @{};
+                                                    //                                                NSError *error;
+                                                    //                                                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error]
+                                                    //                                                ;
+                                                    //
+                                                    //                                                [request setHTTPBody:jsonData];
+                                                    //                                                NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+                                                    //                                                NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
+                                                    //
+                                                    //                                                id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                                                    //                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    //                                                    int time;
+                                                    //                                                    if ([json isKindOfClass:[NSDictionary class]]){
+                                                    //                                                        if ([json valueForKey:@"time"]){
+                                                    //                                                            time = [[json valueForKey:@"time"] intValue];
+                                                    //                                                            int minutes = (time / 60) % 60;
+                                                    //                                                            startTime.text = [NSString stringWithFormat:@"%@ : %i%@",@"ETA",minutes,@"mins"];
+                                                    //                                                        }else{
+                                                    //                                                            startTime.text = @"ETA : --";
+                                                    //                                                        }
+                                                    //                                                    }else{
+                                                    //                                                        startTime.text = @"ETA : --";
+                                                    //                                                    }
+                                                    //                                                });
+                                                    [self getETAWithCompletionBlock:^(NSString *minutes) {
+                                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                                            if ([minutes isEqualToString:@"NO"]){
+                                                                startTime.text = @"ETA : --";
+                                                            }else{
+                                                                if ([minutes isEqualToString:@"1"] || [minutes isEqualToString:@"0"]){
+                                                                    startTime.text = [NSString stringWithFormat:@"%@ %@%@",@"ETA",minutes,@"min"];
+                                                                }else{
+                                                                    startTime.text = [NSString stringWithFormat:@"%@ %@%@",@"ETA",minutes,@"mins"];
+                                                                }
+                                                            }
+                                                        });
+                                                    }];
+                                                }
+                                            }else{
+                                                
+                                            }
+                                        }else{
+                                            
+                                        }
+                                    }
                                 }
                             }else{
                                 
@@ -1460,52 +1715,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
             
         }
         dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
         });
     });
-}
--(void)getSyncTripsFromFCM:(NSArray *)result;
-{
-    NSLog(@"%@",result);
-    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
-    
-    for (NSDictionary *dict in result)
-    {
-        if ([model.tripid isEqualToString:[[dict valueForKey:@"_id"] valueForKey:@"$oid"]]){
-            if ([[dict valueForKey:@"tripLabel"] isEqualToString:@"login"]){
-                
-                NSArray *stops = [dict valueForKey:@"stoppages"];
-                for (NSDictionary *tempDict in stops)
-                {
-                    NSArray *idsArrayForPickup = [tempDict valueForKey:@"_pickup"];
-                    
-                    if (idsArrayForPickup.count != 0){
-                        if ([idsArrayForPickup containsObject:employeeId])
-                        {
-                            if ([dict valueForKey:@"entryTime"]){
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    _etaLabel.text = @"ETA";
-                                    button.hidden = YES;
-                                    startTime.text = @"--";
-                                });
-                            }else{
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    _etaLabel.text = @"ETA";
-                                    button.hidden = NO;
-                                });
-                            }
-                        }
-                    }
-                    
-                }
-                
-            }else{
-                
-            }
-            
-        }else{
-            
-        }
-    }
 }
 -(void)tripCompletedNotification:(NSNotification *)sender{
     NSDictionary *myDictionary = (NSDictionary *)sender.object;
@@ -1513,6 +1725,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
     if ([sender.name isEqualToString:@"tripCompleted"]){
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"tripFeedbackForm"]){
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tripCompleted" object:nil];
                 SomeViewController *some1 = [[SomeViewController alloc]init];
                 [some1 getTripId:[myDictionary valueForKey:@"tripId"]];
                 [self presentViewController:some1 animated:YES completion:nil];
@@ -1526,12 +1739,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
 }
 -(void)pushNotification:(NSTimer *)sender{
     if ([[[NSUserDefaults standardUserDefaults] arrayForKey:@"ratingCompletedTrips"] containsObject:[sender.userInfo valueForKey:@"tripId"]]){
+        
     }else{
         NSArray *userdefaultsArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"ratingCompletedTrips"];
         userdefaultsArray = [NSArray arrayWithObject:[sender.userInfo valueForKey:@"tripId"]];
         [[NSUserDefaults standardUserDefaults] setObject:userdefaultsArray forKey:@"ratingCompletedTrips"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
         [[NSNotificationCenter defaultCenter] postNotificationName:@"tripCompleted" object:sender.userInfo];
     }
 }
@@ -1583,11 +1795,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
                 [actionSheet showInView:self.view];
                 
             }else{
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
-                    _sosMainButton.hidden = YES;
-                }else{
-                    _sosMainButton.hidden = NO;
-                }
+                //                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
+                //                    _sosMainButton.hidden = YES;
+                //                }else{
+                //                    _sosMainButton.hidden = NO;
+                //                }
                 UIAlertView *alertview = [[UIAlertView alloc]initWithTitle:@"You can give your confirmations when trip is in active state" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                 [alertview show];
             }
@@ -1737,7 +1949,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
                                                 completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                        [MBProgressHUD hideHUDForView:self.view animated:YES];
                                                     });
                                                     if (error) {
                                                         NSLog(@"%@", error);
@@ -1761,6 +1973,67 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UISwipeGestureRecognizer *)o
     [dataTask resume];
 }
 
+-(void)getETAWithCompletionBlock:(void(^)(NSString *))completion{
+    NSString *tripId = model.tripid;
+    NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
+    NSLog(@"%@",employeeId);
+    
+    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    NSString *url;
+    if([Port isEqualToString:@"-1"])
+    {
+        url =[NSString stringWithFormat:@"%@://%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],employeeId,tripId];
+        
+    }
+    else
+    {
+        url =[NSString stringWithFormat:@"%@://%@:%@/eta?employeeId=%@&tripId=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],employeeId,tripId];
+    }
+    
+    NSURL *URL = [NSURL URLWithString:url];
+    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+    NSString *headerString;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"azureAuthType"]){
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString,@"oauth_type",@"azure"];
+    }else{
+        headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+    }
+    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+    NSLog(@"%@",finalAuthString);
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+    [request setHTTPMethod:@"POST"];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+        if (connectionError){
+            completion(@"NO");
+        }else{
+            NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&connectionError]);
+            id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&connectionError];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                int time;
+                if ([json isKindOfClass:[NSDictionary class]]){
+                    if ([json valueForKey:@"time"]){
+                        time = [[json valueForKey:@"time"] intValue];
+                        int minutes = (time / 60) % 60;
+                        completion([NSString stringWithFormat:@"%i",minutes]);
+                    }else{
+                        //                        mapView_.selectedMarker = marker_start;
+                        //                        marker_start.title = @"ETA --";
+                        completion(@"NO");
+                    }
+                }else{
+                    //                    mapView_.selectedMarker = marker_start;
+                    //                    marker_start.title = @"ETA --";
+                    completion(@"NO");
+                }
+            });
+        }
+    }];
+    
+}
 @end
 
 

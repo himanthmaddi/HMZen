@@ -100,7 +100,7 @@ BOOL no_trips = FALSE;
     double expireTime = [[[NSUserDefaults standardUserDefaults]stringForKey:@"expiredTime"] doubleValue];
     NSTimeInterval seconds = expireTime / 1000;
     NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
-    
+    NSLog(@"%@",expireDate);
     NSDate *date = [NSDate date];
     NSComparisonResult result = [date compare:expireDate];
     

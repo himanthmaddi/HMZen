@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MapViewController.h"
+#import "NewMapViewViewController.h"
 #import "TripModel.h"
 #import "RestClientTask.h"
 
@@ -30,7 +30,7 @@
     NSMutableArray *subarray;
     int currentExpandedIndex;
     NSMutableDictionary *DataDictionary;
-    MapViewController *mapView;
+    NewMapViewViewController *mapView;
     TripModel *model;
     NSMutableData *_responseData;
     HomeViewController *home;
@@ -86,3 +86,4 @@
 -(IBAction)tripConfirmationsButton:(id)sender;
 
 @end
+

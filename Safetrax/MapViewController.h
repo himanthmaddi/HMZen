@@ -11,15 +11,17 @@
 #import "TripModel.h"
 #import "RestClientTask.h"
 @class HomeViewController;
-@interface MapViewController : UIViewController<RestCallBackDelegate,GMSMapViewDelegate,UIAlertViewDelegate>
+@interface MapViewController : UIViewController<RestCallBackDelegate,GMSMapViewDelegate,UIAlertViewDelegate , UIActionSheetDelegate>
 {
     GMSMapView *mapView_;
     TripModel *tripModel;
     NSTimer *timer;
     __weak IBOutlet UIView *mapView;
+    //    GMSMarker *marker_current;
     NSMutableData *_responseData;
     NSMutableArray *markers;
     GMSMarker *marker_driver;
+    GMSMarker *marker_start;
     HomeViewController *home;
 }
 @property (nonatomic , strong) IBOutlet UIButton *sosMainButton;
@@ -27,8 +29,11 @@
 @property (weak, nonatomic) IBOutlet UIButton *waitingButton;
 @property (weak, nonatomic) IBOutlet UIButton *boardedButton;
 @property (weak, nonatomic) IBOutlet UIButton *callButton;
+@property (weak, nonatomic) IBOutlet UIButton *tripConfirmationsButton;
 
 @property (weak, nonatomic) IBOutlet UIView *buttonsView;
+
+@property (strong , nonatomic) NSString *etaString;
 
 @property (nonatomic, retain) IBOutlet UILabel *DriverName;
 @property (nonatomic, retain) IBOutlet UIButton *MapHelpText;
@@ -37,3 +42,4 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil model:(TripModel*)model;
 -(IBAction)Back:(id)sender;
 @end
+

@@ -171,6 +171,7 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     }
 }
 -(IBAction)help:(id)sender{
+
 }
 -(IBAction)mySchedulePressed:(id)sender
 {
@@ -253,6 +254,9 @@ MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         [self settings:nil];
     }else if ([cellText isEqualToString:@"Support"]){
         dispatch_async(dispatch_get_main_queue(), ^{
+            [Smooch setUserFirstName:[[NSUserDefaults standardUserDefaults] valueForKey:@"name"] lastName:@""];
+            [SKTUser currentUser].email = [[NSUserDefaults standardUserDefaults] valueForKey:@"email"];
+            [[SKTUser currentUser] addProperties:@{@"Company":[[NSUserDefaults standardUserDefaults] valueForKey:@"company"],@"UserId":[[NSUserDefaults standardUserDefaults] valueForKey:@"empid"]}];
             [Smooch show];
         });
     }else if ([cellText isEqualToString:@"Logout"]){

@@ -1,4 +1,4 @@
-//
+	//
 //  LoginViewController.m
 //  Safetrax
 //
@@ -332,11 +332,7 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
             //            SessionValidator *validator = [[SessionValidator alloc]init];
             //            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
             //        }
-            
-            [SKTUser currentUser].firstName = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"];
-            [SKTUser currentUser].email = [[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"];
-            [[SKTUser currentUser] addProperties:@{[[NSUserDefaults standardUserDefaults] valueForKey:@"company"]:@"Company"}];
-            
+                        
             [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"username"];
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"name"];

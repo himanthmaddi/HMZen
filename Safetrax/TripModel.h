@@ -51,3 +51,4 @@
 
 +(TripModel*) buildFromNSDictionary:(NSDictionary *)tripDictionary;
 @end
+

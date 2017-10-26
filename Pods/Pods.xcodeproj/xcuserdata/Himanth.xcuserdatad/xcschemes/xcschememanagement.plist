@@ -4,17 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Harpy-iOS7.0.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Harpy-iOS7.1.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>IQKeyboardManager-iOS7.0.xcscheme</key>
+		<key>Harpy-iOS8.0.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -24,12 +19,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>MBProgressHUD-iOS7.0.xcscheme</key>
+		<key>IQKeyboardManager-iOS8.0.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>MBProgressHUD-iOS7.1.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>MBProgressHUD-iOS8.0.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -56,57 +56,6 @@
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>225CD39F640F85584EC00DD2970B884E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>4B77EED58F60497A567C9FC858CB4B4A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>51618AF81652646C0343B3E5684FDDF0</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>6A3850803FABC704766CEDD06C0F7EE8</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>70CE5AAA49E2559EBEFD872475AF7FF3</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>971E7A8B9631DBA302C93503A64847EC</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AA003F2D6871FF2243F808C6E17A4C09</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>CBB5413B032AF8AF96FD874F40905DCE</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>CC95D0657B1B44F4411B2D4586862DEB</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>D205DC8CC4825FFEF7C747F2F891DDF4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
+	<dict/>
 </dict>
 </plist>

@@ -17,6 +17,7 @@
 #import "SomeViewController.h"
 #import <MBProgressHUD.h>
 
+
 #define DOCUMENTS_FOLDER [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
 NSString *recorderFilePath;
 CGRect keyboardFrame;
@@ -40,7 +41,7 @@ CGRect keyboardFrame;
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"``" object:nil];
     
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"addressGot"];
     AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
@@ -121,9 +122,10 @@ CGRect keyboardFrame;
     RestClientTask *RestClient =[[RestClientTask alloc]initWithMongo:requestWraper];
     [RestClient setDelegate:self];
     _responseData = [[NSMutableData alloc] init];
-    [RestClient execute];
+    //    [RestClient execute];
     [super viewDidLoad];
     sosController = [[SosViewController alloc] initWithNibName:@"SosViewController" bundle:nil model:tripModel withDataDictionary:DataDictionary];
+    
 }
 //Declare a delegate, assign your textField to the delegate and then include these methods
 -(void)keyboardOnScreen:(NSNotification *)notification
@@ -186,17 +188,19 @@ CGRect keyboardFrame;
     [messageTextField resignFirstResponder];
     [textField resignFirstResponder];
     [self.view endEditing:YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     [self sendSosMessage:textField.text withFileAttached:NO fileName:@""];
     textField.text = @"";
-    [self presentViewController:sosController animated:YES completion:nil];
+    //    [self presentViewController:sosController animated:YES completion:nil];
     return YES;
 }
 -(IBAction)messageOne:(id)sender
 {
     if ([self connectedToInternet]){
         NSString *message =@"Driver Misbehaving";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -206,8 +210,9 @@ CGRect keyboardFrame;
 {
     if ([self connectedToInternet]){
         NSString *message =@"Unknown People in Cab";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -217,8 +222,9 @@ CGRect keyboardFrame;
 {
     if ([self connectedToInternet]){
         NSString *message =@"Cab Taking Different Route";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -228,8 +234,9 @@ CGRect keyboardFrame;
 {
     if ([self connectedToInternet]){
         NSString *message =@"Drunken Driving";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -238,8 +245,9 @@ CGRect keyboardFrame;
 -(IBAction)messageFive:(id)sender{
     if ([self connectedToInternet]){
         NSString *message =@"Met with an Accident";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -248,8 +256,9 @@ CGRect keyboardFrame;
 -(IBAction)messageSix:(id)sender{
     if ([self connectedToInternet]){
         NSString *message =@"Feeling unsafe , stay on call with me";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -258,8 +267,9 @@ CGRect keyboardFrame;
 -(IBAction)messageSeven:(id)sender{
     if ([self connectedToInternet]){
         NSString *message =@"Companion Misbehaving";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         [alert show];
@@ -268,8 +278,9 @@ CGRect keyboardFrame;
 -(IBAction)messageEight:(id)sender{
     if ([self connectedToInternet]){
         NSString *message =@"Medical Emergency";
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [self sendSosMessage:message withFileAttached:NO fileName:@""];
-        [self presentViewController:sosController animated:YES completion:nil];
+        //        [self presentViewController:sosController animated:YES completion:nil];
     }
     else{
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
@@ -279,28 +290,144 @@ CGRect keyboardFrame;
 -(void)sendSosMessage:(NSString *)message withFileAttached:(BOOL)fileAttached fileName:(NSString *)fileName
 {
     
-    double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
-    double longitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"longitude"];
-    ////    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",longitude,latitude];
-    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%@,%@&sensor=true",[[NSNumber numberWithDouble:latitude] stringValue],[[NSNumber numberWithDouble:longitude] stringValue]];
-    NSURL *url = [NSURL URLWithString:strin];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    
-    addressConnection = [NSURLConnection connectionWithRequest:request delegate:self];
-    if ([self connectedToInternet]){
-        [addressConnection start];
+    if([CLLocationManager locationServicesEnabled] &&
+       [CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied)
+    {
+        double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
+        double longitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"longitude"];
+        NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%@,%@&sensor=true",[[NSNumber numberWithDouble:latitude] stringValue],[[NSNumber numberWithDouble:longitude] stringValue]];
+        NSURL *url = [NSURL URLWithString:strin];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+        [request setHTTPMethod:@"POST"];
+        [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+        
+        addressConnection = [NSURLConnection connectionWithRequest:request delegate:self];
+        if ([self connectedToInternet]){
+            [addressConnection start];
+        }else{
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            [alert show];
+        }
+        
+        [[NSUserDefaults standardUserDefaults] setObject:message forKey:@"message"];
+        [[NSUserDefaults standardUserDefaults] setObject:fileName forKey:@"fileName"];
+        [[NSUserDefaults standardUserDefaults] setBool:fileAttached forKey:@"fileAttached"];
     }else{
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-        [alert show];
+        NSLog(@"denied");
+        [[NSUserDefaults standardUserDefaults] setDouble:0.0f forKey:@"latitude"];
+        [[NSUserDefaults standardUserDefaults] setDouble:0.0f forKey:@"longitude"];
+        NSString *title;
+        title = @"Location Services Not Enabled!";
+        NSString *messageTitle = @"Please Turn On Location Services to 'While using the app' In The Location Services Settings";
+        
+        UIAlertController *alertController = [UIAlertController  alertControllerWithTitle:title  message:messageTitle  preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Send anyway" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
+            double longitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"longitude"];
+            ////    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",longitude,latitude];
+            NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%@,%@&sensor=true",[[NSNumber numberWithDouble:latitude] stringValue],[[NSNumber numberWithDouble:longitude] stringValue]];
+            NSURL *url = [NSURL URLWithString:strin];
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+            [request setHTTPMethod:@"POST"];
+            [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+            [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+            
+            addressConnection = [NSURLConnection connectionWithRequest:request delegate:self];
+            if ([self connectedToInternet]){
+                [addressConnection start];
+            }else{
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+            
+            [[NSUserDefaults standardUserDefaults] setObject:message forKey:@"message"];
+            [[NSUserDefaults standardUserDefaults] setObject:fileName forKey:@"fileName"];
+            [[NSUserDefaults standardUserDefaults] setBool:fileAttached forKey:@"fileAttached"];        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Turn On" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            NSURL *settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            [[UIApplication sharedApplication] openURL:settingsURL];
+        }]];
+        
+        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        });
+        [self presentViewController:alertController animated:YES completion:nil];
     }
     
-    [[NSUserDefaults standardUserDefaults] setObject:message forKey:@"message"];
-    [[NSUserDefaults standardUserDefaults] setObject:fileName forKey:@"fileName"];
-    [[NSUserDefaults standardUserDefaults] setBool:fileAttached forKey:@"fileAttached"];
     
+    //    locationManager = nil;
+    //    locationManager = [[CLLocationManager alloc] init];
+    //    locationManager.desiredAccuracy=kCLLocationAccuracyBest;
+    //    locationManager.distanceFilter=kCLDistanceFilterNone;
+    //    if(![CLLocationManager locationServicesEnabled] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
+    //    {
+    //        NSLog(@"denied");
+    //        [[NSUserDefaults standardUserDefaults] setDouble:0.0f forKey:@"latitude"];
+    //        [[NSUserDefaults standardUserDefaults] setDouble:0.0f forKey:@"longitude"];
+    //        NSString *title;
+    //        title = @"Location Services Not Enabled!";
+    //        NSString *message = @"Please  Turn On Location Services In The Location Services Settings";
+    //
+    //        UIAlertController *alertController = [UIAlertController  alertControllerWithTitle:title  message:message  preferredStyle:UIAlertControllerStyleAlert];
+    //
+    //        [alertController addAction:[UIAlertAction actionWithTitle:@"Send anyway" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    //            double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
+    //            double longitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"longitude"];
+    //            ////    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",longitude,latitude];
+    //            NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%@,%@&sensor=true",[[NSNumber numberWithDouble:latitude] stringValue],[[NSNumber numberWithDouble:longitude] stringValue]];
+    //            NSURL *url = [NSURL URLWithString:strin];
+    //            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+    //            [request setHTTPMethod:@"POST"];
+    //            [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    //            [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    //
+    //            addressConnection = [NSURLConnection connectionWithRequest:request delegate:self];
+    //            if ([self connectedToInternet]){
+    //                [addressConnection start];
+    //            }else{
+    //                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+    //                [alert show];
+    //            }
+    //
+    //            [[NSUserDefaults standardUserDefaults] setObject:message forKey:@"message"];
+    //            [[NSUserDefaults standardUserDefaults] setObject:fileName forKey:@"fileName"];
+    //            [[NSUserDefaults standardUserDefaults] setBool:fileAttached forKey:@"fileAttached"];        }]];
+    //        [alertController addAction:[UIAlertAction actionWithTitle:@"Turn On" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    //            NSURL *settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    //            [[UIApplication sharedApplication] openURL:settingsURL];
+    //        }]];
+    //
+    //        [self presentViewController:alertController animated:YES completion:nil];
+    //    }
+    //    else
+    //    {
+    //    double latitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"latitude"];
+    //    double longitude = [[NSUserDefaults standardUserDefaults] doubleForKey:@"longitude"];
+    //    ////    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",longitude,latitude];
+    //    NSString *strin = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%@,%@&sensor=true",[[NSNumber numberWithDouble:latitude] stringValue],[[NSNumber numberWithDouble:longitude] stringValue]];
+    //    NSURL *url = [NSURL URLWithString:strin];
+    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+    //    [request setHTTPMethod:@"POST"];
+    //    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    //    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    //
+    //    addressConnection = [NSURLConnection connectionWithRequest:request delegate:self];
+    //    if ([self connectedToInternet]){
+    //        [addressConnection start];
+    //    }else{
+    //        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Alert" message:@"No internet connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+    //        [alert show];
+    //    }
+    //
+    //    [[NSUserDefaults standardUserDefaults] setObject:message forKey:@"message"];
+    //    [[NSUserDefaults standardUserDefaults] setObject:fileName forKey:@"fileName"];
+    //    [[NSUserDefaults standardUserDefaults] setBool:fileAttached forKey:@"fileAttached"];
+    //    }
 }
 -(IBAction)startRecording:(id)sender
 {
@@ -433,43 +560,45 @@ CGRect keyboardFrame;
     return [[formatter stringFromDate:[NSDate date]] stringByAppendingString:@".jpg"];
 }
 -(IBAction)takePictureWithCamera {
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    if(authStatus == AVAuthorizationStatusAuthorized) {
-        // do your logic
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-        picker.delegate = self;
-        picker.allowsEditing = YES;
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        [self presentViewController:picker animated:YES completion:NULL];
-    } else if(authStatus == AVAuthorizationStatusDenied){
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Permision needed" message:@"Go to settings and enable camera" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil];
-        [alert show];
-        [alert setTag:3333];
-    } else if(authStatus == AVAuthorizationStatusRestricted){
-        // restricted
-    } else if(authStatus == AVAuthorizationStatusNotDetermined){
-        // not determined
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-            if(granted){
-                NSLog(@"Granted access");
+            AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+            if(authStatus == AVAuthorizationStatusAuthorized) {
+                // do your logic
                 UIImagePickerController *picker = [[UIImagePickerController alloc] init];
                 picker.delegate = self;
                 picker.allowsEditing = YES;
                 picker.sourceType = UIImagePickerControllerSourceTypeCamera;
                 [self presentViewController:picker animated:YES completion:NULL];
-                
-            } else {
-                NSLog(@"Not granted access");
+            } else if(authStatus == AVAuthorizationStatusDenied){
                 UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Permision needed" message:@"Go to settings and enable camera" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil];
                 [alert show];
                 [alert setTag:3333];
+            } else if(authStatus == AVAuthorizationStatusRestricted){
+                // restricted
+            } else if(authStatus == AVAuthorizationStatusNotDetermined){
+                // not determined
+                [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                    if(granted){
+                        NSLog(@"Granted access");
+                        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+                        picker.delegate = self;
+                        picker.allowsEditing = YES;
+                        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+                        [self presentViewController:picker animated:YES completion:NULL];
+                        
+                    } else {
+                        NSLog(@"Not granted access");
+                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Permision needed" message:@"Go to settings and enable camera" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil];
+                        [alert show];
+                        [alert setTag:3333];
+                    }
+                }];
             }
-        }];
-    }
         });
     });
+    
     
 }
 -(void)imagePickerController:(UIImagePickerController*)picker
@@ -480,102 +609,117 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info {
 }
 -(void)sendimage:(UIImage *)image
 {
-    NSString *Datestr = [self dateStringJPG];
-    NSString *str =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
-    NSLog(@"%@",str);
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    
-    NSString *BoundaryConstant = @"----------V2ymHFg03ehbqgZCaKO6jy";
-    //    NSString* FileParamConstant = @"file";
-    NSURL* requestURL = [NSURL URLWithString:str];
-    request = [[NSMutableURLRequest alloc] init];
-    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-    [request setHTTPShouldHandleCookies:NO];
-    [request setTimeoutInterval:60];
-    [request setHTTPMethod:@"PUT"];
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", BoundaryConstant];
-    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
-    
-    
-    NSMutableData *body = [NSMutableData data];
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
-    if (imageData) {
-        //        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-        //        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"image.jpg\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-        //        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:imageData];
-        //        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    }
-    //    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    
-    [request setHTTPBody:body];
-    NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setURL:requestURL];
-    
-    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if(data.length > 0)
-        {
-            NSLog(@"success jpg %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSString *Datestr = [self dateStringJPG];
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *str;
+        if ([Port isEqualToString:@"-1"]){
+            str =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
+        }else{
+            str =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
         }
-        else
-        {
-            NSLog(@"---xxerror %@-%@",data,error);
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        
+        NSString *BoundaryConstant = @"----------V2ymHFg03ehbqgZCaKO6jy";
+        //    NSString* FileParamConstant = @"file";
+        NSURL* requestURL = [NSURL URLWithString:str];
+        request = [[NSMutableURLRequest alloc] init];
+        [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+        [request setHTTPShouldHandleCookies:NO];
+        [request setTimeoutInterval:60];
+        [request setHTTPMethod:@"PUT"];
+        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", BoundaryConstant];
+        [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+        
+        
+        NSMutableData *body = [NSMutableData data];
+        NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+        if (imageData) {
+            //        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+            //        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"image.jpg\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+            //        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:imageData];
+            //        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
         }
-    }];
-    [self sendSosMessage:@"Image" withFileAttached:YES fileName:Datestr];
-    [self presentViewController:sosController animated:YES completion:nil];
+        //    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        
+        [request setHTTPBody:body];
+        NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setURL:requestURL];
+        
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+            if(data.length > 0)
+            {
+                NSLog(@"success jpg %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            }
+            else
+            {
+                NSLog(@"---xxerror %@-%@",data,error);
+            }
+        }];
+        [self sendSosMessage:@"Image" withFileAttached:YES fileName:Datestr];
+        [self presentViewController:sosController animated:YES completion:nil];
+    });
 }
 -(void)sendAudio:(NSData *)audioData
 {
-    NSString *Datestr = [self dateString];
-    NSString *str =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
-    NSLog(@"%@",str);
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    NSString *BoundaryConstant = @"----------V2ymHFg03ehbqgZCaKO6jy";
-    NSURL* requestURL = [NSURL URLWithString:str];
-    request = [[NSMutableURLRequest alloc] init];
-    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-    [request setHTTPShouldHandleCookies:NO];
-    [request setHTTPMethod:@"PUT"];
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", BoundaryConstant];
-    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
-    NSMutableData *body = [NSMutableData data];
-    if (audioData) {
-        //        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-        //        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"audio.mp3\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-        //        [body appendData:[@"Content-Type: audio/mpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:audioData];
-        //        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    }
-    //    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setHTTPBody:body];
-    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setURL:requestURL];
-    NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
-    NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
-    NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
-    [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if(data.length > 0)
-        {
-            NSLog(@"success wav %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSString *Datestr = [self dateString];
+        
+        NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+        NSString *str;
+        if ([Port isEqualToString:@"-1"]){
+            str =[NSString stringWithFormat:@"%@://%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
+        }else{
+            str =[NSString stringWithFormat:@"%@://%@:%@/%@?dbname=%@&colname=%@&filename=%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"],@"gridfs",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"sos_files",Datestr];
         }
-        else
-        {
-            NSLog(@"error %@-%@",data,error);
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        NSString *BoundaryConstant = @"----------V2ymHFg03ehbqgZCaKO6jy";
+        NSURL* requestURL = [NSURL URLWithString:str];
+        request = [[NSMutableURLRequest alloc] init];
+        [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+        [request setHTTPShouldHandleCookies:NO];
+        [request setHTTPMethod:@"PUT"];
+        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", BoundaryConstant];
+        [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+        NSMutableData *body = [NSMutableData data];
+        if (audioData) {
+            //        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+            //        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"audio.mp3\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+            //        [body appendData:[@"Content-Type: audio/mpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:audioData];
+            //        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
         }
-    }];
-    [self sendSosMessage:@"AudioFile" withFileAttached:YES fileName:Datestr];
-    [self presentViewController:sosController animated:YES completion:nil];
+        //    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setHTTPBody:body];
+        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setURL:requestURL];
+        NSString *tokenString = [[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"];
+        NSString *headerString = [NSString stringWithFormat:@"%@=%@,%@=%@",@"oauth_realm",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoDbName"],@"oauth_token",tokenString];
+        NSString *finalAuthString = [NSString stringWithFormat:@"%@ %@",@"OAuth",headerString];
+        [request setValue:finalAuthString forHTTPHeaderField:@"Authorization"];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+            if(data.length > 0)
+            {
+                NSLog(@"success wav %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            }
+            else
+            {
+                NSLog(@"error %@-%@",data,error);
+            }
+        }];
+        [self sendSosMessage:@"AudioFile" withFileAttached:YES fileName:Datestr];
+        [self presentViewController:sosController animated:YES completion:nil];
+    });
 }
 #pragma mark RESTCallBack Delegate Methods
 -(void)onResponseReceived:(NSData *)data
@@ -614,18 +758,44 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info {
     if ([CLLocationManager locationServicesEnabled]){
         NSError *error;
         //    NSLog(@"%@",[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error]);
-        NSDictionary *resultsDictoinary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-        NSLog(@"%@",resultsDictoinary);
-        if ([resultsDictoinary valueForKey:@"results"]){
-            NSArray *adressArray = [resultsDictoinary valueForKey:@"results"];
-            if (adressArray.count){
-                NSDictionary *firstComponent = [adressArray objectAtIndex:0];
-                NSString *exactAddress = [firstComponent valueForKey:@"formatted_address"];
-                [[NSUserDefaults standardUserDefaults] setValue:exactAddress forKey:@"address"];
-            }else{
-                [[NSUserDefaults standardUserDefaults] setValue:@"NA" forKey:@"address"];
+        if (data != nil){
+            NSDictionary *resultsDictoinary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            NSLog(@"%@",resultsDictoinary);
+            if ([resultsDictoinary valueForKey:@"results"]){
+                NSArray *adressArray = [resultsDictoinary valueForKey:@"results"];
+                if (adressArray.count){
+                    NSDictionary *firstComponent = [adressArray objectAtIndex:0];
+                    NSString *exactAddress = [firstComponent valueForKey:@"formatted_address"];
+                    [[NSUserDefaults standardUserDefaults] setValue:exactAddress forKey:@"address"];
+                }else{
+                    [[NSUserDefaults standardUserDefaults] setValue:@"NA" forKey:@"address"];
+                }
+            }
+            if (connection == addressConnection){
+                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"addressGot"]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"addressGot"];
+                    [self sendSOSFile:[[NSUserDefaults standardUserDefaults] valueForKey:@"message"] withFileAttached:[[NSUserDefaults standardUserDefaults] boolForKey:@"fileAttached"] fileName:[[NSUserDefaults standardUserDefaults] valueForKey:@"fileName"] withAddress:[[NSUserDefaults standardUserDefaults] valueForKey:@"address"]];
+                }
+            }
+            if (connection == sosConnection){
+                NSLog(@"raised sos");
+                NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"message"]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                });
+                [self presentViewController:sosController animated:YES completion:nil];
+            }
+        }else{
+            [[NSUserDefaults standardUserDefaults] setValue:@"NA" forKey:@"address"];
+            if (connection == addressConnection){
+                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"addressGot"]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"addressGot"];
+                    [self sendSOSFile:[[NSUserDefaults standardUserDefaults] valueForKey:@"message"] withFileAttached:[[NSUserDefaults standardUserDefaults] boolForKey:@"fileAttached"] fileName:[[NSUserDefaults standardUserDefaults] valueForKey:@"fileName"] withAddress:[[NSUserDefaults standardUserDefaults] valueForKey:@"address"]];
+                }
             }
         }
+    }else{
+        [[NSUserDefaults standardUserDefaults] setValue:@"NA" forKey:@"address"];
         if (connection == addressConnection){
             if (![[NSUserDefaults standardUserDefaults] boolForKey:@"addressGot"]){
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"addressGot"];
@@ -635,9 +805,11 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info {
         if (connection == sosConnection){
             NSLog(@"raised sos");
             NSLog(@"%@",[[NSUserDefaults standardUserDefaults] valueForKey:@"message"]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+            });
+            [self presentViewController:sosController animated:YES completion:nil];
         }
-    }else{
-        
     }
 }
 -(void)sendSOSFile:(NSString *)message withFileAttached:(BOOL)fileAttached fileName:(NSString *)fileName withAddress:(NSString *)address{
@@ -720,11 +892,19 @@ didFinishPickingMediaWithInfo:(NSDictionary*)info {
     NSLog(@"%@",myDictionary);
     if ([sender.name isEqualToString:@"tripCompleted"]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            SomeViewController *some = [[SomeViewController alloc]init];
-            [some getTripId:[myDictionary valueForKey:@"tripId"]];
-            [self presentViewController:some animated:YES completion:nil];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"tripFeedbackForm"]){
+                SomeViewController *some1 = [[SomeViewController alloc]init];
+                [some1 getTripId:[myDictionary valueForKey:@"tripId"]];
+                [self presentViewController:some1 animated:YES completion:nil];
+            }else{
+                
+            }
         });
         
     }
 }
+-(void)sendSOS{
+    
+}
 @end
+

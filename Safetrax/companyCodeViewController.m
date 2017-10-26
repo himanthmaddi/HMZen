@@ -511,11 +511,7 @@ UIActivityIndicatorView *spinnerIndicator;
                         [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"accessToken"] forKey:@"userAccessToken"];
                         NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]);
                         [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"expiresAt"] forKey:@"expiredTime"];
-                        
-                        [SKTUser currentUser].firstName = [[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"];
-                        [SKTUser currentUser].email = [[userConfigDictionary valueForKey:@"userInfo"]valueForKey:@"email"];
-                        [[SKTUser currentUser] addProperties:@{[[NSUserDefaults standardUserDefaults] valueForKey:@"company"]:@"Company"}];
-                        
+                                                
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"username"];
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"name"];
                         [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"userId"] forKey:@"empid"];

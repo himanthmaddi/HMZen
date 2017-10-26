@@ -19,7 +19,19 @@
     NSString *oldAcccessToken = tokenFrom;
     __block NSDictionary *resultDictionary;
     NSURLSession *session = [NSURLSession sharedSession];
-    [[session dataTaskWithURL:[NSURL URLWithString:@"http://72.52.65.142:8083/auth"]
+    NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
+    NSString *url;
+    if([Port isEqualToString:@"-1"])
+    {
+        url =[NSString stringWithFormat:@"%@://%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"]];
+    }
+    else
+    {
+        url =[NSString stringWithFormat:@"%@://%@:%@/auth",[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoScheme"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoHost"],[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"]];
+    }
+    NSURL *URL =[NSURL URLWithString:url];
+
+    [[session dataTaskWithURL:URL
             completionHandler:^(NSData *data,
                                 NSURLResponse *response,
                                 NSError *error) {
@@ -154,8 +166,6 @@
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         }
     }else{
-        //        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please check your connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
-        //        [alert show];
     }
     
     NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]);

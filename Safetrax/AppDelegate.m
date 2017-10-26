@@ -16,10 +16,9 @@
 #import "companyCodeViewController.h"
 #import "FeedbackViewController.h"
 #import "CheckFeedbackViewController.h"
-#import <Smooch/Smooch.h>
 #import "Harpy.h"
 #import <IQKeyboardManager.h>
-
+#import <Smooch/Smooch.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -49,12 +48,14 @@ NSString *const SubscriptionTopic = @"/topics/global";
 @synthesize responseData;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-    
+    SKTSettings* settings = [SKTSettings settingsWithAppId:@"59ef0a76027fe0004bdf5fee"];
+    settings.conversationAccentColor = [UIColor colorWithRed:145.0/255 green:45.0/255 blue:141.0/255 alpha:1.0];
+    [Smooch initWithSettings:settings completionHandler:nil];    
     [IQKeyboardManager sharedManager].enable = YES;
+    [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
     
     [FIRApp configure];
-    
     
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
@@ -402,6 +403,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"success"];
     [[FIRInstanceID instanceID] setAPNSToken:deviceToken
                                         type:FIRInstanceIDAPNSTokenTypeProd];
+    [Smooch setPushToken:deviceToken];
     
 }
 - (void)applicationDidEnterBackground:(UIApplication *)application
