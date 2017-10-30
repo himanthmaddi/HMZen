@@ -468,17 +468,15 @@ CGRect keyboardFrame;
 {
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         if (granted) {
-            UIAlertView *myAlert = [[UIAlertView alloc]
-                                    initWithTitle:@"Voice Message"
-                                    message:@"Recording....Send SoS Voice Message ?"
-                                    delegate:self
-                                    cancelButtonTitle:@"Cancel"
-                                    otherButtonTitles:@"Send",nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *myAlert = [[UIAlertView alloc] initWithTitle:@"Voice Message" message:@"Recording....Send SoS Voice Message ?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Send",nil];
             myAlert.tag = 11;
             [myAlert show];
             [self record];
+            });
         }
         else {
+            dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView *myAlert = [[UIAlertView alloc]
                                     initWithTitle:@"Permission needed"
                                     message:@"Enable microphone access in settings"
@@ -487,6 +485,7 @@ CGRect keyboardFrame;
                                     otherButtonTitles:@"Settings",nil];
             myAlert.tag = 3333;
             [myAlert show];
+            });
         }
     }];
     

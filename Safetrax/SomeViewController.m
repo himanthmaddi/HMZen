@@ -35,6 +35,7 @@
 {
 
         [self dismissViewControllerAnimated:YES completion:^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSString *urlInString;
             NSString *Port =[[NSUserDefaults standardUserDefaults] stringForKey:@"mongoPort"];
             NSString *employeeId = [[NSUserDefaults standardUserDefaults] stringForKey:@"employeeId"];
@@ -69,6 +70,7 @@
             NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error_config];
             id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
             NSLog(@"%@",result);
+            });
         }];
 }
 
