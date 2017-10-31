@@ -19,6 +19,8 @@
 #import "Harpy.h"
 #import <IQKeyboardManager.h>
 #import <Smooch/Smooch.h>
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -48,6 +50,8 @@ NSString *const SubscriptionTopic = @"/topics/global";
 @synthesize responseData;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [Fabric with:@[[Crashlytics class]]];
+
     SKTSettings* settings = [SKTSettings settingsWithAppId:@"59ef0a76027fe0004bdf5fee"];
     settings.conversationAccentColor = [UIColor colorWithRed:145.0/255 green:45.0/255 blue:141.0/255 alpha:1.0];
     [Smooch initWithSettings:settings completionHandler:nil];    
@@ -427,11 +431,10 @@ NSString *const SubscriptionTopic = @"/topics/global";
     [[NSUserDefaults standardUserDefaults] synchronize];
     [rootViewController_delegate dismiss];
     [self.window setRootViewController:nil];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Company Code" message:@"Please enter your Company Code" delegate:self cancelButtonTitle:@"Submit" otherButtonTitles:nil];
-    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    alertView.tag = 989;
     companyCodeViewController *companyCodeView = [[companyCodeViewController alloc]init];
-    self.window.rootViewController = companyCodeView;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.window.rootViewController = companyCodeView;
+    });
 }
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
@@ -446,20 +449,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
     }
 }
 -(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-//    UIApplicationState state = [application applicationState];
-    
-//    NSLog(@"didreceive");
-//    NSDictionary *userInfo = notification.userInfo;
-//    if ([@"Feedback" isEqualToString:[userInfo objectForKey:@"isFeedbackNotification"]]){
-//        NSString *tripID = [userInfo objectForKey:@"LastTripId"];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"addFeedback" object:nil];
-//        [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"ShowFeedbackForm"];
-//        [[NSUserDefaults standardUserDefaults] setObject:tripID forKey:@"LastTripId"];
-//        //CheckFeedbackViewController *CheckFeedback = [[CheckFeedbackViewController alloc] init];
-//        //[CheckFeedback downloadConfig];
-//    }
     application.applicationIconBadgeNumber = 0;
-
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {

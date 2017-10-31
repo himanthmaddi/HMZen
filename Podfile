@@ -5,6 +5,8 @@ pod 'Firebase/Messaging'
 pod 'Harpy'
 pod 'MBProgressHUD', '~> 1.0.0'
 pod 'IQKeyboardManager'
+pod 'Fabric'
+pod 'Crashlytics'
 target 'Commuter' do
   # Uncomment this line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!

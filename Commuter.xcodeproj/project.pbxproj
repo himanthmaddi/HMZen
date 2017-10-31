@@ -1934,6 +1934,7 @@
 				7E2208A6ED1AA7BD8FB56FEE /* [CP] Embed Pods Frameworks */,
 				A21D19974DBBE3E5DC37C4BA /* [CP] Copy Pods Resources */,
 				01CF5AE51FA1E7EF00B28EF2 /* Embed Frameworks */,
+				01B9CB7E1FA76B58001D8A15 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1966,8 +1967,8 @@
 						TestTargetID = 84E9BB701C18435C00D0839F;
 					};
 					B7D0FB5219696F6000971470 = {
-						DevelopmentTeam = VS69383GKM;
-						ProvisioningStyle = Automatic;
+						DevelopmentTeam = 2D47VGCJHU;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2312,6 +2313,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		01B9CB7E1FA76B58001D8A15 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 1f4bc4955bf03e3170663273f752aada847be4dc 1abdbc17f363d56a0956ca6c09f4a0b474f04c500b36cd61d9837797ea1864a3";
+		};
 		05E41F8C25499FE2D3920815 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3008,7 +3022,8 @@
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = VS69383GKM;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 2D47VGCJHU;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -3028,10 +3043,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "d72c778d-2eeb-4675-9759-8d5117e0d7ad";
+				PROVISIONING_PROFILE_SPECIFIER = ZenCommute_dev_profile;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -3046,8 +3061,9 @@
 				CODE_SIGN_ENTITLEMENTS = Commuter.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = Commuter.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zensar Technologies Ltd (2D47VGCJHU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = VS69383GKM;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 2D47VGCJHU;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Safetrax",
@@ -3068,10 +3084,10 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.safetrax.zengo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zensar.zengo;
 				PRODUCT_NAME = Commuter;
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "c73fcd24-52c6-490c-904c-933c27c54aa6";
+				PROVISIONING_PROFILE_SPECIFIER = "ZenGo AppStore Distribution";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
