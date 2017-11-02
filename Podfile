@@ -7,6 +7,8 @@ pod 'MBProgressHUD', '~> 1.0.0'
 pod 'IQKeyboardManager'
 pod 'Fabric'
 pod 'Crashlytics'
+pod 'Smooch', '~> 6.3.1'
+
 target 'Commuter' do
   # Uncomment this line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!

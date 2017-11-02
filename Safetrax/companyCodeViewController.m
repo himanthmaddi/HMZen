@@ -13,7 +13,6 @@
 #import "HomeViewController.h"
 #import "MenuViewController.h"
 #import "MFSideMenuContainerViewController.h"
-#import <Smooch/Smooch.h>
 #if Parent
 #import "SchoolCodeFAQViewController.h"
 #endif

@@ -18,7 +18,6 @@
 #import "MenuViewControllerParent.h"
 #import "MyChildrenViewController.h"
 #import <CommonCrypto/CommonDigest.h>
-#import <Smooch/Smooch.h>
 #import <MBProgressHUD.h>
 #import <FirebaseInstanceID/FirebaseInstanceID.h>
 
@@ -57,6 +56,13 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     //    [center addObserver:self selector:@selector(keyboardOnScreen:) name:UIKeyboardDidShowNotification object:nil];
     [password setDelegate:self];
     [userName setDelegate:self];
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"] && [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]){
+        userName.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"];
+        password.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"];
+    }else{
+        userName.text = @"";
+        password.text = @"";
+    }
     [invalidCredentials setHidden:YES];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
                                    initWithTarget:self
@@ -306,33 +312,9 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         if ([userConfigDictionary valueForKey:@"accessToken"]){
             
             [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
-            
-            NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-            [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
-            double expireTime = [[userConfigDictionary valueForKey:@"expiresAt"] doubleValue];
-            NSTimeInterval seconds = expireTime / 1000;
-            NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:seconds];
-            NSLog(@"%@",[dateFormat stringFromDate:expireDate]);
-            
-            //        NSDate *date = [NSDate date];
-            //        NSComparisonResult result = [date compare:expireDate];
-            //        if(result == NSOrderedDescending)
-            //        {
-            //            SessionValidator *validator = [[SessionValidator alloc]init];
-            //            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
-            //        }
-            //        else if(result == NSOrderedAscending)
-            //        {
+            [[NSUserDefaults standardUserDefaults] setObject:userConfigDictionary forKey:@"fullConfig"];
             [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"accessToken"] forKey:@"userAccessToken"];
-            NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]);
             [[NSUserDefaults standardUserDefaults] setObject:[userConfigDictionary valueForKey:@"expiresAt"] forKey:@"expiredTime"];
-            //        }
-            //        else
-            //        {
-            //            SessionValidator *validator = [[SessionValidator alloc]init];
-            //            [validator validateAccessToken:[userConfigDictionary valueForKey:@"accessToken"]];
-            //        }
-                        
             [[NSUserDefaults standardUserDefaults] setObject:[self md5:password.text] forKey:@"password"];
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"username"];
             [[NSUserDefaults standardUserDefaults] setObject:[[userConfigDictionary objectForKey:@"userInfo"] objectForKey:@"fullName"] forKey:@"name"];
@@ -354,15 +336,31 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
                 [self showChangePassowrd];
             }
             else{
-                HomeViewController *home = [[HomeViewController alloc]init];
-                MenuViewController *menu = [[MenuViewController alloc]init];
-                rootViewControllerParent_delegate = [MFSideMenuContainerViewController
-                                                     containerWithCenterViewController:home
-                                                     leftMenuViewController:menu
-                                                     rightMenuViewController:nil];
-                rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-                rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
-                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+                if ([[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"] && [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]){
+                    if ([userName.text isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"]] && [password.text isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]]){
+                        HomeViewController *home = [[HomeViewController alloc]init];
+                        MenuViewController *menu = [[MenuViewController alloc]init];
+                        rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                             containerWithCenterViewController:home
+                                                             leftMenuViewController:menu
+                                                             rightMenuViewController:nil];
+                        rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+                        rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+                        });
+                    }else{
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Do you want to update the saved credentials?" message:@"" delegate:self cancelButtonTitle:@"Don't Update" otherButtonTitles:@"Yes", nil];
+                        alert.tag = 1222;
+                        [alert show];
+                    }
+                }else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Do you want to save the credentials?" message:@"" delegate:self cancelButtonTitle:@"Don't Save" otherButtonTitles:@"Yes", nil];
+                    alert.tag = 1221;
+                    [alert show];
+                });
+                }
             }
         }
         else{
@@ -435,5 +433,66 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
         }
     }
     
+}
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (alertView.tag == 1221){
+        if (buttonIndex == alertView.cancelButtonIndex){
+            HomeViewController *home = [[HomeViewController alloc]init];
+            MenuViewController *menu = [[MenuViewController alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                 containerWithCenterViewController:home
+                                                 leftMenuViewController:menu
+                                                 rightMenuViewController:nil];
+            rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+            rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            });
+        }else{
+        [[NSUserDefaults standardUserDefaults] setValue:userName.text forKey:@"savedUsername"];
+        [[NSUserDefaults standardUserDefaults] setValue:password.text forKey:@"savedPassword"];
+
+        HomeViewController *home = [[HomeViewController alloc]init];
+        MenuViewController *menu = [[MenuViewController alloc]init];
+        rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                             containerWithCenterViewController:home
+                                             leftMenuViewController:menu
+                                             rightMenuViewController:nil];
+        rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            });
+        }
+    }else if (1222){
+        if (buttonIndex == alertView.cancelButtonIndex){
+            HomeViewController *home = [[HomeViewController alloc]init];
+            MenuViewController *menu = [[MenuViewController alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                 containerWithCenterViewController:home
+                                                 leftMenuViewController:menu
+                                                 rightMenuViewController:nil];
+            rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+            rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            });
+        }else{
+            [[NSUserDefaults standardUserDefaults] setValue:userName.text forKey:@"savedUsername"];
+            [[NSUserDefaults standardUserDefaults] setValue:password.text forKey:@"savedPassword"];
+            
+            HomeViewController *home = [[HomeViewController alloc]init];
+            MenuViewController *menu = [[MenuViewController alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController
+                                                 containerWithCenterViewController:home
+                                                 leftMenuViewController:menu
+                                                 rightMenuViewController:nil];
+            rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+            rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            });
+        }
+    }
 }
 @end

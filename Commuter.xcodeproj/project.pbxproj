@@ -48,9 +48,6 @@
 		01C63B721E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */; };
 		01C63B741E30300B00A5EE3A /* Driver-48 copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B731E30300B00A5EE3A /* Driver-48 copy.png */; };
 		01C63B761E30301700A5EE3A /* vehicle.png in Resources */ = {isa = PBXBuildFile; fileRef = 01C63B751E30301700A5EE3A /* vehicle.png */; };
-		01CF5AE21FA1E77E00B28EF2 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; };
-		01CF5AE31FA1E7EF00B28EF2 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; };
-		01CF5AE41FA1E7EF00B28EF2 /* Smooch.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01CF5AEB1FA2142400B28EF2 /* NewMapViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01CF5AE91FA2142400B28EF2 /* NewMapViewViewController.m */; };
 		01CF5AEC1FA2142400B28EF2 /* NewMapViewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01CF5AEA1FA2142400B28EF2 /* NewMapViewViewController.xib */; };
 		01EA0F951EE173F4006B18AB /* ic_user_black.png in Resources */ = {isa = PBXBuildFile; fileRef = 01EA0F941EE173F4006B18AB /* ic_user_black.png */; };
@@ -457,20 +454,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		01CF5AE51FA1E7EF00B28EF2 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				01CF5AE41FA1E7EF00B28EF2 /* Smooch.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		01019AD11E08FEDE003E1F26 /* ScheduleTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScheduleTableViewCell.h; sourceTree = "<group>"; };
 		01019AD21E08FEDE003E1F26 /* ScheduleTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduleTableViewCell.m; sourceTree = "<group>"; };
@@ -526,7 +509,6 @@
 		01C63B711E302FFE00A5EE3A /* ic_alarm_black_18dp copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_alarm_black_18dp copy.png"; sourceTree = "<group>"; };
 		01C63B731E30300B00A5EE3A /* Driver-48 copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Driver-48 copy.png"; sourceTree = "<group>"; };
 		01C63B751E30301700A5EE3A /* vehicle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vehicle.png; sourceTree = "<group>"; };
-		01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
 		01CF5AE61FA1F27600B28EF2 /* icons8-Do Not Disturb-48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-Do Not Disturb-48.png"; sourceTree = "<group>"; };
 		01CF5AE81FA2142400B28EF2 /* NewMapViewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewMapViewViewController.h; sourceTree = "<group>"; };
 		01CF5AE91FA2142400B28EF2 /* NewMapViewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NewMapViewViewController.m; sourceTree = "<group>"; };
@@ -1079,12 +1061,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01CF5AE21FA1E77E00B28EF2 /* Smooch.framework in Frameworks */,
 				84DEB99E1C23158800C01299 /* GoogleMaps.framework in Frameworks */,
 				84B6CE0A1A5D72D8001A33E9 /* SystemConfiguration.framework in Frameworks */,
 				84B6CE0C1A5D72EE001A33E9 /* ImageIO.framework in Frameworks */,
 				84B6CE081A5D72CD001A33E9 /* QuartzCore.framework in Frameworks */,
-				01CF5AE31FA1E7EF00B28EF2 /* Smooch.framework in Frameworks */,
 				84B6CE061A5D72C6001A33E9 /* OpenGLES.framework in Frameworks */,
 				84B6CE041A5D72BD001A33E9 /* libz.dylib in Frameworks */,
 				84B6CE021A5D72B3001A33E9 /* libicucore.dylib in Frameworks */,
@@ -1605,7 +1585,6 @@
 		B7D0FB5519696F6000971470 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				01CF5AE11FA1E62E00B28EF2 /* Smooch.framework */,
 				84D81F0A1C21827A00E81B88 /* GoogleMaps.framework */,
 				84DFB6E91C1EC56D00EB83A9 /* Photos.framework */,
 				84DFB6E71C1EC53E00EB83A9 /* CoreTelephony.framework */,
@@ -1933,7 +1912,6 @@
 				B7D0FB5119696F6000971470 /* Resources */,
 				7E2208A6ED1AA7BD8FB56FEE /* [CP] Embed Pods Frameworks */,
 				A21D19974DBBE3E5DC37C4BA /* [CP] Copy Pods Resources */,
-				01CF5AE51FA1E7EF00B28EF2 /* Embed Frameworks */,
 				01B9CB7E1FA76B58001D8A15 /* ShellScript */,
 			);
 			buildRules = (
@@ -1956,7 +1934,8 @@
 				TargetAttributes = {
 					84E9BB701C18435C00D0839F = {
 						CreatedOnToolsVersion = 7.1;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = VS69383GKM;
+						ProvisioningStyle = Automatic;
 					};
 					84E9BB881C18435D00D0839F = {
 						CreatedOnToolsVersion = 7.1;
@@ -2350,9 +2329,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Parent App/Pods-Parent App-frameworks.sh",
+				"${PODS_ROOT}/Smooch/Smooch.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Smooch.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2398,9 +2380,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Commuter/Pods-Commuter-frameworks.sh",
+				"${PODS_ROOT}/Smooch/Smooch.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Smooch.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2772,8 +2757,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2785,7 +2771,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "Parent=1";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Parent App/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
@@ -2795,6 +2781,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.parentapp.safetrax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -2808,9 +2795,10 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = VS69383GKM;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2821,7 +2809,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "Parent=1";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Parent App/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
@@ -2831,6 +2819,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.parentapp.safetrax;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

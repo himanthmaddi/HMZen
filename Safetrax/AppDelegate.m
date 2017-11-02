@@ -50,11 +50,10 @@ NSString *const SubscriptionTopic = @"/topics/global";
 @synthesize responseData;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [Smooch initWithSettings:[SKTSettings settingsWithAppId:@"59ef0a76027fe0004bdf5fee"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+    }];
     [Fabric with:@[[Crashlytics class]]];
-
-    SKTSettings* settings = [SKTSettings settingsWithAppId:@"59ef0a76027fe0004bdf5fee"];
-    settings.conversationAccentColor = [UIColor colorWithRed:145.0/255 green:45.0/255 blue:141.0/255 alpha:1.0];
-    [Smooch initWithSettings:settings completionHandler:nil];    
+    
     [IQKeyboardManager sharedManager].enable = YES;
     [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
@@ -383,6 +382,9 @@ NSString *const SubscriptionTopic = @"/topics/global";
     }
     else if ([identifier isEqualToString:@"answerAction"]){
     }
+    [Smooch handleUserNotificationActionWithIdentifier:@"" withResponseInfo:@{} completionHandler:^{
+        
+    }];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -437,6 +439,7 @@ NSString *const SubscriptionTopic = @"/topics/global";
     });
 }
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    [Smooch handlePushNotification:@{}];
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber + 1;
     NSLog(@"Received Remote Push Notification");
@@ -526,14 +529,13 @@ NSString *const SubscriptionTopic = @"/topics/global";
 - (void)application:(UIApplication *)application
 didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))handler {
+    [Smooch handlePushNotification:@{}];
     NSLog(@"Notification received: %@", userInfo);
     if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
     {
         NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
         return;
     }
-    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification: %@", userInfo );
-    
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
     {
         NSLog( @"INACTIVE" );

@@ -8,9 +8,10 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <UserNotifications/UserNotifications.h>
+#import <UserNotificationsUI/UserNotificationsUI.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import "Harpy.h"
-@interface AppDelegate : UIResponder <UIApplicationDelegate,CLLocationManagerDelegate,UNUserNotificationCenterDelegate,FIRMessagingDelegate,HarpyDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,CLLocationManagerDelegate,UNUserNotificationCenterDelegate,FIRMessagingDelegate,HarpyDelegate,UNNotificationContentExtension>
 {
     UIAlertView *offlineAlertView ;
     UIAlertView *serverDownAlert;
