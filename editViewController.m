@@ -174,9 +174,10 @@
     [_officeTextField resignFirstResponder];
 }
 -(void)viewWillAppear:(BOOL)animated{
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
     
-    self.title = @"Modify Schedule";
+    self.title = @"MODIFY SCHEDULE";
     UIBarButtonItem *deleteBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(barButtonClicked:)];
     self.navigationItem.rightBarButtonItem = deleteBarButtonItem;
 }
@@ -668,8 +669,11 @@
         
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:bodyDict options:kNilOptions error:&error_config];
         [request setHTTPBody:jsonData];
-        
-        NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error_config];
+        NSURLResponse *response;
+        NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error_config];
+        NSLog(@"%@",resultData);
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        NSLog(@"%@",httpResponse);
         if (resultData != nil){
             id result = [NSJSONSerialization JSONObjectWithData:resultData options:kNilOptions error:&error_config];
             if ([result isKindOfClass:[NSArray class]]){

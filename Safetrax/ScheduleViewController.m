@@ -36,8 +36,10 @@ extern NSArray *tripList;
     
     [super viewDidLoad];
     
-    validateLogin *validate = [[validateLogin alloc]init];
-    [validate setDelegate:self];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        validateLogin *validate = [[validateLogin alloc]init];
+        [validate setDelegate:self];
+    });
     
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
     [dateFormat setDateFormat:@"YYY-MM-dd HH:mm:ss"];
@@ -252,7 +254,11 @@ extern NSArray *tripList;
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    
+    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.title = @"MY SCHEDULES";
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"OneTripIsInActive"]){
@@ -272,7 +278,6 @@ extern NSArray *tripList;
     
     
     _scheduleTableView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
-    self.title = @"Schedule";
     self.navigationItem.leftBarButtonItem = sideDrawer;
     //    self.navigationItem.rightBarButtonItem = select;
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"enabledSelection"];

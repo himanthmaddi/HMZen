@@ -89,10 +89,7 @@
                     }else{
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please check your connection" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
                         [alert show];
-                    }
-                    
-                    NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"userAccessToken"]);
-                    NSLog(@"%@",[[NSUserDefaults standardUserDefaults] stringForKey:@"expiredTime"]);
+                    }                    
                 }
             }] resume];
     
