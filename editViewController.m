@@ -97,6 +97,7 @@
             [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
             [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
             AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            NSLog(@"logged out from edit view");
             [appDelegate dismiss_delegate:nil];
             [self.view removeFromSuperview];
         }else{
@@ -110,6 +111,7 @@
     }
     else if(result == NSOrderedAscending)
     {
+        
     }
     
     

@@ -82,14 +82,6 @@ BOOL no_trips = FALSE;
     }else{
         
     }
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"scheduleVisibility"]){
-        mainSegment.hidden = NO;
-        [mainSegment setSelectedSegmentIndex:0];
-        schedule =[[EmpSchedule alloc] init:self];
-    }else{
-        mainSegment.hidden = YES;
-        [mainSegment setSelectedSegmentIndex:1];
-    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
     
@@ -113,8 +105,15 @@ BOOL no_trips = FALSE;
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
     else if(result == NSOrderedAscending)
-    {
-        
+    {   
+    }
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"scheduleVisibility"]){
+        mainSegment.hidden = NO;
+        [mainSegment setSelectedSegmentIndex:0];
+        schedule =[[EmpSchedule alloc] init:self];
+    }else{
+        mainSegment.hidden = YES;
+        [mainSegment setSelectedSegmentIndex:1];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self

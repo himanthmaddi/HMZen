@@ -63,6 +63,7 @@ extern NSArray *tripList;
             [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
             [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
             AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+            NSLog(@"logged out from schedule view");
             [appDelegate dismiss_delegate:nil];
             [self.view removeFromSuperview];
         }else{
@@ -110,28 +111,7 @@ extern NSArray *tripList;
                                              selector:@selector(menuStateEventOccurred:)
                                                  name:MFSideMenuStateNotificationEvent
                                                object:nil];
-    //    _scheduleTableView.allowsSelectionDuringEditing = YES;
-    //
-    //    toolBar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 60, self.view.frame.size.width, 60)];
-    //
-    //    UIBarButtonItem *editBarButtonItem  = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editBarButtonItemAction:)];
-    //
-    //    UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-    //
-    //    UIBarButtonItem *deleteBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(deleteBarButtonItemAction:)];
-    //
-    //    [toolBar setItems:[NSArray arrayWithObjects:editBarButtonItem,space,deleteBarButtonItem, nil]];
-    //
-    //    [self.view addSubview:toolBar];
-    //
-    //    toolBar.hidden = YES;
-    
-    //    refreshControl = [[UIRefreshControl alloc]init];
-    //    [refreshControl addTarget:self action:@selector(handleRefreshControl) forControlEvents:UIControlEventValueChanged];
-    //    _scheduleTableView.refreshControl = refreshControl;
-    //    refreshControl.backgroundColor = [UIColor lightGrayColor];
-    //    refreshControl.tintColor = [UIColor whiteColor];
-    // Do any additional setup after loading the view from its nib.
+
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -328,6 +308,7 @@ extern NSArray *tripList;
                     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
                     [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"ShowFeedbackForm"];
                     AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
+                    NSLog(@"logged out from schedule view");
                     [appDelegate dismiss_delegate:nil];
                     [self.view removeFromSuperview];
                 }else{

@@ -358,14 +358,13 @@ MFSideMenuContainerViewController *rootViewController_delegate;
     [self stopUpdateLocation];
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"login"];
-    [rootViewController_delegate dismiss];
-    [self.window setRootViewController:nil];
-    self.window.backgroundColor = [UIColor whiteColor];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Company Code" message:@"Please enter your Company Code" delegate:self cancelButtonTitle:@"Submit" otherButtonTitles:nil];
-    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    alertView.tag = 989;
     companyCodeViewController *companyCodeView = [[companyCodeViewController alloc]init];
-    self.window.rootViewController = companyCodeView;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [rootViewController_delegate dismiss];
+        [self.window setRootViewController:nil];
+        self.window.backgroundColor = [UIColor whiteColor];
+        self.window.rootViewController = companyCodeView;
+    });
 }
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
