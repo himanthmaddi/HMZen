@@ -56,13 +56,8 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
     //    [center addObserver:self selector:@selector(keyboardOnScreen:) name:UIKeyboardDidShowNotification object:nil];
     [password setDelegate:self];
     [userName setDelegate:self];
-    if ([[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"] && [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]){
-        userName.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"];
-        password.text = [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"];
-    }else{
-        userName.text = @"";
-        password.text = @"";
-    }
+    userName.text = @"";
+    password.text = @"";
     [invalidCredentials setHidden:YES];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
                                    initWithTarget:self
@@ -332,36 +327,15 @@ extern MFSideMenuContainerViewController *rootViewControllerParent_delegate;
             
             [spinner stopAnimating];
             [[FIRMessaging messaging] subscribeToTopic:@"/topics/global"];
-            if ([[userConfigDictionary objectForKey:@"isOneTimePass"] boolValue] ){
-                [self showChangePassowrd];
-            }
-            else{
-                if ([[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"] && [[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]){
-                    if ([userName.text isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKey:@"savedUsername"]] && [password.text isEqualToString:[[NSUserDefaults standardUserDefaults] valueForKey:@"savedPassword"]]){
-                        HomeViewController *home = [[HomeViewController alloc]init];
-                        MenuViewController *menu = [[MenuViewController alloc]init];
-                        rootViewControllerParent_delegate = [MFSideMenuContainerViewController
-                                                             containerWithCenterViewController:home
-                                                             leftMenuViewController:menu
-                                                             rightMenuViewController:nil];
-                        rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-                        rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
-                        });
-                    }else{
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Do you want to update the saved credentials?" message:@"" delegate:self cancelButtonTitle:@"Don't Update" otherButtonTitles:@"Yes", nil];
-                        alert.tag = 1222;
-                        [alert show];
-                    }
-                }else{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Do you want to save the credentials?" message:@"" delegate:self cancelButtonTitle:@"Don't Save" otherButtonTitles:@"Yes", nil];
-                    alert.tag = 1221;
-                    [alert show];
-                });
-                }
-            }
+            HomeViewController *home = [[HomeViewController alloc]init];
+            MenuViewController *menu = [[MenuViewController alloc]init];
+            rootViewControllerParent_delegate = [MFSideMenuContainerViewController containerWithCenterViewController:home
+            leftMenuViewController:menu rightMenuViewController:nil];
+            rootViewControllerParent_delegate.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+            rootViewControllerParent_delegate.modalPresentationStyle = UIModalPresentationFullScreen;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:rootViewControllerParent_delegate animated:YES completion:nil];
+            });
         }
         else{
             

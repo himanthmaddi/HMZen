@@ -234,8 +234,6 @@ extern NSArray *tripList;
 }
 -(void)viewWillAppear:(BOOL)animated
 {
-    self.navigationController.navigationBarHidden = YES;
-    self.navigationController.navigationBarHidden = NO;
     self.title = @"MY SCHEDULES";
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
@@ -258,8 +256,28 @@ extern NSArray *tripList;
     
     
     _scheduleTableView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
-    self.navigationItem.leftBarButtonItem = sideDrawer;
+//    self.navigationItem.leftBarButtonItem = sideDrawer;
     //    self.navigationItem.rightBarButtonItem = select;
+    
+    UIImage *image = [[UIImage imageNamed:@"sideDrawer.png"] imageWithRenderingMode: UIImageRenderingModeAlwaysOriginal];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(openSettingsMenu:)];
+    UIBarButtonItem *barButtonItemRight = [[UIBarButtonItem alloc] initWithImage:[[self image:[UIImage imageNamed:@"shield_03apr.png"] scaledToSize:CGSizeMake(30, 30)] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:self action:@selector(openSOSMenu:)];
+    self.navigationItem.leftBarButtonItem = barButtonItem;
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosEnabled"]){
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"sosOnTrip"]){
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"OneTripIsInActive"]){
+                self.navigationItem.rightBarButtonItem = barButtonItemRight;
+            }else{
+                self.navigationItem.rightBarButtonItem = nil;
+            }
+        }else{
+            self.navigationItem.rightBarButtonItem = barButtonItemRight;
+        }
+    }else{
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"enabledSelection"];
     [_scheduleTableView setEditing:NO animated:YES];
     [self adjustNavigationItems];
@@ -337,6 +355,22 @@ extern NSArray *tripList;
     
 }
 -(void)viewDidAppear:(BOOL)animated{
+    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.navigationBarHidden = NO;
+    self.title = @"MY SCHEDULES";
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:(73.0/255.0) green:(140.0/255.0) blue:(58.0/255.0) alpha:1.0];
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
+}
+-(IBAction)openSOSMenu:(id)sender{
+    sosController = nil;
+    if (!tripList || !tripList.count){
+        sosController = [[SOSMainViewController alloc] initWithNibName:@"SOSMainViewController" bundle:nil model:nil];
+    }
+    else{
+        sosController = [[SOSMainViewController alloc] initWithNibName:@"SOSMainViewController" bundle:nil model:[tripList objectAtIndex:0]];
+    }
+    [self presentViewController:sosController animated:YES completion:nil];
 }
 //- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 //{

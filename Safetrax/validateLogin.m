@@ -94,68 +94,22 @@
                             
                         }else{
                             AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                            NSLog(@"logged out from validate login view");
                             [appDelegate dismiss_delegate:nil];
                             [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
                         }
                     }
                 }else{
-                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    NSLog(@"logged out from validate login view");
-                    [appDelegate dismiss_delegate:nil];
-                    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+
                 }
             }else{
-                AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                NSLog(@"logged out from validate login view");
-                [appDelegate dismiss_delegate:nil];
-                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"fcmtokenpushed"];
+
             }
         }else{
             
         }
     });
 
-    //    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    //    [connection start];
+
 }
--(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [_responseData setLength:0];//Set your data to 0 to clear your buffer
-}
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [_responseData appendData:data];//Append the download data..
-}
--(void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    id status = [NSJSONSerialization JSONObjectWithData:_responseData options:0 error:nil];
-    NSLog(@"%@",status);
-    NSString *localFcmToken = [[FIRInstanceID instanceID]token];
-    
-    if ([status isKindOfClass:[NSArray class]]){
-        NSArray *array = status;
-        if (array.count == 1){
-            for (NSDictionary *dict in array){
-                NSString *dbFcmToken = [dict valueForKey:@"fcmtoken"];
-                if ([localFcmToken isEqualToString:dbFcmToken] && [[dict valueForKey:@"app"] isEqualToString:@"iOS"]){
-                    [homeObject didFinishvalidation];
-                }else{
-                    AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-                    NSLog(@"logged out from validate login view");
-                    [appDelegate dismiss_delegate:nil];
-                    //                    [homeObject didFinishvalidation];
-                    
-                }
-            }
-        }else{
-            AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-            NSLog(@"logged out from validate login view");
-            [appDelegate dismiss_delegate:nil];        }
-    }else{
-        AppDelegate *appDelegate =(AppDelegate*)[UIApplication sharedApplication].delegate;
-        NSLog(@"logged out from validate login view");
-        [appDelegate dismiss_delegate:nil];
-    }
-}
+
 @end

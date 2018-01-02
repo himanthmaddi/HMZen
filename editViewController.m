@@ -176,10 +176,10 @@
     [_officeTextField resignFirstResponder];
 }
 -(void)viewWillAppear:(BOOL)animated{
-
+    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tripCompletedNotification:) name:@"tripCompleted" object:nil];
-    
     self.title = @"MODIFY SCHEDULE";
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]};
     UIBarButtonItem *deleteBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(barButtonClicked:)];
     self.navigationItem.rightBarButtonItem = deleteBarButtonItem;
 }
